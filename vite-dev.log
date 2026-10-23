@@ -1,0 +1,50 @@
+
+> dream-ads-admin@1.0.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m964[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m11:10:23 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AdminLayout.tsx, /src/index.css[22m
+[2m11:10:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AdminLayout.tsx, /src/index.css[22m
+[2m11:10:25 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AdminLayout.tsx, /src/index.css[22m
+[2m11:10:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AdminLayout.tsx, /src/index.css[22m
+[2m11:11:25 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.tsx, /src/index.css[22m
+[2m11:12:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.tsx, /src/index.css[22m
+[2m11:12:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.tsx, /src/index.css[22m
+[2m11:12:14 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.tsx, /src/index.css[22m
+[2m11:12:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.tsx, /src/index.css[22m
+[2m11:49:21 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:49:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:49:48 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:49:50 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:49:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:49:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m11:51:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Users.tsx, /src/index.css[22m
+[2m12:01:13 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Referrals.tsx, /src/index.css[22m
+[2m12:09:54 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Leads.tsx, /src/index.css[22m
+[2m12:10:45 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Leads.tsx, /src/index.css[22m
+[2m12:18:33 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/WalletLedger.tsx, /src/index.css[22m
+[2m12:28:06 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:28:21 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:28:23 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:28:24 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:30:00 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:30:17 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Finance.tsx, /src/index.css[22m
+[2m12:30:53 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/ui/index.tsx, /src/index.css[22m
+[2m12:31:08 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/ui/index.tsx, /src/index.css[22m
+[2m12:39:20 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:39:39 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:39:41 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:39:44 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:39:49 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:40:03 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Vouchers.tsx, /src/index.css[22m
+[2m12:52:52 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Content.tsx, /src/index.css[22m
+[2m12:53:02 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Content.tsx, /src/index.css[22m
+[2m1:02:30 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Tasks.tsx, /src/index.css[22m
+[2m1:03:21 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Tasks.tsx, /src/index.css[22m
+[2m1:03:24 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Tasks.tsx, /src/index.css[22m
+[2m1:12:33 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/RolesAudit.tsx, /src/index.css[22m
