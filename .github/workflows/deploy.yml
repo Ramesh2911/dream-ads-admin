@@ -30,8 +30,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Write deploy marker
+        run: printf '%s' "$GITHUB_RUN_ID" > dist/_deploy-marker.txt
+
       - name: Deploy via cPanel API
         env:
-          CPANEL_SSO_EMAIL: ${{ secrets.CPANEL_SSO_EMAIL }}
-          CPANEL_SSO_PASSWORD: ${{ secrets.CPANEL_SSO_PASSWORD }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
         run: bash scripts/cpanel-deploy.sh
