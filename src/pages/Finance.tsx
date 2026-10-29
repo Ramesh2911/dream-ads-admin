@@ -75,9 +75,9 @@ function StatusPill({ status, map }: { status: string; map: Record<string, { cls
 
 type Confirm =
   | null
-  | { kind: 'approve'; id: string; name: string; amount: number; wallet: string }
-  | { kind: 'reject'; id: string; name: string; amount: number; wallet: string }
-  | { kind: 'paid'; id: string; name: string; amount: number; wallet: string }
+  | { kind: 'approve'; id: string; name: string; amount: number; wallet: string; destination?: string; method?: string }
+  | { kind: 'reject'; id: string; name: string; amount: number; wallet: string; destination?: string; method?: string }
+  | { kind: 'paid'; id: string; name: string; amount: number; wallet: string; destination?: string; method?: string }
   | { kind: 'complete'; id: string; name: string; amount: number }
   | { kind: 'fail'; id: string; name: string; amount: number };
 
@@ -392,16 +392,16 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                   </div>
                   {manage && w.status === 'pending' && (
                     <div className="flex gap-1.5">
-                      <button onClick={() => openConfirm({ kind: 'approve', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet })} className="btn-ghost !py-1.5 px-3 text-xs text-accent-green">
+                      <button onClick={() => openConfirm({ kind: 'approve', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet, destination: w.destination, method: w.method })} className="btn-ghost !py-1.5 px-3 text-xs text-accent-green">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Approve
                       </button>
-                      <button onClick={() => openConfirm({ kind: 'reject', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet })} className="btn-ghost !py-1.5 px-3 text-xs text-accent-red">
+                      <button onClick={() => openConfirm({ kind: 'reject', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet, destination: w.destination, method: w.method })} className="btn-ghost !py-1.5 px-3 text-xs text-accent-red">
                         <XCircle className="w-3.5 h-3.5" /> Reject
                       </button>
                     </div>
                   )}
                   {manage && w.status === 'approved' && (
-                    <button onClick={() => openConfirm({ kind: 'paid', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet })} className="btn-gold !py-1.5 px-3 text-xs">
+                    <button onClick={() => openConfirm({ kind: 'paid', id: w._id, name: w.user?.name ?? 'user', amount: w.amount, wallet: w.wallet, destination: w.destination, method: w.method })} className="btn-gold !py-1.5 px-3 text-xs">
                       <Send className="w-3.5 h-3.5" /> Mark Paid
                     </button>
                   )}
@@ -430,6 +430,11 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                   {formatCoins(confirm.amount)}
                   {'wallet' in confirm && <> · {confirm.wallet} wallet</>}
                 </p>
+                {'destination' in confirm && confirm.destination ? (
+                  <p className="text-xs text-zinc-400 font-mono mt-1.5 break-all bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 py-1.5" title={confirm.destination}>
+                    {confirm.destination}
+                  </p>
+                ) : null}
               </div>
             </div>
             {confirm.kind === 'reject' && (
