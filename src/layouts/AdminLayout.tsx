@@ -21,6 +21,7 @@ const nav = [
   { to: '/vouchers', label: 'Vouchers', icon: Ticket, perm: 'vouchers.read', group: 'Money' },
   { to: '/content', label: 'Content & Ads', icon: Video, perm: 'content.read', group: 'Engagement' },
   { to: '/tasks', label: 'Task Verification', icon: ListChecks, perm: 'tasks.verify', group: 'Engagement' },
+  { to: '/notifications', label: 'Notifications', icon: Bell, perm: 'cms.read', group: 'Engagement' },
   { to: '/roles', label: 'Roles & Audit', icon: Shield, perm: 'roles.read', group: 'Control' },
   { to: '/reports', label: 'Reports', icon: BarChart3, perm: 'reports.read', group: 'Control' },
   { to: '/settings', label: 'Settings', icon: Settings, perm: 'settings.read', group: 'Control' },
@@ -189,7 +190,12 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="btn-ghost p-2 relative hover:border-accent-gold/40" aria-label="Notifications">
+            <button
+              onClick={() => nav2('/notifications')}
+              className="btn-ghost p-2 relative hover:border-accent-gold/40"
+              aria-label="Notifications"
+              title="Notifications"
+            >
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-gold shadow-glow-gold" />
             </button>

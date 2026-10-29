@@ -16,6 +16,7 @@ import Settings from './pages/Settings';
 import Vouchers from './pages/Vouchers';
 import WalletLedger from './pages/WalletLedger';
 import Leads from './pages/Leads';
+import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import { ReactNode } from 'react';
 
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/finance" element={<Finance />} />
               <Route path="/leads" element={<Leads />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/vouchers" element={<Vouchers />} />
               <Route path="/roles" element={<RolesAudit />} />
               <Route path="/reports" element={<Reports />} />
