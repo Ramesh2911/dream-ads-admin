@@ -5,6 +5,7 @@ import AdminLayout from './layouts/AdminLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import Kyc from './pages/Kyc';
 import Content from './pages/Content';
 import Tasks from './pages/Tasks';
 import Finance from './pages/Finance';
@@ -35,6 +36,7 @@ export default function App() {
             <Route element={<Protected><AdminLayout /></Protected>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
+              <Route path="/kyc" element={<Kyc />} />
               <Route path="/wallet" element={<WalletLedger />} />
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/content" element={<Content />} />

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, Users, Wallet, Share2, Video, ListChecks,
   Banknote, Ticket, Shield, BarChart3, Settings, LogOut, Menu, X, Bell, Inbox,
-  CalendarDays, ChevronDown, UserCircle,
+  CalendarDays, ChevronDown, UserCircle, BadgeCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
@@ -13,6 +13,7 @@ const GROUPS = ['Overview', 'Growth', 'Money', 'Engagement', 'Control'] as const
 const nav = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, perm: 'dashboard.view', group: 'Overview' },
   { to: '/users', label: 'Users', icon: Users, perm: 'users.read', group: 'Growth' },
+  { to: '/kyc', label: 'KYC Verification', icon: BadgeCheck, perm: 'users.read', group: 'Growth' },
   { to: '/referrals', label: 'Referrals', icon: Share2, perm: 'referral.read', group: 'Growth' },
   { to: '/leads', label: 'Leads', icon: Inbox, perm: 'leads.read', group: 'Growth' },
   { to: '/wallet', label: 'Wallet & Ledger', icon: Wallet, perm: 'wallet.read', group: 'Money' },
