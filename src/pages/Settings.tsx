@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Settings2, Smartphone, Wallet, ShieldAlert, CheckCircle2, AlertTriangle, XCircle,
-  Save, RotateCcw, ExternalLink, Server, Clock,
+  Save, RotateCcw, ExternalLink, Server, Clock, QrCode, Crown, Upload,
 } from 'lucide-react';
 import api from '../lib/api';
 import { cn, formatDateTime } from '../lib/utils';
@@ -21,6 +21,11 @@ type Form = {
   minWithdrawal: string;
   signupBonus: string;
   maintenanceMode: boolean;
+  activationFee: string;
+  upiQr: string;
+  usdtQr: string;
+  usdtAddress: string;
+  usdtMin: string;
 };
 
 const toForm = (d?: Record<string, unknown>): Form => ({
@@ -30,6 +35,11 @@ const toForm = (d?: Record<string, unknown>): Form => ({
   minWithdrawal: String(d?.minWithdrawal ?? '0'),
   signupBonus: String(d?.signupBonus ?? '0'),
   maintenanceMode: Boolean(d?.maintenanceMode),
+  activationFee: String(d?.activationFee ?? '151'),
+  upiQr: String(d?.upiQr ?? ''),
+  usdtQr: String(d?.usdtQr ?? ''),
+  usdtAddress: String(d?.usdtAddress ?? ''),
+  usdtMin: String(d?.usdtMin ?? '2'),
 });
 
 const isValidUrl = (v: string) => v === '' || /^https?:\/\/\S+$/.test(v);
@@ -82,6 +92,11 @@ export default function Settings() {
     else if (Number(form.minWithdrawal) < 0) e.push('Minimum withdrawal cannot be negative');
     if (!isInt(form.signupBonus)) e.push('Signup bonus must be a whole number');
     else if (Number(form.signupBonus) > 100_000) e.push('Signup bonus looks too high (max 100,000)');
+    if (!isInt(form.activationFee)) e.push('Activation fee must be a whole number');
+    else if (Number(form.activationFee) <= 0) e.push('Activation fee must be greater than 0');
+    if (form.usdtAddress.trim() && !/^(0x[a-fA-F0-9]{40}|[a-zA-Z0-9]{20,})$/.test(form.usdtAddress.trim()))
+      e.push('USDT wallet address looks invalid');
+    if (form.usdtMin && !/^\d+(\.\d{1,2})?$/.test(form.usdtMin.trim())) e.push('Minimum USDT must be a number');
     return e;
   }, [form]);
 
@@ -94,6 +109,11 @@ export default function Settings() {
         minWithdrawal: Number(form.minWithdrawal),
         signupBonus: Number(form.signupBonus),
         maintenanceMode: form.maintenanceMode,
+        activationFee: Number(form.activationFee),
+        upiQr: form.upiQr,
+        usdtQr: form.usdtQr,
+        usdtAddress: form.usdtAddress.trim(),
+        usdtMin: Number(form.usdtMin || '0'),
       }),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ['settings'] });
@@ -106,6 +126,34 @@ export default function Settings() {
     const times = Object.values(res?.meta ?? {}).map((t) => new Date(t).getTime());
     return times.length ? Math.max(...times) : 0;
   }, [res]);
+
+  const apiBase = import.meta.env.VITE_API_BASE || '/api';
+  const qrSrc = (kind: 'upi' | 'usdt', file: string) =>
+    file ? `${apiBase}/finance/membership/qr/${kind}?v=${encodeURIComponent(file)}` : '';
+
+  const [qrUploading, setQrUploading] = useState<'upi' | 'usdt' | null>(null);
+  const [qrError, setQrError] = useState('');
+
+  const uploadQr = async (kind: 'upi' | 'usdt', file?: File) => {
+    if (!file) return;
+    setQrUploading(kind);
+    setQrError('');
+    try {
+      const fd = new FormData();
+      fd.append('kind', kind);
+      fd.append('file', file);
+      const res = await api.post('/admin/settings/payment-qr', fd);
+      const value = res.data?.data?.value as string;
+      setForm((f) => ({ ...f, [kind === 'upi' ? 'upiQr' : 'usdtQr']: value }));
+      await qc.invalidateQueries({ queryKey: ['settings'] });
+      setSavedFlash(true);
+      setTimeout(() => setSavedFlash(false), 4000);
+    } catch (err) {
+      setQrError((err as Error)?.message || 'Upload failed');
+    } finally {
+      setQrUploading(null);
+    }
+  };
 
   const toggleMaintenance = (next: boolean) => {
     if (next && editable) {
@@ -120,7 +168,10 @@ export default function Settings() {
     { ok: isValidUrl(form.androidDownloadUrl) && form.androidDownloadUrl !== '', label: 'Android download link', hint: form.androidDownloadUrl || 'not set yet' },
     { ok: isValidUrl(form.iosDownloadUrl) && form.iosDownloadUrl !== '', warn: form.iosDownloadUrl === '', label: 'iOS download link', hint: form.iosDownloadUrl || 'optional — missing' },
     { ok: isInt(form.minWithdrawal) && Number(form.minWithdrawal) >= 0, label: 'Minimum withdrawal valid', hint: `${Number(form.minWithdrawal) || 0} coins` },
-    { ok: isInt(form.signupBonus) && Number(form.signupBonus) <= 100_000, label: 'Signup bonus valid', hint: `${Number(form.signupBonus) || 0} coins per new user` },
+    { ok: isInt(form.signupBonus) && Number(form.signupBonus) <= 100_000, label: 'Signup bonus valid', hint: `${Number(form.signupBonus) || 0} points per new user` },
+    { ok: isInt(form.activationFee) && Number(form.activationFee) > 0, label: 'Activation fee valid', hint: `${Number(form.activationFee) || 0} (plain number)` },
+    { ok: form.upiQr !== '', warn: form.upiQr === '', label: 'Digital handle QR uploaded', hint: form.upiQr ? 'Configured' : 'missing — users cannot see a QR' },
+    { ok: form.usdtQr !== '' && form.usdtAddress !== '', warn: form.usdtQr === '' || form.usdtAddress === '', label: 'USDT (BEP-20) payment setup', hint: form.usdtQr && form.usdtAddress ? 'Configured' : 'QR or wallet address missing' },
   ];
 
   return (
@@ -264,6 +315,101 @@ export default function Settings() {
                   </div>
                   <p className="text-[11px] text-zinc-600 mt-1">Credited to social wallet on account creation</p>
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* membership activation */}
+          <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '105ms' }}>
+            <div className="flex items-center gap-2.5 mb-5">
+              <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
+              <h3 className="font-semibold text-white">Membership Activation</h3>
+              <span className="text-[11px] text-zinc-500">fee & payment QRs</span>
+            </div>
+            {isLoading ? (
+              <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-zinc-400">Activation fee</label>
+                    <div className="relative mt-1">
+                      <input
+                        className="glass-input pr-14 tabular-nums"
+                        inputMode="numeric"
+                        value={form.activationFee}
+                        disabled={!editable}
+                        onChange={(e) => setForm({ ...form, activationFee: e.target.value })}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">points</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-600 mt-1">Shown in-app as a plain number (no currency symbols)</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-zinc-400">Minimum USDT (BEP-20)</label>
+                    <div className="relative mt-1">
+                      <input
+                        className="glass-input pr-14 tabular-nums"
+                        inputMode="decimal"
+                        value={form.usdtMin}
+                        disabled={!editable}
+                        onChange={(e) => setForm({ ...form, usdtMin: e.target.value })}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">USDT</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-600 mt-1">Minimum activation amount for the USDT option</p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {([['upi', 'Digital handle QR', 'UPI ID QR shown to users'], ['usdt', 'USDT BEP-20 QR', 'BSC (BEP-20) network only']] as const).map(([kind, label, hint]) => (
+                    <div key={kind} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><QrCode className="w-3.5 h-3.5" /> {label}</p>
+                          <p className="text-[11px] text-zinc-600 mt-0.5">{hint}</p>
+                        </div>
+                        {form[kind === 'upi' ? 'upiQr' : 'usdtQr'] && (
+                          <img
+                            src={qrSrc(kind, form[kind === 'upi' ? 'upiQr' : 'usdtQr'])}
+                            alt={label}
+                            className="w-16 h-16 rounded-lg object-cover border border-white/[0.12] bg-white"
+                          />
+                        )}
+                      </div>
+                      <label className={cn(
+                        'mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
+                        !editable || qrUploading
+                          ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                          : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
+                      )}>
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          disabled={!editable || !!qrUploading}
+                          onChange={(e) => uploadQr(kind, e.target.files?.[0])}
+                        />
+                        <Upload className="w-3.5 h-3.5" />
+                        {qrUploading === kind ? 'Uploading…' : form[kind === 'upi' ? 'upiQr' : 'usdtQr'] ? 'Replace QR' : 'Upload QR'}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                {qrError && (
+                  <p className="text-[11px] text-accent-red flex items-center gap-1.5"><XCircle className="w-3 h-3" /> {qrError}</p>
+                )}
+
+                <Field label="USDT wallet address (BEP-20)" hint="Copyable wallet address shown next to the QR in-app — start with 0x…">
+                  <input
+                    className="glass-input mt-1 font-mono"
+                    placeholder="0x…"
+                    value={form.usdtAddress}
+                    disabled={!editable}
+                    onChange={(e) => setForm({ ...form, usdtAddress: e.target.value })}
+                  />
+                </Field>
               </div>
             )}
           </div>

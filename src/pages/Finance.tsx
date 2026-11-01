@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import {
   Landmark, IndianRupee, Clock3, AlertTriangle, Smartphone, Building2, CheckCircle2,
-  XCircle, Banknote, Inbox, ChevronLeft, ChevronRight, Send, Wallet,
+  XCircle, Banknote, Inbox, ChevronLeft, ChevronRight, Send, Wallet, Crown, Eye,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
@@ -82,7 +82,7 @@ type Confirm =
   | { kind: 'fail'; id: string; name: string; amount: number };
 
 export default function Finance() {
-  const [tab, setTab] = useState<'withdrawals' | 'deposits'>('withdrawals');
+  const [tab, setTab] = useState<'withdrawals' | 'deposits' | 'membership'>('withdrawals');
   return (
     <div>
       {/* header */}
@@ -99,12 +99,12 @@ export default function Finance() {
         </div>
       </div>
 
-      {tab === 'withdrawals' ? <Withdrawals onTab={setTab} /> : <Deposits onTab={setTab} />}
+      {tab === 'withdrawals' ? <Withdrawals onTab={setTab} /> : tab === 'deposits' ? <Deposits onTab={setTab} /> : <MembershipRequests />}
 
       {/* tab switcher (bottom, sticky-feel) */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
         <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
-          {([['withdrawals', 'Withdrawals', Landmark], ['deposits', 'Deposits', Wallet]] as const).map(([k, l, Icon]) => (
+          {([['withdrawals', 'Withdrawals', Landmark], ['deposits', 'Deposits', Wallet], ['membership', 'Membership', Crown]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -622,6 +622,227 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
                 className={cn('btn !py-2 px-4 text-xs disabled:opacity-50', confirm.kind === 'fail' ? 'bg-accent-red/90 hover:bg-accent-red text-white' : 'btn-gold')}
               >
                 {mut.isPending ? 'Saving…' : confirm.kind === 'complete' ? 'Complete' : 'Mark failed'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </>
+  );
+}
+
+interface MsItem {
+  _id: string;
+  user: { name: string; email?: string; mobile?: string; membershipStatus?: string } | null;
+  method: 'upi' | 'usdt';
+  amount: number;
+  utr?: string;
+  txHash?: string;
+  status: string;
+  rejectionReason?: string;
+  createdAt: string;
+}
+interface MsData {
+  requests: MsItem[];
+  total: number;
+  page: number;
+  pages: number;
+  counts: Record<string, number>;
+}
+const MS_STATUS: Record<string, { cls: string; dot: string }> = {
+  pending: { cls: 'text-accent-gold bg-accent-gold/10 border-accent-gold/25', dot: 'bg-accent-gold' },
+  approved: { cls: 'text-accent-green bg-accent-green/10 border-accent-green/25', dot: 'bg-accent-green' },
+  rejected: { cls: 'text-accent-red bg-accent-red/10 border-accent-red/25', dot: 'bg-accent-red' },
+};
+
+function MembershipRequests() {
+  const [status, setStatus] = useState('pending');
+  const [page, setPage] = useState(1);
+  const [confirm, setConfirm] = useState<{ id: string; name: string; kind: 'approve' | 'reject' } | null>(null);
+  const [reason, setReason] = useState('');
+  const [shotUrl, setShotUrl] = useState('');
+  const [shotOpen, setShotOpen] = useState(false);
+  const [shotLoading, setShotLoading] = useState(false);
+  const qc = useQueryClient();
+  const { can } = useAuth();
+  const { data, isLoading } = useQuery({
+    queryKey: ['membership-requests', status, page],
+    queryFn: async (): Promise<MsData> => (await api.get('/admin/membership-requests', { params: { status, page, limit: 30 } })).data.data,
+    placeholderData: (prev) => prev,
+  });
+
+  const mut = useMutation({
+    mutationFn: ({ id, status, rejectionReason }: { id: string; status: string; rejectionReason?: string }) =>
+      api.put(`/admin/membership-requests/${id}`, { status, rejectionReason }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['membership-requests'] });
+      qc.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+
+  const items = data?.requests ?? [];
+  const counts = data?.counts ?? {};
+  const total = data?.total ?? 0;
+  const start = total === 0 ? 0 : (page - 1) * 30 + 1;
+  const end = Math.min(page * 30, total);
+  const manage = can('finance.approve');
+
+  const openShot = async (id: string) => {
+    setShotLoading(true);
+    setShotOpen(true);
+    try {
+      const res = await api.get(`/admin/membership-requests/${id}/screenshot`, { responseType: 'blob' });
+      setShotUrl(URL.createObjectURL(res.data as Blob));
+    } catch {
+      setShotUrl('');
+    } finally {
+      setShotLoading(false);
+    }
+  };
+
+  const runConfirm = () => {
+    if (!confirm) return;
+    if (confirm.kind === 'approve') mut.mutate({ id: confirm.id, status: 'approved' });
+    else mut.mutate({ id: confirm.id, status: 'rejected', rejectionReason: reason || undefined });
+    setConfirm(null);
+    setReason('');
+  };
+
+  return (
+    <>
+      <div className="glass overflow-hidden animate-fade-in">
+        <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+          <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
+          <span className="text-sm font-semibold text-white mr-2">Membership activation requests</span>
+          {['pending', 'approved', 'rejected'].map((s) => (
+            <button
+              key={s}
+              onClick={() => { setStatus(s); setPage(1); }}
+              className={cn(
+                'px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all border',
+                status === s
+                  ? s === 'pending' ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 shadow-glow-goldSoft'
+                  : s === 'approved' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
+                  : 'bg-accent-red/15 text-accent-red border-accent-red/30'
+                  : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+              )}
+            >
+              {s} <span className="ml-1 opacity-60">{counts[s] ?? 0}</span>
+            </button>
+          ))}
+        </div>
+
+        {isLoading ? (
+          <div>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
+                <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
+                <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
+                <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/20 to-accent-gold/10 flex items-center justify-center mb-4">
+              <Crown className="w-6 h-6 text-accent-violet" />
+            </div>
+            <p className="text-white font-semibold">No {status} membership requests</p>
+            <p className="mt-1 text-sm text-zinc-500">Users submit activation proof from the app — it lands here.</p>
+          </div>
+        ) : (
+          items.map((r, i) => (
+            <div
+              key={r._id}
+              style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
+              className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_auto_minmax(0,1.4fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+            >
+              <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-violet/70 to-accent-gold/50 transition-all" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-accent-violet/80 to-accent-gold/70 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {r.user?.name?.[0]?.toUpperCase() ?? '?'}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{r.user?.name ?? 'Unknown user'}</p>
+                  <p className="text-[11px] text-zinc-500 truncate">{r.user?.mobile ?? r.user?.email ?? '—'}</p>
+                </div>
+              </div>
+              <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-1">
+                <p className="text-base font-extrabold text-accent-gold tabular-nums">{r.amount}</p>
+                <Badge variant={r.method === 'usdt' ? 'info' : 'warning'}>{r.method === 'usdt' ? 'USDT · BEP-20' : 'Digital handle'}</Badge>
+              </div>
+              <div className="min-w-0 space-y-1.5">
+                <p className="text-[11px] text-zinc-400 font-mono truncate" title={r.utr ?? r.txHash}>
+                  {r.method === 'usdt' ? `Tx: ${r.txHash ?? '—'}` : `UTR: ${r.utr ?? '—'}`}
+                </p>
+                <button onClick={() => openShot(r._id)} className="btn-ghost !py-1 px-2.5 text-xs text-accent-blue">
+                  <Eye className="w-3.5 h-3.5" /> Screenshot
+                </button>
+                {r.status === 'rejected' && r.rejectionReason && <p className="text-[10px] text-accent-red/70 truncate">reason: {r.rejectionReason}</p>}
+              </div>
+              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                <div className="flex flex-col md:items-end gap-1">
+                  <StatusPill status={r.status} map={MS_STATUS} />
+                  <p className="text-[11px] text-zinc-600 md:text-right" title={formatDate(r.createdAt)}>{rel(r.createdAt)}</p>
+                </div>
+                {manage && r.status === 'pending' && (
+                  <div className="flex gap-1.5">
+                    <button onClick={() => { setReason(''); setConfirm({ id: r._id, name: r.user?.name ?? 'user', kind: 'approve' }); }} className="btn-ghost !py-1.5 px-3 text-xs text-accent-green">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Approve
+                    </button>
+                    <button onClick={() => { setReason(''); setConfirm({ id: r._id, name: r.user?.name ?? 'user', kind: 'reject' }); }} className="btn-ghost !py-1.5 px-3 text-xs text-accent-red">
+                      <XCircle className="w-3.5 h-3.5" /> Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+
+        <Pagination page={page} pages={data?.pages ?? 1} total={total} start={start} end={end} setPage={setPage} />
+      </div>
+
+      {/* screenshot preview */}
+      <Modal open={shotOpen} onClose={() => { setShotOpen(false); setShotUrl(''); }} title="Payment screenshot">
+        {shotLoading ? (
+          <div className="h-64 rounded-xl bg-white/[0.03] animate-pulse" />
+        ) : shotUrl ? (
+          <img src={shotUrl} alt="Payment proof" className="w-full max-h-[65vh] object-contain rounded-xl bg-base-950/60" />
+        ) : (
+          <p className="text-sm text-zinc-500 text-center py-8">Screenshot could not be loaded.</p>
+        )}
+      </Modal>
+
+      {/* approve/reject confirm */}
+      <Modal
+        open={!!confirm}
+        onClose={() => setConfirm(null)}
+        title={confirm?.kind === 'approve' ? 'Activate lifetime membership?' : 'Reject membership request?'}
+      >
+        {confirm && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+              <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
+              <div>
+                <p className="text-sm text-white font-semibold">{confirm.name}</p>
+                <p className="text-xs text-zinc-500">{confirm.kind === 'approve' ? 'Membership status becomes active immediately.' : 'User can submit a new request after rejection.'}</p>
+              </div>
+            </div>
+            {confirm.kind === 'reject' && (
+              <div>
+                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
+                <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="field-gold resize-none" placeholder="e.g. screenshot unreadable, UTR mismatch…" />
+              </div>
+            )}
+            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+              <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
+              <button
+                onClick={runConfirm}
+                disabled={mut.isPending}
+                className={cn('btn !py-2 px-4 text-xs disabled:opacity-50', confirm.kind === 'reject' ? 'bg-accent-red/90 hover:bg-accent-red text-white' : 'btn-gold')}
+              >
+                {mut.isPending ? 'Saving…' : confirm.kind === 'approve' ? 'Activate membership' : 'Reject'}
               </button>
             </div>
           </div>
