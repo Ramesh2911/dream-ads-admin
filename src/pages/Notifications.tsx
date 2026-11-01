@@ -207,7 +207,7 @@ export default function Notifications() {
                 <Bell className="w-6 h-6 text-accent-gold" />
               </div>
               <p className="text-white font-semibold">No broadcasts yet</p>
-              <p className="mt-1 text-sm text-zinc-500">Send your first announcement — task, withdrawal and KYC updates are delivered here automatically.</p>
+              <p className="mt-1 text-sm text-zinc-500">Send your first announcement — task, redeem and KYC updates are delivered here automatically.</p>
             </div>
           ) : (
             <div className="glass overflow-hidden animate-fade-in">

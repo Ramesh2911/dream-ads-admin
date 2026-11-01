@@ -25,7 +25,7 @@ interface ProfileData {
 }
 
 const MODULE_LABELS: Record<string, string> = {
-  dashboard: 'Dashboard', users: 'Users', wallet: 'Wallet', referral: 'Referrals',
+  dashboard: 'Dashboard', users: 'Users', wallet: 'Passbook', referral: 'Referrals',
   content: 'Content', ads: 'Ads', tasks: 'Tasks', kyc: 'KYC', finance: 'Finance',
   vouchers: 'Vouchers', cms: 'CMS', roles: 'Roles', leads: 'Leads', audit: 'Audit',
   reports: 'Reports', settings: 'Settings',

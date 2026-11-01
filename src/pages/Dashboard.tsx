@@ -118,16 +118,16 @@ export default function Dashboard() {
 
   const queue = [
     { name: 'Task reviews', value: d?.pendingTasks ?? 0, color: QUEUE_COLORS.tasks, href: '/tasks' },
-    { name: 'Withdrawals', value: d?.pendingWithdrawals ?? 0, color: QUEUE_COLORS.withdrawals, href: '/finance' },
-    { name: 'Deposits', value: d?.pendingDeposits ?? 0, color: QUEUE_COLORS.deposits, href: '/finance' },
+    { name: 'Redeems', value: d?.pendingWithdrawals ?? 0, color: QUEUE_COLORS.withdrawals, href: '/finance' },
+    { name: 'Activations', value: d?.pendingDeposits ?? 0, color: QUEUE_COLORS.deposits, href: '/finance' },
     { name: 'New leads', value: d?.pendingLeads ?? 0, color: QUEUE_COLORS.leads, href: '/leads' },
   ].filter((q) => can(q.href === '/tasks' ? 'tasks.verify' : q.href === '/leads' ? 'leads.read' : 'finance.read'));
   const queueTotal = queue.reduce((s, q) => s + q.value, 0);
 
   const overview = [
     { label: 'Users awaiting task review', value: d?.pendingTasks ?? 0, href: '/tasks', icon: ListChecks, color: 'text-accent-blue bg-accent-blue/10' },
-    { label: 'Withdrawal requests to process', value: d?.pendingWithdrawals ?? 0, href: '/finance', icon: Banknote, color: 'text-accent-gold bg-accent-gold/10' },
-    { label: 'Deposits awaiting confirmation', value: d?.pendingDeposits ?? 0, href: '/finance', icon: TrendingUp, color: 'text-accent-green bg-accent-green/10' },
+    { label: 'Redeem requests to process', value: d?.pendingWithdrawals ?? 0, href: '/finance', icon: Banknote, color: 'text-accent-gold bg-accent-gold/10' },
+    { label: 'Activations awaiting confirmation', value: d?.pendingDeposits ?? 0, href: '/finance', icon: TrendingUp, color: 'text-accent-green bg-accent-green/10' },
     ...(can('leads.read') ? [{ label: 'Fresh leads to contact', value: d?.pendingLeads ?? 0, href: '/leads', icon: Inbox, color: 'text-accent-violet bg-accent-violet/10' }] : []),
   ].filter((o) => can(o.href === '/tasks' ? 'tasks.verify' : o.href === '/leads' ? 'leads.read' : 'finance.read'));
 
@@ -183,8 +183,8 @@ export default function Dashboard() {
         <Kpi label="Total Users" value={dash(d?.userCount)} sub="registered accounts" icon={Users} tone="violet" />
         <Kpi label="New Today" value={dash(d?.newUsersToday)} sub="joined since midnight" icon={UserPlus} tone="green" />
         <Kpi label="Pending Tasks" value={dash(d?.pendingTasks)} sub="awaiting your review" icon={ListChecks} tone="blue" />
-        <Kpi label="Withdrawals" value={dash(d?.pendingWithdrawals)} sub="requests to process" icon={Banknote} tone="gold" />
-        <Kpi label="Deposits" value={dash(d?.pendingDeposits)} sub="awaiting confirmation" icon={TrendingUp} tone="green" />
+        <Kpi label="Redeems" value={dash(d?.pendingWithdrawals)} sub="requests to process" icon={Banknote} tone="gold" />
+        <Kpi label="Activations" value={dash(d?.pendingDeposits)} sub="awaiting confirmation" icon={TrendingUp} tone="green" />
         <Kpi label="Coins Earned" value={dash(d?.totalVideoEarned)} sub="lifetime distributed" icon={Coins} tone="gold" />
       </div>
 

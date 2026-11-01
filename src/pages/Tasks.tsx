@@ -363,7 +363,7 @@ function TasksTab() {
                   </div>
                   <p className="font-semibold text-white text-sm leading-snug line-clamp-1">{t.title}</p>
                   <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{t.description}</p>
-                  <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(t.rewardCoins)} <span className="text-xs font-semibold text-zinc-500">coins · {t.rewardWallet} wallet</span></p>
+                  <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(t.rewardCoins)} <span className="text-xs font-semibold text-zinc-500">coins · {t.rewardWallet} passbook</span></p>
                   <div className="mt-3">
                     <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-1">
                       <span>Slots</span>
@@ -448,7 +448,7 @@ function TasksTab() {
               <input type="number" min={1} className="field-gold" value={form.rewardCoins} onChange={(e) => setForm({ ...form, rewardCoins: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Wallet</label>
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Passbook</label>
               <select className="field-gold" value={form.rewardWallet} onChange={(e) => setForm({ ...form, rewardWallet: e.target.value })}>
                 <option value="social">Social</option>
                 <option value="video">Video</option>
@@ -676,7 +676,7 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                   <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Coins className="w-4 h-4 text-accent-gold" /></span>
                   <div className="min-w-0">
                     <p className="text-sm text-white font-semibold truncate">{review.task?.title ?? 'Task'}</p>
-                    <p className="text-[11px] text-zinc-500">reward {formatCoins(review.task?.rewardCoins ?? 0)} · {review.task?.rewardWallet} wallet</p>
+                    <p className="text-[11px] text-zinc-500">reward {formatCoins(review.task?.rewardCoins ?? 0)} · {review.task?.rewardWallet} passbook</p>
                   </div>
                 </div>
               </div>

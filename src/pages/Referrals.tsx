@@ -340,8 +340,8 @@ export default function Referrals() {
                           onChange={(e) => patchLevel(i, { wallet: e.target.value as 'video' | 'social' })}
                           className="glass-input w-36 !py-2 !rounded-lg"
                         >
-                          <option value="social">Social wallet</option>
-                          <option value="video">Video wallet</option>
+                          <option value="social">Social passbook</option>
+                          <option value="video">Video passbook</option>
                         </select>
                         <button
                           onClick={() => removeLevel(i)}
@@ -406,7 +406,7 @@ export default function Referrals() {
                     </Badge>
                   </div>
                   <p className="text-[11px] text-zinc-500 mt-2 leading-relaxed">
-                    Lifetime withdrawal commission is disabled by default and requires written business rules plus legal review before activation.
+                    Lifetime redeem commission is disabled by default and requires written business rules plus legal review before activation.
                   </p>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
@@ -414,7 +414,7 @@ export default function Referrals() {
                     <p className="text-sm text-zinc-300">Commission paid to date</p>
                     <p className="text-sm font-bold text-white tabular-nums">{stats ? formatCoins(stats.totals.commission) : '—'}</p>
                   </div>
-                  <p className="text-[11px] text-zinc-500 mt-2">Ledger truth: referral_commission entries across all wallets.</p>
+                  <p className="text-[11px] text-zinc-500 mt-2">Ledger truth: referral_commission entries across all passbooks.</p>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
                   <div className="flex items-center justify-between gap-2">

@@ -56,7 +56,7 @@ export default function Reports() {
     { label: 'Total users', value: t ? t.users : null, icon: Users, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: t ? `${t.activeUsers} active · ${t.suspendedUsers} susp · ${t.bannedUsers} banned` : '' },
     { label: 'Watch time', value: t ? `${formatCoins(t.watchMinutes)} min` : null, icon: Timer, chip: 'bg-accent-violet/15 text-accent-violet border-accent-violet/25', sub: t ? `${t.views} views · ${t.rewardedViews} rewarded` : '' },
     { label: 'Coins in circulation', value: t ? formatCoins(t.outstanding) : null, icon: Wallet, chip: 'bg-accent-gold/15 text-accent-gold border-accent-gold/25', sub: t ? `in ${formatCoins(t.coinsIn)} · out ${formatCoins(t.coinsOut)}` : '' },
-    { label: 'Deposits in', value: t ? formatCoins(t.depositsIn) : null, icon: ArrowDown, chip: 'bg-accent-green/15 text-accent-green border-accent-green/25', sub: t ? `${t.depositsCount} done · payouts ${formatCoins(t.payoutsOut)} (${t.payoutsCount})` : '' },
+    { label: 'Activations in', value: t ? formatCoins(t.depositsIn) : null, icon: ArrowDown, chip: 'bg-accent-green/15 text-accent-green border-accent-green/25', sub: t ? `${t.depositsCount} done · payouts ${formatCoins(t.payoutsOut)} (${t.payoutsCount})` : '' },
   ];
 
   const m = METRICS.find((x) => x.k === metric)!;

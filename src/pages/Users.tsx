@@ -24,6 +24,9 @@ const STATUS_META: Record<StatusKey, { label: string; badge: 'success' | 'warnin
 };
 const meta = (s: string) => STATUS_META[s as StatusKey] ?? STATUS_META.active;
 
+const REASON_LABEL: Record<string, string> = { withdrawal: 'Redeem', deposit: 'Activation' };
+const reasonLabel = (r: string) => REASON_LABEL[r] ?? String(r).replace(/_/g, ' ');
+
 const TABS = [
   { key: '', label: 'All' },
   { key: 'active', label: 'Active' },
@@ -81,7 +84,7 @@ export default function Users() {
 
   const actionsFor = (u: UserRow) => {
     const acts: Array<{ icon: React.ComponentType<{ className?: string }>; cls: string; title: string; onClick: (e: React.MouseEvent) => void }> = [];
-    if (can('wallet.adjust')) acts.push({ icon: Wallet, cls: 'hover:text-accent-gold hover:bg-accent-gold/10', title: 'Adjust wallet', onClick: (e) => { e.stopPropagation(); setAdjust({ id: u._id, name: u.name }); } });
+    if (can('wallet.adjust')) acts.push({ icon: Wallet, cls: 'hover:text-accent-gold hover:bg-accent-gold/10', title: 'Adjust passbook', onClick: (e) => { e.stopPropagation(); setAdjust({ id: u._id, name: u.name }); } });
     if (u.status === 'active') {
       if (can('users.update')) acts.push({ icon: PauseCircle, cls: 'hover:text-accent-gold hover:bg-accent-gold/10', title: 'Suspend', onClick: (e) => { e.stopPropagation(); setConfirm({ id: u._id, name: u.name, to: 'suspended' }); } });
       if (can('users.ban')) acts.push({ icon: Ban, cls: 'hover:text-accent-red hover:bg-accent-red/10', title: 'Ban', onClick: (e) => { e.stopPropagation(); setConfirm({ id: u._id, name: u.name, to: 'banned' }); } });
@@ -419,7 +422,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
               {/* ledger */}
               <div>
                 <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
-                  <Inbox className="w-3.5 h-3.5 text-accent-gold/70" /> Recent wallet activity
+                  <Inbox className="w-3.5 h-3.5 text-accent-gold/70" /> Recent passbook activity
                 </p>
                 {data.recentLedger.length === 0 && (
                   <p className="text-sm text-zinc-600 py-4 text-center">No transactions yet.</p>
@@ -431,7 +434,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                         {e.type === 'credit' ? <ArrowDown className="w-4 h-4" /> : <ArrowUp className="w-4 h-4" />}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs text-zinc-300 font-medium capitalize truncate">{String(e.reason).replace(/_/g, ' ')}</p>
+                        <p className="text-xs text-zinc-300 font-medium capitalize truncate">{reasonLabel(e.reason)}</p>
                         {e.note && <p className="text-[11px] text-zinc-600 truncate">{e.note}</p>}
                       </div>
                       <div className="text-right shrink-0">
@@ -497,12 +500,12 @@ function AdjustModal({ user, onClose, onDone }: { user: { id: string; name: stri
 
   if (!user) return null;
   return (
-    <Modal open={!!user} onClose={onClose} title={`Adjust wallet — ${user.name}`}>
+    <Modal open={!!user} onClose={onClose} title={`Adjust passbook — ${user.name}`}>
       {err && <div className="mb-3 p-3 rounded-xl bg-accent-red/10 border border-accent-red/20 text-accent-red text-sm">{err}</div>}
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-zinc-400">Wallet</label>
+            <label className="text-xs font-medium text-zinc-400">Passbook</label>
             <select value={wallet} onChange={(e) => setWallet(e.target.value as 'video' | 'social')} className="glass-input mt-1">
               <option value="video">Video Earnings</option>
               <option value="social">Social / Task</option>

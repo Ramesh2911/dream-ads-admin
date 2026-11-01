@@ -8,7 +8,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
 
-const GROUPS = ['Overview', 'Growth', 'Money', 'Engagement', 'Control'] as const;
+const GROUPS = ['Overview', 'Growth', 'Points', 'Engagement', 'Control'] as const;
 
 const nav = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, perm: 'dashboard.view', group: 'Overview' },
@@ -16,9 +16,9 @@ const nav = [
   { to: '/kyc', label: 'KYC Verification', icon: BadgeCheck, perm: 'users.read', group: 'Growth' },
   { to: '/referrals', label: 'Referrals', icon: Share2, perm: 'referral.read', group: 'Growth' },
   { to: '/leads', label: 'Leads', icon: Inbox, perm: 'leads.read', group: 'Growth' },
-  { to: '/wallet', label: 'Wallet & Ledger', icon: Wallet, perm: 'wallet.read', group: 'Money' },
-  { to: '/finance', label: 'Finance', icon: Banknote, perm: 'finance.read', group: 'Money' },
-  { to: '/vouchers', label: 'Vouchers', icon: Ticket, perm: 'vouchers.read', group: 'Money' },
+  { to: '/wallet', label: 'Passbook Ledger', icon: Wallet, perm: 'wallet.read', group: 'Points' },
+  { to: '/finance', label: 'Finance', icon: Banknote, perm: 'finance.read', group: 'Points' },
+  { to: '/vouchers', label: 'Vouchers', icon: Ticket, perm: 'vouchers.read', group: 'Points' },
   { to: '/content', label: 'Content & Ads', icon: Video, perm: 'content.read', group: 'Engagement' },
   { to: '/tasks', label: 'Task Verification', icon: ListChecks, perm: 'tasks.verify', group: 'Engagement' },
   { to: '/notifications', label: 'Notifications', icon: Bell, perm: 'cms.read', group: 'Engagement' },

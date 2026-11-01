@@ -327,7 +327,7 @@ function VideosTab() {
                       {v.category?.name ?? 'Uncategorized'}
                     </span>
                     <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize bg-brand-blue/10 text-accent-blue border border-brand-blue/25">
-                      {v.rewardWallet} wallet
+                      {v.rewardWallet} passbook
                     </span>
                   </div>
                   <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
@@ -395,7 +395,7 @@ function VideosTab() {
               <input type="number" min={0} className="field-gold" value={form.rewardCoins} onChange={(e) => setForm({ ...form, rewardCoins: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Wallet</label>
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Passbook</label>
               <select className="field-gold" value={form.rewardWallet} onChange={(e) => setForm({ ...form, rewardWallet: e.target.value })}>
                 <option value="video">Video</option>
                 <option value="social">Social</option>

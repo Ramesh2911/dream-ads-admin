@@ -88,14 +88,14 @@ export default function Settings() {
     if (!form.appName.trim()) e.push('App name cannot be empty');
     if (!isValidUrl(form.androidDownloadUrl)) e.push('Android URL must be a valid http(s) link');
     if (!isValidUrl(form.iosDownloadUrl)) e.push('iOS URL must be a valid http(s) link');
-    if (!isInt(form.minWithdrawal)) e.push('Minimum withdrawal must be a whole number');
-    else if (Number(form.minWithdrawal) < 0) e.push('Minimum withdrawal cannot be negative');
+    if (!isInt(form.minWithdrawal)) e.push('Minimum redeem must be a whole number');
+    else if (Number(form.minWithdrawal) < 0) e.push('Minimum redeem cannot be negative');
     if (!isInt(form.signupBonus)) e.push('Signup bonus must be a whole number');
     else if (Number(form.signupBonus) > 100_000) e.push('Signup bonus looks too high (max 100,000)');
     if (!isInt(form.activationFee)) e.push('Activation fee must be a whole number');
     else if (Number(form.activationFee) <= 0) e.push('Activation fee must be greater than 0');
     if (form.usdtAddress.trim() && !/^(0x[a-fA-F0-9]{40}|[a-zA-Z0-9]{20,})$/.test(form.usdtAddress.trim()))
-      e.push('USDT wallet address looks invalid');
+      e.push('USDT address looks invalid');
     if (form.usdtMin && !/^\d+(\.\d{1,2})?$/.test(form.usdtMin.trim())) e.push('Minimum USDT must be a number');
     return e;
   }, [form]);
@@ -167,11 +167,11 @@ export default function Settings() {
     { ok: form.appName.trim().length > 0, label: 'App name set', hint: 'Shown across app & website' },
     { ok: isValidUrl(form.androidDownloadUrl) && form.androidDownloadUrl !== '', label: 'Android download link', hint: form.androidDownloadUrl || 'not set yet' },
     { ok: isValidUrl(form.iosDownloadUrl) && form.iosDownloadUrl !== '', warn: form.iosDownloadUrl === '', label: 'iOS download link', hint: form.iosDownloadUrl || 'optional — missing' },
-    { ok: isInt(form.minWithdrawal) && Number(form.minWithdrawal) >= 0, label: 'Minimum withdrawal valid', hint: `${Number(form.minWithdrawal) || 0} coins` },
+    { ok: isInt(form.minWithdrawal) && Number(form.minWithdrawal) >= 0, label: 'Minimum redeem valid', hint: `${Number(form.minWithdrawal) || 0} coins` },
     { ok: isInt(form.signupBonus) && Number(form.signupBonus) <= 100_000, label: 'Signup bonus valid', hint: `${Number(form.signupBonus) || 0} points per new user` },
     { ok: isInt(form.activationFee) && Number(form.activationFee) > 0, label: 'Activation fee valid', hint: `${Number(form.activationFee) || 0} (plain number)` },
     { ok: form.upiQr !== '', warn: form.upiQr === '', label: 'Digital handle QR uploaded', hint: form.upiQr ? 'Configured' : 'missing — users cannot see a QR' },
-    { ok: form.usdtQr !== '' && form.usdtAddress !== '', warn: form.usdtQr === '' || form.usdtAddress === '', label: 'USDT (BEP-20) payment setup', hint: form.usdtQr && form.usdtAddress ? 'Configured' : 'QR or wallet address missing' },
+    { ok: form.usdtQr !== '' && form.usdtAddress !== '', warn: form.usdtQr === '' || form.usdtAddress === '', label: 'USDT (BEP-20) payment setup', hint: form.usdtQr && form.usdtAddress ? 'Configured' : 'QR or address missing' },
   ];
 
   return (
@@ -288,7 +288,7 @@ export default function Settings() {
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-zinc-400">Minimum withdrawal</label>
+                  <label className="text-xs font-medium text-zinc-400">Minimum redeem</label>
                   <div className="relative mt-1">
                     <input
                       className="glass-input pr-16 tabular-nums"
@@ -299,7 +299,7 @@ export default function Settings() {
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
                   </div>
-                  <p className="text-[11px] text-zinc-600 mt-1">Withdrawals below {Number(form.minWithdrawal) || 0} coins are blocked</p>
+                  <p className="text-[11px] text-zinc-600 mt-1">Redeems below {Number(form.minWithdrawal) || 0} coins are blocked</p>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-zinc-400">Signup bonus</label>
@@ -313,7 +313,7 @@ export default function Settings() {
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
                   </div>
-                  <p className="text-[11px] text-zinc-600 mt-1">Credited to social wallet on account creation</p>
+                  <p className="text-[11px] text-zinc-600 mt-1">Credited to social passbook on account creation</p>
                 </div>
               </div>
             )}
@@ -362,7 +362,7 @@ export default function Settings() {
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
-                  {([['upi', 'Digital handle QR', 'UPI ID QR shown to users'], ['usdt', 'USDT BEP-20 QR', 'BSC (BEP-20) network only']] as const).map(([kind, label, hint]) => (
+                  {([['upi', 'Digital handle QR', 'Digital ID QR shown to users'], ['usdt', 'USDT BEP-20 QR', 'BSC (BEP-20) network only']] as const).map(([kind, label, hint]) => (
                     <div key={kind} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -401,7 +401,7 @@ export default function Settings() {
                   <p className="text-[11px] text-accent-red flex items-center gap-1.5"><XCircle className="w-3 h-3" /> {qrError}</p>
                 )}
 
-                <Field label="USDT wallet address (BEP-20)" hint="Copyable wallet address shown next to the QR in-app — start with 0x…">
+                <Field label="USDT address (BEP-20)" hint="Copyable address shown next to the QR in-app — start with 0x…">
                   <input
                     className="glass-input mt-1 font-mono"
                     placeholder="0x…"
@@ -564,7 +564,7 @@ export default function Settings() {
             <AlertTriangle className="w-5 h-5 text-accent-red shrink-0 mt-0.5" />
             <p className="text-sm text-zinc-300 leading-relaxed">
               The user app will <b className="text-white">immediately block all user access</b> until you turn this off.
-              Existing sessions cannot redeem, watch or withdraw while maintenance is on.
+               Existing sessions cannot redeem, watch or claim while maintenance is on.
             </p>
           </div>
           <div className="flex justify-end gap-2">

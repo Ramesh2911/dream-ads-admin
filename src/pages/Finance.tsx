@@ -4,7 +4,7 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import {
-  Landmark, IndianRupee, Clock3, AlertTriangle, Smartphone, Building2, CheckCircle2,
+  Landmark, Coins, Clock3, AlertTriangle, Smartphone, Building2, CheckCircle2,
   XCircle, Banknote, Inbox, ChevronLeft, ChevronRight, Send, Wallet, Crown, Eye,
 } from 'lucide-react';
 import api from '../lib/api';
@@ -41,6 +41,7 @@ const METHOD_TONE: Record<string, string> = {
   bank: 'text-accent-blue bg-brand-blue/10 border-brand-blue/25',
   paytm: 'text-accent-pink bg-accent-pink/10 border-accent-pink/25',
 };
+const METHOD_LABEL: Record<string, string> = { upi: 'Digital Handle' };
 const WD_STATUS: Record<string, { cls: string; dot: string }> = {
   pending: { cls: 'text-accent-gold bg-accent-gold/10 border-accent-gold/25', dot: 'bg-accent-gold' },
   approved: { cls: 'text-accent-blue bg-brand-blue/10 border-brand-blue/25', dot: 'bg-accent-blue' },
@@ -92,7 +93,7 @@ export default function Finance() {
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Landmark className="w-5 h-5 text-accent-gold" /></span>
             Finance Operations
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Review payout requests and deposits — every action is audited</p>
+          <p className="mt-1.5 text-sm text-zinc-500">Review payout requests and activations — every action is audited</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-zinc-500">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
@@ -104,7 +105,7 @@ export default function Finance() {
       {/* tab switcher (bottom, sticky-feel) */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
         <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
-          {([['withdrawals', 'Withdrawals', Landmark], ['deposits', 'Deposits', Wallet], ['membership', 'Membership', Crown]] as const).map(([k, l, Icon]) => (
+          {([['withdrawals', 'Redeems', Landmark], ['deposits', 'Activations', Wallet], ['membership', 'Membership', Crown]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -137,8 +138,8 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
   const statsChips = [
     { label: 'In-flight payouts', value: stats ? formatCoins(t!.inflight) : null, icon: Clock3, chip: 'bg-accent-gold/15 text-accent-gold border-accent-gold/25', sub: stats ? `${t!.inflightCount} awaiting completion` : '' },
     { label: 'Paid out (all time)', value: stats ? formatCoins(t!.paid.sum) : null, icon: Banknote, chip: 'bg-accent-green/15 text-accent-green border-accent-green/25', sub: stats ? `${t!.paid.count} payouts` : '' },
-    { label: 'Deposits completed', value: stats ? formatCoins(d!.completed.sum) : null, icon: IndianRupee, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${d!.completed.count} deposits` : '' },
-    { label: 'Needs review', value: stats ? (t!.pending.count + d!.pending.count) : null, icon: AlertTriangle, chip: 'bg-accent-pink/15 text-accent-pink border-accent-pink/25', sub: stats ? `${t!.pending.count} payouts · ${d!.pending.count} deposits` : '' },
+    { label: 'Activations completed', value: stats ? formatCoins(d!.completed.sum) : null, icon: Coins, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${d!.completed.count} activations` : '' },
+    { label: 'Needs review', value: stats ? (t!.pending.count + d!.pending.count) : null, icon: AlertTriangle, chip: 'bg-accent-pink/15 text-accent-pink border-accent-pink/25', sub: stats ? `${t!.pending.count} payouts · ${d!.pending.count} activations` : '' },
   ];
 
   const chartData = (stats?.days ?? []).map((p) => ({
@@ -170,10 +171,10 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Landmark className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Money flow</h3>
+              <h3 className="font-semibold text-white truncate">Points flow</h3>
             </div>
             <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> deposits</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> activations</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-gold" /> payouts</span>
             </span>
           </div>
@@ -192,7 +193,7 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
                 <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: '#52525b', fontSize: 11 }} />
                 <YAxis tickLine={false} axisLine={false} allowDecimals={false} tick={{ fill: '#52525b', fontSize: 11 }} />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-                <Bar dataKey="deposits" name="Deposits in" fill="url(#finDeposits)" radius={[6, 6, 0, 0]} barSize={22} />
+                <Bar dataKey="deposits" name="Activations in" fill="url(#finDeposits)" radius={[6, 6, 0, 0]} barSize={22} />
                 <Line dataKey="paid" name="Payouts out" type="monotone" stroke="#FFD86F" strokeWidth={2.5} dot={{ r: 3, fill: '#FFD86F', strokeWidth: 0 }} activeDot={{ r: 5 }} />
               </ComposedChart>
             </ResponsiveContainer>
@@ -206,7 +207,7 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
           </div>
           {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
           {!statsLoading && (stats?.byMethod.length ?? 0) === 0 && (stats?.byGateway.length ?? 0) === 0 && (
-            <p className="text-sm text-zinc-500 py-8 text-center">No payout or deposit activity yet.</p>
+            <p className="text-sm text-zinc-500 py-8 text-center">No payout or activation activity yet.</p>
           )}
           <div className="space-y-2">
             {(stats?.byMethod ?? []).map((r) => (
@@ -216,7 +217,7 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
                   <div className="min-w-0 flex items-center gap-2">
                     {r.method === 'upi' ? <Smartphone className="w-3.5 h-3.5 text-accent-violet shrink-0" /> : r.method === 'bank' ? <Building2 className="w-3.5 h-3.5 text-accent-blue shrink-0" /> : <Banknote className="w-3.5 h-3.5 text-accent-pink shrink-0" />}
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white uppercase truncate">{r.method}</p>
+                      <p className="text-xs font-semibold text-white uppercase truncate">{METHOD_LABEL[r.method] ?? r.method}</p>
                       <p className="text-[10px] text-zinc-500">{r.count} payouts · active</p>
                     </div>
                   </div>
@@ -229,10 +230,10 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
                 <div className="absolute inset-y-0 left-0 bg-accent-green opacity-15" style={{ width: `${Math.max(6, Math.round((r.sum / maxBreak) * 100))}%` }} />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0 flex items-center gap-2">
-                    <IndianRupee className="w-3.5 h-3.5 text-accent-green shrink-0" />
+                    <Coins className="w-3.5 h-3.5 text-accent-green shrink-0" />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-white capitalize truncate">{r.gateway}</p>
-                      <p className="text-[10px] text-zinc-500">{r.count} deposits</p>
+                      <p className="text-[10px] text-zinc-500">{r.count} activations</p>
                     </div>
                   </div>
                   <p className="text-sm font-bold text-zinc-200 tabular-nums shrink-0">{formatCoins(r.sum)}</p>
@@ -279,13 +280,13 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
   const { data: stats, isLoading: statsLoading } = useFinanceStats();
   const { data, isLoading } = useQuery({
     queryKey: ['withdrawals', status, page],
-    queryFn: async (): Promise<WdData> => (await api.get('/admin/withdrawals', { params: { status, page, limit: 30 } })).data.data,
+    queryFn: async (): Promise<WdData> => (await api.get('/admin/redeems', { params: { status, page, limit: 30 } })).data.data,
     placeholderData: (prev) => prev,
   });
 
   const mut = useMutation({
     mutationFn: ({ id, status, paymentRef, rejectionReason }: { id: string; status: string; paymentRef?: string; rejectionReason?: string }) =>
-      api.put(`/admin/withdrawals/${id}`, { status, paymentRef, rejectionReason }),
+      api.put(`/admin/redeems/${id}`, { status, paymentRef, rejectionReason }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['withdrawals'] }); qc.invalidateQueries({ queryKey: ['finance-stats'] }); qc.invalidateQueries({ queryKey: ['ledger'] }); qc.invalidateQueries({ queryKey: ['ledger-stats'] }); },
   });
 
@@ -334,7 +335,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
               </button>
             ))}
             <button onClick={() => onTab('deposits')} className="ml-auto text-xs text-accent-gold hover:underline flex items-center gap-1">
-              Switch to deposits <span aria-hidden>→</span>
+              Switch to activations <span aria-hidden>→</span>
             </button>
           </div>
 
@@ -353,7 +354,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-gold" />
               </div>
-              <p className="text-white font-semibold">No {status} withdrawals</p>
+              <p className="text-white font-semibold">No {status} redeems</p>
               <p className="mt-1 text-sm text-zinc-500">Requests appear here the moment users request a payout.</p>
             </div>
           ) : (
@@ -379,7 +380,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                 </div>
                 <div className="min-w-0 space-y-1.5">
                   <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold uppercase', METHOD_TONE[w.method] ?? 'bg-white/[0.08] text-zinc-300 border-white/10')}>
-                    {w.method}
+                    {METHOD_LABEL[w.method] ?? w.method}
                   </span>
                   <p className="text-[11px] text-zinc-500 truncate" title={w.destination}>{w.destination}</p>
                   {w.status === 'paid' && w.paymentRef && <p className="text-[10px] text-zinc-600 truncate">ref: {w.paymentRef}</p>}
@@ -418,7 +419,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
       <Modal
         open={!!confirm}
         onClose={() => setConfirm(null)}
-        title={confirm?.kind === 'reject' ? 'Reject withdrawal' : confirm?.kind === 'paid' ? 'Mark payout as paid' : confirm?.kind === 'approve' ? 'Approve withdrawal' : confirm?.kind === 'complete' ? 'Complete deposit' : confirm?.kind === 'fail' ? 'Fail deposit' : ''}
+        title={confirm?.kind === 'reject' ? 'Reject redeem' : confirm?.kind === 'paid' ? 'Mark payout as paid' : confirm?.kind === 'approve' ? 'Approve redeem' : confirm?.kind === 'complete' ? 'Complete activation' : confirm?.kind === 'fail' ? 'Fail activation' : ''}
       >
         {confirm && (
           <div className="space-y-4">
@@ -428,7 +429,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                 <p className="text-sm text-white font-semibold">{confirm.name}</p>
                 <p className="text-xs text-zinc-500">
                   {formatCoins(confirm.amount)}
-                  {'wallet' in confirm && <> · {confirm.wallet} wallet</>}
+                  {'wallet' in confirm && <> · {confirm.wallet} passbook</>}
                 </p>
                 {'destination' in confirm && confirm.destination ? (
                   <p className="text-xs text-zinc-400 font-mono mt-1.5 break-all bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 py-1.5" title={confirm.destination}>
@@ -441,7 +442,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
               <div>
                 <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
                 <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="field-gold resize-none" placeholder="e.g. invalid destination, failed verification…" />
-                <p className="mt-1.5 text-[11px] text-zinc-600">Coins are refunded to the {confirm.wallet} wallet automatically.</p>
+                <p className="mt-1.5 text-[11px] text-zinc-600">Coins are refunded to the {confirm.wallet} passbook automatically.</p>
               </div>
             )}
             {confirm.kind === 'paid' && (
@@ -450,8 +451,8 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                 <input value={payRef} onChange={(e) => setPayRef(e.target.value)} className="field-gold" placeholder="UTR / transaction id" />
               </div>
             )}
-            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">{formatCoins(confirm.amount)} will be credited to the user's social wallet and recorded in the ledger.</p>}
-            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this deposit as failed. No coins are credited.</p>}
+            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">{formatCoins(confirm.amount)} will be credited to the user's social passbook and recorded in the ledger.</p>}
+            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this activation as failed. No coins are credited.</p>}
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
@@ -483,12 +484,12 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
   const { data: stats, isLoading: statsLoading } = useFinanceStats();
   const { data, isLoading } = useQuery({
     queryKey: ['deposits', status, page],
-    queryFn: async (): Promise<DpData> => (await api.get('/admin/deposits', { params: { status, page, limit: 30 } })).data.data,
+    queryFn: async (): Promise<DpData> => (await api.get('/admin/activations', { params: { status, page, limit: 30 } })).data.data,
     placeholderData: (prev) => prev,
   });
 
   const mut = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => api.put(`/admin/deposits/${id}`, { status }),
+    mutationFn: ({ id, status }: { id: string; status: string }) => api.put(`/admin/activations/${id}`, { status }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['deposits'] }); qc.invalidateQueries({ queryKey: ['finance-stats'] }); qc.invalidateQueries({ queryKey: ['ledger'] }); qc.invalidateQueries({ queryKey: ['ledger-stats'] }); },
   });
 
@@ -528,7 +529,7 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
               </button>
             ))}
             <button onClick={() => onTab('withdrawals')} className="ml-auto text-xs text-accent-gold hover:underline flex items-center gap-1">
-              Switch to withdrawals <span aria-hidden>→</span>
+              Switch to redeems <span aria-hidden>→</span>
             </button>
           </div>
 
@@ -547,8 +548,8 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-green/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-green" />
               </div>
-              <p className="text-white font-semibold">No {status} deposits</p>
-              <p className="mt-1 text-sm text-zinc-500">Deposit requests show up here instantly for review.</p>
+              <p className="text-white font-semibold">No {status} activations</p>
+              <p className="mt-1 text-sm text-zinc-500">Activation requests show up here instantly for review.</p>
             </div>
           ) : (
             items.map((d, i) => (
@@ -601,19 +602,19 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
       <Modal
         open={!!confirm}
         onClose={() => setConfirm(null)}
-        title={confirm?.kind === 'complete' ? 'Complete deposit' : 'Fail deposit'}
+        title={confirm?.kind === 'complete' ? 'Complete activation' : 'Fail activation'}
       >
         {confirm && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-              <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><IndianRupee className="w-4 h-4 text-accent-green" /></span>
+              <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Coins className="w-4 h-4 text-accent-green" /></span>
               <div>
                 <p className="text-sm text-white font-semibold">{confirm.name}</p>
                 <p className="text-xs text-zinc-500">{formatCoins(confirm.amount)}</p>
               </div>
             </div>
-            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">Coins will be credited to the user's social wallet and recorded in the ledger.</p>}
-            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this deposit as failed. No coins are credited.</p>}
+            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">Coins will be credited to the user's social passbook and recorded in the ledger.</p>}
+            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this activation as failed. No coins are credited.</p>}
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button

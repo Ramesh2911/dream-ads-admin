@@ -49,7 +49,9 @@ const REASON_TONE: Record<string, string> = {
 };
 const tooltipStyle = { background: '#0A1540', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, color: '#fff', fontSize: 12 } as const;
 
-const human = (r: string) => r.replace(/_/g, ' ');
+const REASON_LABEL: Record<string, string> = { withdrawal: 'Redeem', deposit: 'Activation' };
+
+const human = (r: string) => REASON_LABEL[r] ?? r.replace(/_/g, ' ');
 
 function rel(iso: string) {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -115,7 +117,7 @@ export default function WalletLedger() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Wallet className="w-5 h-5 text-accent-gold" /></span>
-            Wallet & Ledger
+            Passbook Ledger
           </h1>
           <p className="mt-1.5 text-sm text-zinc-500">Immutable transaction history, balances and flow analytics</p>
         </div>
@@ -222,7 +224,7 @@ export default function WalletLedger() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
-              {[{ k: '', l: 'All wallets' }, { k: 'video', l: 'Video' }, { k: 'social', l: 'Social' }].map((w) => (
+              {[{ k: '', l: 'All passbooks' }, { k: 'video', l: 'Video' }, { k: 'social', l: 'Social' }].map((w) => (
                 <button
                   key={w.k}
                   onClick={() => { setWallet(w.k); setPage(1); }}
@@ -349,7 +351,7 @@ export default function WalletLedger() {
       {/* footnote */}
       <p className="mt-4 text-[11px] text-zinc-600 flex items-center gap-1.5">
         <ArrowRight className="w-3 h-3" />
-        All balance changes are recorded in an immutable ledger. Manual adjustments require a reason and are fully audited (Users → Adjust wallet).
+        All balance changes are recorded in an immutable ledger. Manual adjustments require a reason and are fully audited (Users → Adjust passbook).
       </p>
     </div>
   );

@@ -385,7 +385,7 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
         <div className="space-y-4">
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
-            <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="field-gold" placeholder="e.g. Mobile Recharge ₹50" />
+            <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="field-gold" placeholder="e.g. Mobile Recharge 50" />
           </div>
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description</label>
@@ -406,7 +406,7 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
               <input type="number" min={1} value={form.coinCost} onChange={(e) => setForm({ ...form, coinCost: e.target.value })} className="field-gold" placeholder="500" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Face value (₹)</label>
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Face value</label>
               <input type="number" min={0} value={form.faceValue} onChange={(e) => setForm({ ...form, faceValue: e.target.value })} className="field-gold" placeholder="50" />
             </div>
             <div>
