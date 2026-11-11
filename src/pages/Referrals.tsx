@@ -25,9 +25,25 @@ interface Stats {
 interface Cfg {
   _id?: string; maxLevels: number;
   levelRewards: { level: number; coins: number; wallet: 'video' | 'social' }[];
+  levelTargets?: { level: number; target: number }[];
+  levelUpBonuses?: { level: number; coins: number; wallet: 'video' | 'social' }[];
   dailyJoinLimit: number; commissionEnabled: boolean; commissionPercent: number;
 }
-type Level = { level: number; coins: number; wallet: 'video' | 'social' };
+type Level = { level: number; coins: number; wallet: 'video' | 'social'; target: number; bonus: number };
+
+/** Client's 10-level income table preset (per joining + team size + level-up bonus). */
+const CLIENT_TABLE: { coins: number; target: number; bonus: number }[] = [
+  { coins: 20, target: 3, bonus: 0 },
+  { coins: 30, target: 9, bonus: 50 },
+  { coins: 40, target: 27, bonus: 100 },
+  { coins: 50, target: 81, bonus: 200 },
+  { coins: 70, target: 243, bonus: 500 },
+  { coins: 90, target: 729, bonus: 1000 },
+  { coins: 120, target: 2187, bonus: 2500 },
+  { coins: 160, target: 6561, bonus: 5000 },
+  { coins: 200, target: 19683, bonus: 10000 },
+  { coins: 269, target: 59049, bonus: 0 },
+];
 
 const LEVEL_TONES = [
   'from-accent-gold/30 to-accent-gold/10 text-accent-gold border-accent-gold/30',
@@ -47,7 +63,7 @@ function rel(iso: string) {
   return formatDate(iso);
 }
 
-const norm = (arr: Level[]) => arr.map((l) => `${l.level}:${l.coins}:${l.wallet}`).join('|');
+const norm = (arr: Level[]) => arr.map((l) => `${l.level}:${l.coins}:${l.wallet}:${l.target}:${l.bonus}`).join('|');
 
 export default function Referrals() {
   const qc = useQueryClient();
@@ -74,7 +90,9 @@ export default function Referrals() {
         dailyJoinLimit: cfg?.dailyJoinLimit ?? 100,
         commissionEnabled: cfg?.commissionEnabled ?? false,
         commissionPercent: cfg?.commissionPercent ?? 0,
-        levelRewards: levels.map((l, i) => ({ level: i + 1, coins: l.coins, wallet: l.wallet })),
+        levelRewards: levels.map((l) => ({ level: l.level, coins: l.coins, wallet: l.wallet })),
+        levelTargets: levels.map((l) => ({ level: l.level, target: l.target })),
+        levelUpBonuses: levels.map((l) => ({ level: l.level, coins: l.bonus, wallet: l.wallet })),
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['referral-config'] });
@@ -83,7 +101,13 @@ export default function Referrals() {
     },
   });
 
-  const serverLevels: Level[] = (cfg?.levelRewards ?? []).map((l) => ({ level: l.level, coins: l.coins, wallet: l.wallet }));
+  const serverLevels: Level[] = (cfg?.levelRewards ?? []).map((l) => ({
+    level: l.level,
+    coins: l.coins,
+    wallet: l.wallet,
+    target: cfg?.levelTargets?.find((t) => t.level === l.level)?.target ?? 3 ** l.level,
+    bonus: cfg?.levelUpBonuses?.find((b) => b.level === l.level)?.coins ?? 0,
+  }));
   const shown = draft ?? serverLevels;
   const dirty = draft !== null && norm(draft) !== norm(serverLevels);
   const maxLevels = cfg?.maxLevels ?? 10;
@@ -93,8 +117,12 @@ export default function Referrals() {
   const addLevel = () => {
     if (shown.length >= maxLevels) return;
     const next = shown.map((l) => ({ ...l }));
-    next.push({ level: next.length + 1, coins: 10, wallet: 'social' });
+    const lv = next.length + 1;
+    next.push({ level: lv, coins: 10, wallet: 'social', target: 3 ** lv, bonus: 0 });
     setDraft(next);
+  };
+  const loadClientTable = () => {
+    setDraft(CLIENT_TABLE.map((t, i) => ({ level: i + 1, coins: t.coins, wallet: 'social' as const, target: t.target, bonus: t.bonus })));
   };
   const removeLevel = (i: number) => {
     const next = shown.filter((_, j) => j !== i).map((l, j) => ({ ...l, level: j + 1 }));
@@ -306,7 +334,20 @@ export default function Referrals() {
                 </span>
               </div>
             </div>
-            <p className="text-sm text-zinc-500 mb-4">Coins paid to the referrer when a referred user joins, per network level.</p>
+            <p className="text-sm text-zinc-500 mb-3">Coins paid to the referrer when a referred user joins, per network level. Team size and level-up bonus load dynamically from the database.</p>
+
+            {/* client table totals (live from draft) */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+                Team target <span className="text-white font-bold tabular-nums">{shown.reduce((s, l) => s + l.target, 0).toLocaleString('en-IN')}</span> members
+              </span>
+              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+                Per joining <span className="text-accent-gold font-bold tabular-nums">₹{shown.reduce((s, l) => s + l.coins, 0).toLocaleString('en-IN')}</span> distributed
+              </span>
+              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+                Total potential <span className="text-accent-green font-bold tabular-nums">₹{shown.reduce((s, l) => s + l.target * l.coins, 0).toLocaleString('en-IN')}</span>
+              </span>
+            </div>
 
             {cfg === undefined ? (
               <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
@@ -321,28 +362,50 @@ export default function Referrals() {
                       <span className={cn('w-11 h-11 rounded-xl border flex items-center justify-center text-sm font-extrabold shrink-0 bg-gradient-to-br', LEVEL_TONES[i % LEVEL_TONES.length])}>
                         L{i + 1}
                       </span>
-                      <div className="min-w-[140px] flex-1">
-                        <p className="text-sm font-semibold text-white">Level {i + 1} reward</p>
+                      <div className="min-w-[130px] flex-1">
+                        <p className="text-sm font-semibold text-white">Level {i + 1}</p>
                         <p className="text-[11px] text-zinc-500">
                           {paid ? (
                             <>Paid so far: <span className="text-accent-gold font-semibold">{formatCoins(paid.coins)}</span> coins · {paid.users} users</>
                           ) : 'Not paid yet'}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number" min={0} value={r.coins}
-                          onChange={(e) => patchLevel(i, { coins: Math.max(0, Number(e.target.value)) })}
-                          className="field-gold !py-2 w-24 !rounded-lg"
-                        />
-                        <select
-                          value={r.wallet}
-                          onChange={(e) => patchLevel(i, { wallet: e.target.value as 'video' | 'social' })}
-                          className="glass-input w-36 !py-2 !rounded-lg"
-                        >
-                          <option value="social">Social passbook</option>
-                          <option value="video">Video passbook</option>
-                        </select>
+                      <div className="flex items-end gap-2 flex-wrap">
+                        <label className="flex flex-col gap-1">
+                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Team size</span>
+                          <input
+                            type="number" min={1} value={r.target}
+                            onChange={(e) => patchLevel(i, { target: Math.max(1, Number(e.target.value)) })}
+                            className="field-gold !py-2 w-24 !rounded-lg"
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1">
+                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Per join ₹</span>
+                          <input
+                            type="number" min={0} value={r.coins}
+                            onChange={(e) => patchLevel(i, { coins: Math.max(0, Number(e.target.value)) })}
+                            className="field-gold !py-2 w-20 !rounded-lg"
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1">
+                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Level-up bonus</span>
+                          <input
+                            type="number" min={0} value={r.bonus}
+                            onChange={(e) => patchLevel(i, { bonus: Math.max(0, Number(e.target.value)) })}
+                            className="field-gold !py-2 w-24 !rounded-lg"
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1">
+                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Passbook</span>
+                          <select
+                            value={r.wallet}
+                            onChange={(e) => patchLevel(i, { wallet: e.target.value as 'video' | 'social' })}
+                            className="glass-input w-36 !py-2 !rounded-lg"
+                          >
+                            <option value="social">Social passbook</option>
+                            <option value="video">Video passbook</option>
+                          </select>
+                        </label>
                         <button
                           onClick={() => removeLevel(i)}
                           title="Remove level"
@@ -367,7 +430,14 @@ export default function Referrals() {
                   ✓ All changes saved
                 </span>
               )}
-              <div className="flex gap-2.5">
+              <div className="flex gap-2.5 flex-wrap">
+                <button
+                  onClick={loadClientTable}
+                  title="Load the client's 10-level income table (20…269 per joining, 3^N team sizes)"
+                  className="btn-ghost border border-white/[0.12] hover:border-accent-gold/40 hover:text-accent-gold"
+                >
+                  <Trophy className="w-4 h-4" /> Load client table
+                </button>
                 <button
                   onClick={addLevel}
                   disabled={shown.length >= maxLevels}
