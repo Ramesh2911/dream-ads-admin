@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import {
   Clapperboard, FolderOpen, Image as ImageIcon, Megaphone, Plus, Pencil, Trash2,
-  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save,
+  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save, MessageSquare,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
@@ -46,7 +46,7 @@ const FORMAT_TONE: Record<string, { cls: string; icon: typeof ImageIcon }> = {
 };
 const tooltipStyle = { background: '#0A1540', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, color: '#fff', fontSize: 12 } as const;
 
-type TabKey = 'videos' | 'categories' | 'banners' | 'ads';
+type TabKey = 'videos' | 'categories' | 'banners' | 'ads' | 'announcements';
 
 export default function Content() {
   const [tab, setTab] = useState<TabKey>('videos');
@@ -57,7 +57,7 @@ export default function Content() {
 
   const t = stats?.totals;
   const chips = [
-    { label: 'Videos', value: stats ? t!.videos : null, icon: Clapperboard, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${t!.published} published · ${t!.draft} draft` : '' },
+    { label: 'Videos', value: stats ? t!.videos : null, icon: Clapperboard, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${t!.published} published Â· ${t!.draft} draft` : '' },
     { label: 'Categories', value: stats ? t!.categoriesActive : null, icon: FolderOpen, chip: 'bg-accent-gold/15 text-accent-gold border-accent-gold/25', sub: stats ? `${t!.categoriesInactive} inactive` : '' },
     { label: 'Featured + Trending', value: stats ? `${t!.featured}+${t!.trending}` : null, icon: Star, chip: 'bg-accent-violet/15 text-accent-violet border-accent-violet/25', sub: 'spotlight flags' },
     { label: 'Ad slots enabled', value: stats ? `${t!.adsEnabled}/${t!.adsTotal}` : null, icon: Megaphone, chip: 'bg-accent-pink/15 text-accent-pink border-accent-pink/25', sub: stats ? `${t!.bannersActive} live banners` : '' },
@@ -92,7 +92,7 @@ export default function Content() {
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
+              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? 'â€”'}</p>
               {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function Content() {
         <div className="lg:col-span-3 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Clapperboard className="w-4 h-4 text-accent-gold" /></span>
-            <h3 className="font-semibold text-white">Videos added · last 7 days</h3>
+            <h3 className="font-semibold text-white">Videos added Â· last 7 days</h3>
           </div>
           {statsLoading ? (
             <div className="h-[230px] rounded-xl bg-white/[0.03] animate-pulse" />
@@ -159,6 +159,7 @@ export default function Content() {
           ['categories', 'Categories', FolderOpen],
           ['banners', 'Banners', ImageIcon],
           ['ads', 'Ad placements', Megaphone],
+          ['announcements', 'Announcements', MessageSquare],
         ] as const).map(([k, l, Icon]) => (
           <button
             key={k}
@@ -179,6 +180,7 @@ export default function Content() {
       {tab === 'categories' && <CategoriesTab />}
       {tab === 'banners' && <BannersTab />}
       {tab === 'ads' && <AdsTab />}
+      {tab === 'announcements' && <AnnouncementsTab />}
     </div>
   );
 }
@@ -191,6 +193,7 @@ function useInvalidateContent() {
     qc.invalidateQueries({ queryKey: ['admin-categories'] });
     qc.invalidateQueries({ queryKey: ['admin-banners'] });
     qc.invalidateQueries({ queryKey: ['ad-placements'] });
+    qc.invalidateQueries({ queryKey: ['admin-announcements'] });
     qc.invalidateQueries({ queryKey: ['categories'] });
     qc.invalidateQueries({ queryKey: ['banners'] });
   };
@@ -260,7 +263,7 @@ function VideosTab() {
         <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search by title…" />
+            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search by titleâ€¦" />
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
             <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
@@ -347,7 +350,7 @@ function VideosTab() {
 
         {data && data.pages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> · {total} videos</p>
+            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> Â· {total} videos</p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
@@ -366,11 +369,11 @@ function VideosTab() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Video URL *</label>
-              <input className="field-gold" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://…" />
+              <input className="field-gold" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://â€¦" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thumbnail URL *</label>
-              <input className="field-gold" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://…jpg" />
+              <input className="field-gold" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://â€¦jpg" />
             </div>
           </div>
           {form.thumbnail.trim() && (
@@ -380,13 +383,13 @@ function VideosTab() {
           )}
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description</label>
-            <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional description…" />
+            <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional descriptionâ€¦" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Category *</label>
               <select className="field-gold" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                <option value="">Pick…</option>
+                <option value="">Pickâ€¦</option>
                 {cats.data?.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
@@ -424,7 +427,7 @@ function VideosTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create video'}
+              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create video'}
             </button>
           </div>
         </div>
@@ -438,14 +441,14 @@ function VideosTab() {
               <img src={deleting.thumbnail} alt="" className="w-14 h-9 rounded-lg object-cover" />
               <div className="min-w-0">
                 <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
-                <p className="text-xs text-zinc-500">{deleting.views} views · {deleting.likes} likes</p>
+                <p className="text-xs text-zinc-500">{deleting.views} views Â· {deleting.likes} likes</p>
               </div>
             </div>
             <p className="text-sm text-zinc-400">This permanently removes the video and its catalog entry. This cannot be undone.</p>
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deleting…' : 'Delete'}
+                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
               </button>
             </div>
           </div>
@@ -498,7 +501,7 @@ function CategoriesTab() {
     <>
       <div className="glass overflow-hidden animate-fade-in">
         <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.length}</span> categories · ordered by display order</p>
+          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.length}</span> categories Â· ordered by display order</p>
           {manage && (
             <button onClick={() => { setEditing(null); setForm(emptyCat); setFormErr(''); setFormOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New category
@@ -518,7 +521,7 @@ function CategoriesTab() {
             <div key={c._id} style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }} className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_auto_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative">
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
               <div className="flex items-center gap-3 min-w-0">
-                <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center text-lg shrink-0">{c.icon || '📁'}</span>
+                <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center text-lg shrink-0">{c.icon || 'ðŸ“'}</span>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white truncate">{c.name}</p>
                   <p className="text-[11px] text-zinc-600 font-mono truncate">{c.slug}</p>
@@ -559,7 +562,7 @@ function CategoriesTab() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Icon (emoji)</label>
-              <input className="field-gold" maxLength={4} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="🎬" />
+              <input className="field-gold" maxLength={4} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="ðŸŽ¬" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Display order</label>
@@ -574,7 +577,7 @@ function CategoriesTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create'}
+              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create'}
             </button>
           </div>
         </div>
@@ -585,7 +588,7 @@ function CategoriesTab() {
           <div className="space-y-4">
             <p className="text-sm text-zinc-400">
               Delete <span className="text-white font-semibold">{deleting.name}</span>?
-              {deleting.videoCount > 0 && <span className="text-accent-red block mt-2">This category has {deleting.videoCount} video(s) — deletion will be blocked. Reassign them first.</span>}
+              {deleting.videoCount > 0 && <span className="text-accent-red block mt-2">This category has {deleting.videoCount} video(s) â€” deletion will be blocked. Reassign them first.</span>}
             </p>
             {delMut.isError && (
               <p className="text-xs text-accent-red">{(delMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}</p>
@@ -593,7 +596,7 @@ function CategoriesTab() {
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending || deleting.videoCount > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deleting…' : 'Delete'}
+                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
               </button>
             </div>
           </div>
@@ -695,7 +698,7 @@ function BannersTab() {
                 <div className="p-4">
                   <p className="font-semibold text-white text-sm truncate">{b.title}</p>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap text-[10px] text-zinc-500">
-                    {b.targetUrl && <span className="truncate max-w-[140px]">→ {b.targetUrl}</span>}
+                    {b.targetUrl && <span className="truncate max-w-[140px]">â†’ {b.targetUrl}</span>}
                     {b.startsAt && <span>from {formatDate(b.startsAt)}</span>}
                     {b.endsAt && <span>to {formatDate(b.endsAt)}</span>}
                   </div>
@@ -731,11 +734,11 @@ function BannersTab() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Image URL *</label>
-              <input className="field-gold" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://…jpg" />
+              <input className="field-gold" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://â€¦jpg" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Target URL</label>
-              <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://…" />
+              <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://â€¦" />
             </div>
           </div>
           {form.imageUrl.trim() && (
@@ -767,7 +770,7 @@ function BannersTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create banner'}
+              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create banner'}
             </button>
           </div>
         </div>
@@ -784,7 +787,7 @@ function BannersTab() {
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deleting…' : 'Delete'}
+                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
               </button>
             </div>
           </div>
@@ -835,7 +838,7 @@ function AdsTab() {
       <div className="glass p-4 flex items-start gap-3">
         <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Megaphone className="w-4 h-4 text-accent-gold" /></span>
         <p className="text-xs text-zinc-500 leading-relaxed">
-          Configure banner, interstitial and rewarded ad placements. Ads must comply with network policy — no hidden or forced background ads. Disabling a slot stops it from being requested by apps immediately.
+          Configure banner, interstitial and rewarded ad placements. Ads must comply with network policy â€” no hidden or forced background ads. Disabling a slot stops it from being requested by apps immediately.
         </p>
       </div>
 
@@ -873,11 +876,11 @@ function AdsTab() {
                 <div className="mt-4 space-y-3">
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Network</label>
-                    <input disabled={!manage} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.network} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, network: e.target.value } })} placeholder="admob / unity…" />
+                    <input disabled={!manage} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.network} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, network: e.target.value } })} placeholder="admob / unityâ€¦" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Unit ID</label>
-                    <input disabled={!manage} className="field-gold !py-1.5 text-xs font-mono disabled:opacity-50" value={d.unitId} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, unitId: e.target.value } })} placeholder="ca-app-pub-…" />
+                    <input disabled={!manage} className="field-gold !py-1.5 text-xs font-mono disabled:opacity-50" value={d.unitId} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, unitId: e.target.value } })} placeholder="ca-app-pub-â€¦" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Frequency cap (per session)</label>
@@ -887,14 +890,14 @@ function AdsTab() {
                 {manage && (
                   <div className="mt-4 pt-4 border-t border-white/[0.08] flex items-center justify-between">
                     <span className={cn('text-[10px] font-semibold', dirty(p) ? 'text-accent-gold' : 'text-zinc-600')}>
-                      {dirty(p) ? 'Unsaved changes' : savedId === p._id ? 'Saved ✓' : 'Up to date'}
+                      {dirty(p) ? 'Unsaved changes' : savedId === p._id ? 'Saved âœ“' : 'Up to date'}
                     </span>
                     <button
                       onClick={() => saveMut.mutate({ id: p._id, d })}
                       disabled={!dirty(p) || saveMut.isPending}
                       className={cn('btn !py-1.5 px-3 text-xs', dirty(p) ? 'btn-gold' : 'bg-white/[0.06] text-zinc-500 cursor-not-allowed')}
                     >
-                      <Save className="w-3 h-3" /> {saveMut.isPending && saveMut.variables?.id === p._id ? 'Saving…' : 'Save'}
+                      <Save className="w-3 h-3" /> {saveMut.isPending && saveMut.variables?.id === p._id ? 'Savingâ€¦' : 'Save'}
                     </button>
                   </div>
                 )}
@@ -904,5 +907,147 @@ function AdsTab() {
         </div>
       )}
     </div>
+  );
+}
+
+interface AnnouncementItem { _id: string; text: string; priority: number; isActive: boolean; createdAt: string }
+
+function AnnouncementsTab() {
+  const { can } = useAuth();
+  const manage = can('content.manage');
+  const invalidate = useInvalidateContent();
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<AnnouncementItem | null>(null);
+  const [form, setForm] = useState({ text: '', priority: '1', isActive: true });
+  const [formErr, setFormErr] = useState('');
+  const [deleting, setDeleting] = useState<AnnouncementItem | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-announcements'],
+    queryFn: async (): Promise<{ announcements: AnnouncementItem[] }> => {
+      const res = await api.get('/admin/announcements');
+      return { announcements: res.data.data };
+    },
+  });
+
+  const body = () => ({ text: form.text.trim(), priority: Number(form.priority) || 0, isActive: form.isActive });
+  const createMut = useMutation({
+    mutationFn: () => api.post('/admin/announcements', body()),
+    onSuccess: () => { invalidate(); setOpen(false); },
+    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create announcement'),
+  });
+  const updateMut = useMutation({
+    mutationFn: () => api.put(`/admin/announcements/${editing!._id}`, body()),
+    onSuccess: () => { invalidate(); setOpen(false); setEditing(null); },
+    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save announcement'),
+  });
+  const toggleMut = useMutation({
+    mutationFn: (a: AnnouncementItem) => api.put(`/admin/announcements/${a._id}`, { isActive: !a.isActive }),
+    onSuccess: invalidate,
+  });
+  const delMut = useMutation({
+    mutationFn: (id: string) => api.delete(`/admin/announcements/${id}`),
+    onSuccess: () => { invalidate(); setDeleting(null); },
+  });
+
+  const items = data?.announcements ?? [];
+  const valid = form.text.trim().length >= 2 && !(createMut.isPending || updateMut.isPending);
+
+  return (
+    <>
+      <div className="glass overflow-hidden animate-fade-in">
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
+          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.filter((a) => a.isActive).length}</span> live of {items.length} announcements — scroll across the app home</p>
+          {manage && (
+            <button onClick={() => { setEditing(null); setForm({ text: '', priority: '1', isActive: true }); setFormErr(''); setOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
+              <Plus className="w-3.5 h-3.5" /> New announcement
+            </button>
+          )}
+        </div>
+        {isLoading ? (
+          <div className="space-y-3 p-4">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+        ) : items.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><MessageSquare className="w-6 h-6 text-accent-gold" /></div>
+            <p className="text-white font-semibold">No announcements</p>
+            <p className="mt-1 text-sm text-zinc-500">Create one to show a scrolling ticker on the app home screen.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-white/[0.06]">
+            {items.map((a) => (
+              <div key={a._id} className="flex items-center gap-3 p-4">
+                <span className="text-[10px] font-bold px-2 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-zinc-500 tabular-nums shrink-0">P{a.priority}</span>
+                <p className="text-sm text-zinc-300 flex-1 min-w-0 truncate">{a.text}</p>
+                <span className={cn('text-[10px] px-2 py-1 rounded-full border shrink-0', a.isActive ? 'bg-accent-green/10 text-accent-green border-accent-green/25' : 'bg-white/[0.06] text-zinc-500 border-white/10')}>
+                  {a.isActive ? 'Live' : 'Off'}
+                </span>
+                {manage && (
+                  <div className="flex gap-1 shrink-0">
+                    <button onClick={() => toggleMut.mutate(a)} className="btn-ghost p-1.5 text-accent-blue" title={a.isActive ? 'Hide' : 'Show'}>
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => { setEditing(a); setForm({ text: a.text, priority: String(a.priority), isActive: a.isActive }); setFormErr(''); setOpen(true); }} className="btn-ghost p-1.5 text-accent-gold"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setDeleting(a)} className="btn-ghost p-1.5 text-accent-red"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Modal open={open} onClose={() => setOpen(false)} title={editing ? 'Edit announcement' : 'New announcement'}>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Text *</label>
+            <textarea
+              className="field-gold min-h-[90px] resize-y"
+              value={form.text}
+              maxLength={300}
+              placeholder="e.g. Get 10 coins daily — complete all daily tasks!"
+              onChange={(e) => setForm({ ...form, text: e.target.value })}
+            />
+            <p className="text-[11px] text-zinc-600 mt-1">{form.text.length}/300 — keep it short, it scrolls horizontally</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Priority</label>
+              <input type="number" min={0} className="field-gold" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} />
+            </div>
+            <div className="flex items-end pb-1">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
+                <span className="text-sm text-zinc-300">Live</span>
+              </label>
+            </div>
+          </div>
+          {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
+          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <button onClick={() => setOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
+            <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
+              {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create announcement'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete announcement">
+        {deleting && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+              <MessageSquare className="w-4 h-4 text-accent-gold shrink-0" />
+              <p className="text-sm text-white truncate">{deleting.text}</p>
+            </div>
+            <p className="text-sm text-zinc-400">This permanently removes the announcement. This cannot be undone.</p>
+            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+              <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
+              <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
+                {delMut.isPending ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 }

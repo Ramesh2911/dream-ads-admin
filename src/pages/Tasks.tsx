@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthContext';
 interface TaskItem {
   _id: string; title: string; description: string; instructions?: string;
   proofType: string; rewardCoins: number; rewardWallet: string;
-  status: string; totalSlots?: number; filledSlots: number;
+  status: string; isDaily?: boolean; totalSlots?: number; filledSlots: number;
   eligibility?: { minLevel?: number; requiresKyc?: boolean; maxSubmissions?: number };
   startsAt?: string; endsAt?: string; createdAt: string;
   submissions: { pending: number; approved: number; rejected: number; total: number };
@@ -218,7 +218,7 @@ function useInvalidateTasks() {
 
 const emptyTask = {
   title: '', description: '', instructions: '', proofType: 'screenshot', rewardCoins: '10',
-  rewardWallet: 'social', totalSlots: '', status: 'draft',
+  rewardWallet: 'social', totalSlots: '', status: 'draft', isDaily: false,
   minLevel: '', requiresKyc: false, maxSubmissions: '', startsAt: '', endsAt: '',
 };
 
@@ -257,6 +257,7 @@ function TasksTab() {
     rewardCoins: Number(form.rewardCoins),
     rewardWallet: form.rewardWallet,
     totalSlots: form.totalSlots ? Number(form.totalSlots) : undefined,
+    isDaily: form.isDaily,
     status: form.status,
     eligibility: {
       ...(form.minLevel ? { minLevel: Number(form.minLevel) } : {}),
@@ -292,6 +293,7 @@ function TasksTab() {
       title: t.title, description: t.description, instructions: t.instructions ?? '',
       proofType: t.proofType, rewardCoins: String(t.rewardCoins), rewardWallet: t.rewardWallet,
       totalSlots: t.totalSlots != null ? String(t.totalSlots) : '', status: t.status === 'completed' ? 'draft' : t.status,
+      isDaily: !!t.isDaily,
       minLevel: t.eligibility?.minLevel != null ? String(t.eligibility.minLevel) : '',
       requiresKyc: !!t.eligibility?.requiresKyc,
       maxSubmissions: t.eligibility?.maxSubmissions != null ? String(t.eligibility.maxSubmissions) : '',
@@ -357,9 +359,14 @@ function TasksTab() {
                     <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold', (T_STATUS[t.status] ?? T_STATUS.draft).cls)}>
                       <span className={cn('w-1.5 h-1.5 rounded-full', (T_STATUS[t.status] ?? T_STATUS.draft).dot)} /> {t.status}
                     </span>
-                    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold', P.cls)}>
-                      <P.icon className="w-2.5 h-2.5" /> {P.label}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {t.isDaily && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold bg-accent-pink/15 text-accent-pink border-accent-pink/25">Daily</span>
+                      )}
+                      <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold', P.cls)}>
+                        <P.icon className="w-2.5 h-2.5" /> {P.label}
+                      </span>
+                    </div>
                   </div>
                   <p className="font-semibold text-white text-sm leading-snug line-clamp-1">{t.title}</p>
                   <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{t.description}</p>
@@ -476,10 +483,14 @@ function TasksTab() {
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Max / user</label>
               <input type="number" min={1} className="field-gold" value={form.maxSubmissions} onChange={(e) => setForm({ ...form, maxSubmissions: e.target.value })} placeholder="—" />
             </div>
-            <div className="flex items-end pb-1">
+            <div className="flex items-end pb-1 gap-4">
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
                 <input type="checkbox" checked={form.requiresKyc} onChange={(e) => setForm({ ...form, requiresKyc: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
                 <span className="text-sm text-zinc-300">KYC required</span>
+              </label>
+              <label className="flex items-center gap-2.5 cursor-pointer select-none" title="Users can submit once per calendar day; counts toward the daily goal">
+                <input type="checkbox" checked={form.isDaily} onChange={(e) => setForm({ ...form, isDaily: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
+                <span className="text-sm text-zinc-300">Daily task</span>
               </label>
             </div>
           </div>

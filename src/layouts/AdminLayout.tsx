@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, Users, Wallet, Share2, Video, ListChecks,
   Banknote, Ticket, Shield, BarChart3, Settings, LogOut, Menu, X, Bell, Inbox,
-  CalendarDays, ChevronDown, UserCircle, BadgeCheck,
+  CalendarDays, ChevronDown, UserCircle, BadgeCheck, Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
@@ -22,6 +22,7 @@ const nav = [
   { to: '/content', label: 'Content & Ads', icon: Video, perm: 'content.read', group: 'Engagement' },
   { to: '/tasks', label: 'Task Verification', icon: ListChecks, perm: 'tasks.verify', group: 'Engagement' },
   { to: '/notifications', label: 'Notifications', icon: Bell, perm: 'cms.read', group: 'Engagement' },
+  { to: '/app-updates', label: 'App Updates', icon: Sparkles, perm: 'content.read', group: 'Engagement' },
   { to: '/roles', label: 'Roles & Audit', icon: Shield, perm: 'roles.read', group: 'Control' },
   { to: '/reports', label: 'Reports', icon: BarChart3, perm: 'reports.read', group: 'Control' },
   { to: '/settings', label: 'Settings', icon: Settings, perm: 'settings.read', group: 'Control' },

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Settings2, Smartphone, Wallet, ShieldAlert, CheckCircle2, AlertTriangle, XCircle,
-  Save, RotateCcw, ExternalLink, Server, Clock, QrCode, Crown, Upload,
+  Save, RotateCcw, ExternalLink, Server, Clock, QrCode, Crown, Upload, Share2, FileText, Target, Plus, Trash2,
 } from 'lucide-react';
 import api from '../lib/api';
 import { cn, formatDateTime } from '../lib/utils';
@@ -45,6 +45,10 @@ const toForm = (d?: Record<string, unknown>): Form => ({
 const isValidUrl = (v: string) => v === '' || /^https?:\/\/\S+$/.test(v);
 const isInt = (v: string) => /^\d+$/.test(v.trim());
 
+const PLATFORMS = ['Facebook', 'YouTube', 'Telegram', 'Instagram', 'Twitter', 'WhatsApp', 'LinkedIn', 'Website'];
+
+type SocialLink = { platform: string; url: string };
+
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div>
@@ -69,8 +73,18 @@ export default function Settings() {
   const [confirmMaint, setConfirmMaint] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
 
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [goalReward, setGoalReward] = useState('0');
+  const [landingPdf, setLandingPdf] = useState('');
+
   useEffect(() => {
-    if (res?.data) setForm(toForm(res.data));
+    if (res?.data) {
+      setForm(toForm(res.data));
+      const links = res.data.socialLinks;
+      setSocialLinks(Array.isArray(links) ? (links as SocialLink[]) : []);
+      setGoalReward(String(res.data.dailyGoalReward ?? '0'));
+      setLandingPdf(String(res.data.landingPdf ?? ''));
+    }
   }, [res]);
 
   const server = useMemo(() => toForm(res?.data), [res]);
@@ -100,25 +114,66 @@ export default function Settings() {
     return e;
   }, [form]);
 
+  const basePayload = () => ({
+    appName: form.appName.trim(),
+    androidDownloadUrl: form.androidDownloadUrl.trim(),
+    iosDownloadUrl: form.iosDownloadUrl.trim(),
+    minWithdrawal: Number(form.minWithdrawal),
+    signupBonus: Number(form.signupBonus),
+    maintenanceMode: form.maintenanceMode,
+    activationFee: Number(form.activationFee),
+    upiQr: form.upiQr,
+    usdtQr: form.usdtQr,
+    usdtAddress: form.usdtAddress.trim(),
+    usdtMin: Number(form.usdtMin || '0'),
+  });
+
+  const flashSaved = async () => {
+    await qc.invalidateQueries({ queryKey: ['settings'] });
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 4000);
+  };
+
   const mut = useMutation({
-    mutationFn: () =>
-      api.put('/admin/settings', {
-        appName: form.appName.trim(),
-        androidDownloadUrl: form.androidDownloadUrl.trim(),
-        iosDownloadUrl: form.iosDownloadUrl.trim(),
-        minWithdrawal: Number(form.minWithdrawal),
-        signupBonus: Number(form.signupBonus),
-        maintenanceMode: form.maintenanceMode,
-        activationFee: Number(form.activationFee),
-        upiQr: form.upiQr,
-        usdtQr: form.usdtQr,
-        usdtAddress: form.usdtAddress.trim(),
-        usdtMin: Number(form.usdtMin || '0'),
-      }),
+    mutationFn: () => api.put('/admin/settings', basePayload()),
+    onSuccess: flashSaved,
+  });
+
+  const saveSocial = useMutation({
+    mutationFn: () => api.put('/admin/settings', { ...basePayload(), socialLinks }),
+    onSuccess: flashSaved,
+  });
+
+  const saveGoal = useMutation({
+    mutationFn: () => api.put('/admin/settings', { ...basePayload(), dailyGoalReward: Number(goalReward) }),
+    onSuccess: flashSaved,
+  });
+
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfError, setPdfError] = useState('');
+
+  const uploadPdf = async (file?: File) => {
+    if (!file) return;
+    setPdfUploading(true);
+    setPdfError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res2 = await api.post('/admin/settings/landing-pdf', fd);
+      setLandingPdf(String(res2.data?.data?.value ?? ''));
+      await flashSaved();
+    } catch (err) {
+      setPdfError((err as Error)?.message || 'Upload failed');
+    } finally {
+      setPdfUploading(false);
+    }
+  };
+
+  const removePdf = useMutation({
+    mutationFn: () => api.put('/admin/settings', { ...basePayload(), landingPdf: '' }),
     onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['settings'] });
-      setSavedFlash(true);
-      setTimeout(() => setSavedFlash(false), 4000);
+      setLandingPdf('');
+      await flashSaved();
     },
   });
 
@@ -410,6 +465,158 @@ export default function Settings() {
                     onChange={(e) => setForm({ ...form, usdtAddress: e.target.value })}
                   />
                 </Field>
+              </div>
+            )}
+          </div>
+
+          {/* daily goal, social links, landing pdf */}
+          <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '120ms' }}>
+            <div className="flex items-center gap-2.5 mb-5">
+              <span className="p-2 rounded-lg bg-accent-pink/10 border border-accent-pink/20"><Share2 className="w-4 h-4 text-accent-pink" /></span>
+              <h3 className="font-semibold text-white">Daily goal & sharing</h3>
+              <span className="text-[11px] text-zinc-500">reward · socials · landing PDF</span>
+            </div>
+            {isLoading ? (
+              <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+            ) : (
+              <div className="space-y-6">
+                {/* daily goal reward */}
+                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div className="flex-1 min-w-[160px]">
+                      <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Daily goal reward</label>
+                      <div className="relative mt-1">
+                        <input
+                          className="glass-input pr-16 tabular-nums"
+                          inputMode="numeric"
+                          value={goalReward}
+                          disabled={!editable}
+                          onChange={(e) => setGoalReward(e.target.value)}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
+                      </div>
+                      <p className="text-[11px] text-zinc-600 mt-1">Credited once per day when every active daily task is approved</p>
+                    </div>
+                    <button
+                      onClick={() => saveGoal.mutate()}
+                      disabled={!editable || saveGoal.isPending || !isInt(goalReward)}
+                      className="btn-primary px-4 py-2.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Save className="w-4 h-4" /> {saveGoal.isPending ? 'Saving…' : 'Save reward'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* social media links */}
+                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                  <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><Share2 className="w-3.5 h-3.5" /> Social media links</label>
+                  <p className="text-[11px] text-zinc-600 mt-0.5 mb-3">Shown in the app profile — tap to open in the browser</p>
+                  <div className="space-y-2">
+                    {socialLinks.map((l, i) => (
+                      <div key={i} className="flex gap-2">
+                        <select
+                          className="glass-input w-36 shrink-0 text-sm"
+                          value={l.platform}
+                          disabled={!editable}
+                          onChange={(e) => setSocialLinks(socialLinks.map((x, j) => (j === i ? { ...x, platform: e.target.value } : x)))}
+                        >
+                          {PLATFORMS.map((p) => <option key={p} value={p}>{p}</option>)}
+                        </select>
+                        <input
+                          className="glass-input flex-1 text-sm"
+                          placeholder="https://..."
+                          value={l.url}
+                          disabled={!editable}
+                          onChange={(e) => setSocialLinks(socialLinks.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))}
+                        />
+                        <button
+                          onClick={() => setSocialLinks(socialLinks.filter((_, j) => j !== i))}
+                          disabled={!editable}
+                          className="px-2.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-zinc-500 hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
+                          aria-label="Remove link"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {socialLinks.length === 0 && <p className="text-[11px] text-zinc-600">No links yet.</p>}
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <button
+                      onClick={() => setSocialLinks([...socialLinks, { platform: 'Telegram', url: 'https://' }])}
+                      disabled={!editable || socialLinks.length >= 10}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-accent-pink/40 text-accent-pink text-xs font-semibold hover:bg-accent-pink/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add link
+                    </button>
+                    <button
+                      onClick={() => saveSocial.mutate()}
+                      disabled={!editable || saveSocial.isPending || socialLinks.some((l) => !l.url.trim() || !isValidUrl(l.url.trim()))}
+                      className="btn-primary px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Save className="w-4 h-4" /> {saveSocial.isPending ? 'Saving…' : 'Save links'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* landing page pdf */}
+                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                  <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> Landing page PDF</label>
+                  <p className="text-[11px] text-zinc-600 mt-0.5">Company profile / Get Started brochure — opened from the app profile</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-3">
+                    {landingPdf ? (
+                      <>
+                        <a
+                          href={`${apiBase}/landing-pdf`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.10] text-xs font-semibold text-accent-blue hover:bg-white/[0.09] transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" /> Open current PDF
+                        </a>
+                        <label className={cn(
+                          'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
+                          !editable || pdfUploading
+                            ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                            : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
+                        )}>
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            disabled={!editable || pdfUploading}
+                            onChange={(e) => uploadPdf(e.target.files?.[0])}
+                          />
+                          <Upload className="w-3.5 h-3.5" /> {pdfUploading ? 'Uploading…' : 'Replace PDF'}
+                        </label>
+                        <button
+                          onClick={() => removePdf.mutate()}
+                          disabled={!editable || removePdf.isPending}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.10] text-xs font-semibold text-zinc-400 hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Remove
+                        </button>
+                      </>
+                    ) : (
+                      <label className={cn(
+                        'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
+                        !editable || pdfUploading
+                          ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                          : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
+                      )}>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          disabled={!editable || pdfUploading}
+                          onChange={(e) => uploadPdf(e.target.files?.[0])}
+                        />
+                        <Upload className="w-3.5 h-3.5" /> {pdfUploading ? 'Uploading…' : 'Upload PDF'}
+                      </label>
+                    )}
+                  </div>
+                  {pdfError && <p className="text-[11px] text-accent-red flex items-center gap-1.5 mt-2"><XCircle className="w-3 h-3" /> {pdfError}</p>}
+                </div>
               </div>
             )}
           </div>
