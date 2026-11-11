@@ -425,7 +425,7 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
       <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-          <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search action, actor or entity…" />
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search action, actor or entity..." />
         </div>
         <button onClick={() => onTab('roles')} className="btn-ghost !py-2 px-3 text-xs lg:ml-auto self-start">
           <Shield className="w-3.5 h-3.5" /> Switch to roles

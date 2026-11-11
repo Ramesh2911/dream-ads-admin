@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import {
   Clapperboard, FolderOpen, Image as ImageIcon, Megaphone, Plus, Pencil, Trash2,
-  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save, MessageSquare,
+  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save, MessageSquare, Coins,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
@@ -57,7 +57,7 @@ export default function Content() {
 
   const t = stats?.totals;
   const chips = [
-    { label: 'Videos', value: stats ? t!.videos : null, icon: Clapperboard, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${t!.published} published Â· ${t!.draft} draft` : '' },
+    { label: 'Videos', value: stats ? t!.videos : null, icon: Clapperboard, chip: 'bg-brand-blue/15 text-accent-blue border-brand-blue/25', sub: stats ? `${t!.published} published · ${t!.draft} draft` : '' },
     { label: 'Categories', value: stats ? t!.categoriesActive : null, icon: FolderOpen, chip: 'bg-accent-gold/15 text-accent-gold border-accent-gold/25', sub: stats ? `${t!.categoriesInactive} inactive` : '' },
     { label: 'Featured + Trending', value: stats ? `${t!.featured}+${t!.trending}` : null, icon: Star, chip: 'bg-accent-violet/15 text-accent-violet border-accent-violet/25', sub: 'spotlight flags' },
     { label: 'Ad slots enabled', value: stats ? `${t!.adsEnabled}/${t!.adsTotal}` : null, icon: Megaphone, chip: 'bg-accent-pink/15 text-accent-pink border-accent-pink/25', sub: stats ? `${t!.bannersActive} live banners` : '' },
@@ -92,7 +92,7 @@ export default function Content() {
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? 'â€”'}</p>
+              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
               {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function Content() {
         <div className="lg:col-span-3 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Clapperboard className="w-4 h-4 text-accent-gold" /></span>
-            <h3 className="font-semibold text-white">Videos added Â· last 7 days</h3>
+            <h3 className="font-semibold text-white">Videos added · last 7 days</h3>
           </div>
           {statsLoading ? (
             <div className="h-[230px] rounded-xl bg-white/[0.03] animate-pulse" />
@@ -263,7 +263,7 @@ function VideosTab() {
         <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search by titleâ€¦" />
+            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search by title..." />
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
             <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
@@ -320,7 +320,7 @@ function VideosTab() {
                   <div className="absolute bottom-2.5 left-2.5 flex items-center gap-3 text-[10px] text-zinc-300">
                     <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{v.views}</span>
                     <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{v.likes}</span>
-                    <span className="text-accent-gold font-bold">{formatCoins(v.rewardCoins)}</span>
+                    <span className="flex items-center gap-1 text-accent-gold font-bold"><Coins className="w-3 h-3" />{formatCoins(v.rewardCoins)}</span>
                   </div>
                 </div>
                 <div className="p-4">
@@ -350,7 +350,7 @@ function VideosTab() {
 
         {data && data.pages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> Â· {total} videos</p>
+            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> · {total} videos</p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
@@ -369,11 +369,11 @@ function VideosTab() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Video URL *</label>
-              <input className="field-gold" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://â€¦" />
+              <input className="field-gold" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thumbnail URL *</label>
-              <input className="field-gold" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://â€¦jpg" />
+              <input className="field-gold" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://...jpg" />
             </div>
           </div>
           {form.thumbnail.trim() && (
@@ -383,13 +383,13 @@ function VideosTab() {
           )}
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description</label>
-            <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional descriptionâ€¦" />
+            <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional description..." />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Category *</label>
               <select className="field-gold" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                <option value="">Pickâ€¦</option>
+                <option value="">Pick...</option>
                 {cats.data?.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
@@ -427,7 +427,7 @@ function VideosTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create video'}
+              {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create video'}
             </button>
           </div>
         </div>
@@ -441,14 +441,14 @@ function VideosTab() {
               <img src={deleting.thumbnail} alt="" className="w-14 h-9 rounded-lg object-cover" />
               <div className="min-w-0">
                 <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
-                <p className="text-xs text-zinc-500">{deleting.views} views Â· {deleting.likes} likes</p>
+                <p className="text-xs text-zinc-500">{deleting.views} views · {deleting.likes} likes</p>
               </div>
             </div>
             <p className="text-sm text-zinc-400">This permanently removes the video and its catalog entry. This cannot be undone.</p>
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
+                {delMut.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
@@ -501,7 +501,7 @@ function CategoriesTab() {
     <>
       <div className="glass overflow-hidden animate-fade-in">
         <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.length}</span> categories Â· ordered by display order</p>
+          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.length}</span> categories · ordered by display order</p>
           {manage && (
             <button onClick={() => { setEditing(null); setForm(emptyCat); setFormErr(''); setFormOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New category
@@ -521,7 +521,7 @@ function CategoriesTab() {
             <div key={c._id} style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }} className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_auto_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative">
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
               <div className="flex items-center gap-3 min-w-0">
-                <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center text-lg shrink-0">{c.icon || 'ðŸ“'}</span>
+                <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center text-lg shrink-0">{c.icon || '📁'}</span>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white truncate">{c.name}</p>
                   <p className="text-[11px] text-zinc-600 font-mono truncate">{c.slug}</p>
@@ -562,7 +562,7 @@ function CategoriesTab() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Icon (emoji)</label>
-              <input className="field-gold" maxLength={4} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="ðŸŽ¬" />
+              <input className="field-gold" maxLength={4} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="e.g. icon" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Display order</label>
@@ -577,7 +577,7 @@ function CategoriesTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create'}
+              {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create'}
             </button>
           </div>
         </div>
@@ -588,7 +588,7 @@ function CategoriesTab() {
           <div className="space-y-4">
             <p className="text-sm text-zinc-400">
               Delete <span className="text-white font-semibold">{deleting.name}</span>?
-              {deleting.videoCount > 0 && <span className="text-accent-red block mt-2">This category has {deleting.videoCount} video(s) â€” deletion will be blocked. Reassign them first.</span>}
+              {deleting.videoCount > 0 && <span className="text-accent-red block mt-2">This category has {deleting.videoCount} video(s) — deletion will be blocked. Reassign them first.</span>}
             </p>
             {delMut.isError && (
               <p className="text-xs text-accent-red">{(delMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}</p>
@@ -596,7 +596,7 @@ function CategoriesTab() {
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending || deleting.videoCount > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
+                {delMut.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
@@ -734,11 +734,11 @@ function BannersTab() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Image URL *</label>
-              <input className="field-gold" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://â€¦jpg" />
+              <input className="field-gold" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://...jpg" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Target URL</label>
-              <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://â€¦" />
+              <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://..." />
             </div>
           </div>
           {form.imageUrl.trim() && (
@@ -770,7 +770,7 @@ function BannersTab() {
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Savingâ€¦' : editing ? 'Save changes' : 'Create banner'}
+              {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create banner'}
             </button>
           </div>
         </div>
@@ -787,7 +787,7 @@ function BannersTab() {
             <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
-                {delMut.isPending ? 'Deletingâ€¦' : 'Delete'}
+                {delMut.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
@@ -838,7 +838,7 @@ function AdsTab() {
       <div className="glass p-4 flex items-start gap-3">
         <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Megaphone className="w-4 h-4 text-accent-gold" /></span>
         <p className="text-xs text-zinc-500 leading-relaxed">
-          Configure banner, interstitial and rewarded ad placements. Ads must comply with network policy â€” no hidden or forced background ads. Disabling a slot stops it from being requested by apps immediately.
+          Configure banner, interstitial and rewarded ad placements. Ads must comply with network policy — no hidden or forced background ads. Disabling a slot stops it from being requested by apps immediately.
         </p>
       </div>
 
@@ -876,11 +876,11 @@ function AdsTab() {
                 <div className="mt-4 space-y-3">
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Network</label>
-                    <input disabled={!manage} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.network} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, network: e.target.value } })} placeholder="admob / unityâ€¦" />
+                    <input disabled={!manage} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.network} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, network: e.target.value } })} placeholder="admob / unity..." />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Unit ID</label>
-                    <input disabled={!manage} className="field-gold !py-1.5 text-xs font-mono disabled:opacity-50" value={d.unitId} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, unitId: e.target.value } })} placeholder="ca-app-pub-â€¦" />
+                    <input disabled={!manage} className="field-gold !py-1.5 text-xs font-mono disabled:opacity-50" value={d.unitId} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, unitId: e.target.value } })} placeholder="ca-app-pub-..." />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Frequency cap (per session)</label>
@@ -890,14 +890,14 @@ function AdsTab() {
                 {manage && (
                   <div className="mt-4 pt-4 border-t border-white/[0.08] flex items-center justify-between">
                     <span className={cn('text-[10px] font-semibold', dirty(p) ? 'text-accent-gold' : 'text-zinc-600')}>
-                      {dirty(p) ? 'Unsaved changes' : savedId === p._id ? 'Saved âœ“' : 'Up to date'}
+                      {dirty(p) ? 'Unsaved changes' : savedId === p._id ? 'Saved ✓' : 'Up to date'}
                     </span>
                     <button
                       onClick={() => saveMut.mutate({ id: p._id, d })}
                       disabled={!dirty(p) || saveMut.isPending}
                       className={cn('btn !py-1.5 px-3 text-xs', dirty(p) ? 'btn-gold' : 'bg-white/[0.06] text-zinc-500 cursor-not-allowed')}
                     >
-                      <Save className="w-3 h-3" /> {saveMut.isPending && saveMut.variables?.id === p._id ? 'Savingâ€¦' : 'Save'}
+                      <Save className="w-3 h-3" /> {saveMut.isPending && saveMut.variables?.id === p._id ? 'Saving...' : 'Save'}
                     </button>
                   </div>
                 )}

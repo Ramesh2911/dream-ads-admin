@@ -133,7 +133,7 @@ export default function Profile() {
       setCurPw(''); setNewPw(''); setConfPw('');
       setPwErr('');
       setPwFlash(true);
-      setTimeout(() => setPwFlash(false), 5000);
+      setTimeout(() => setPwFlash(false), 4000);
       await qc.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: (e) => setPwErr(errMsg(e, 'Could not change password')),

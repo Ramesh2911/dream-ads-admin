@@ -313,7 +313,7 @@ function TasksTab() {
         <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search tasks…" />
+            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search tasks..." />
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
             <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">

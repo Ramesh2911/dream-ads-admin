@@ -77,7 +77,7 @@ export default function Notifications() {
       setBody('');
       setTarget('');
       qc.invalidateQueries({ queryKey: ['admin-notifications'] });
-      setTimeout(() => setSent(null), 5000);
+      setTimeout(() => setSent(null), 4000);
     },
     onError: (e: unknown) => {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Broadcast failed';

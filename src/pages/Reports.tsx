@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import {
   BarChart3, Users, Timer, Wallet, ArrowDown, Trophy, Crown, Play, Eye,
-  Heart, Medal, Link2,
+  Heart, Medal, Link2, Coins,
 } from 'lucide-react';
 import api from '../lib/api';
 import { cn, formatCoins, formatDate } from '../lib/utils';
@@ -311,7 +311,7 @@ export default function Reports() {
                 <div className="flex items-center gap-3 mt-1 text-[11px] text-zinc-500">
                   <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{v.views}</span>
                   <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{v.likes}</span>
-                  <span className="text-accent-gold font-bold">{formatCoins(v.rewardCoins)}</span>
+                  <span className="flex items-center gap-1 text-accent-gold font-bold"><Coins className="w-3 h-3" />{formatCoins(v.rewardCoins)}</span>
                 </div>
               </div>
               <div className="hidden sm:block w-24 shrink-0">
