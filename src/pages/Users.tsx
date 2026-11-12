@@ -3,16 +3,35 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Search, Ban, CheckCircle, PauseCircle, Wallet, Eye, Users2, Coins, Share2,
   Copy, Check, X, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, Inbox,
+  Crown, ListChecks, Banknote, CreditCard, User,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal, EmptyState } from '../components/ui';
 import { cn, formatDate, formatCoins } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
-interface UserRow { _id: string; name: string; email?: string; mobile?: string; referralCode: string; status: string; createdAt: string }
+interface UserRow { _id: string; name: string; email?: string; mobile?: string; referralCode: string; status: string; createdAt: string; dob?: string; kycStatus?: string; lastLoginAt?: string; membershipStatus?: string; membershipActiveAt?: string; avatar?: string }
 interface ListData { users: UserRow[]; total: number; counts?: Record<string, number>; page: number; pages: number }
 interface LedgerRow { _id: string; wallet: string; type: string; amount: number; reason: string; note?: string; createdAt: string }
-interface DrawerData { user: UserRow; balances: { video: number; social: number }; referralCount: number; recentLedger: LedgerRow[] }
+interface CountMap { pending: number; approved: number; rejected: number; paid?: number; completed?: number; failed?: number; total: number }
+interface DrawerData {
+  user: UserRow;
+  balances: { video: number; social: number };
+  referralCount: number;
+  recentLedger: LedgerRow[];
+  summary?: {
+    membership: { status: string; activeAt: string | null; requests: Record<string, number> };
+    tasks: CountMap;
+    withdrawals: CountMap & { sums: { pending: number; paid: number } };
+    deposits: CountMap & { sums: { completed: number } };
+  };
+  recent?: {
+    membership: { _id: string; method: string; amount: number; status: string; createdAt: string }[];
+    tasks: { _id: string; status: string; createdAt: string; rejectionReason?: string; task?: { title: string; rewardCoins: number } }[];
+    withdrawals: { _id: string; amount: number; wallet: string; method: string; status: string; createdAt: string }[];
+    deposits: { _id: string; amount: number; gateway: string; status: string; createdAt: string }[];
+  };
+}
 
 type StatusKey = 'active' | 'suspended' | 'banned' | 'pending_delete';
 
@@ -199,6 +218,7 @@ export default function Users() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium text-white truncate group-hover:text-accent-gold transition-colors">{u.name}</p>
+                    <p className="text-xs font-semibold text-accent-blue truncate tabular-nums" title={`Unique ID: ${u.referralCode}`}>{u.referralCode}</p>
                     <p className="text-xs text-zinc-500 truncate">{u.email || u.mobile || '—'}</p>
                     <div className="flex items-center gap-2 mt-1.5 md:hidden">
                       <Badge variant={m.badge}>{m.label}</Badge>
@@ -319,6 +339,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
   const { can } = useAuth();
   const [shown, setShown] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState<'profile' | 'membership' | 'tasks' | 'withdrawals' | 'deposits'>('profile');
 
   const { data, isLoading } = useQuery({
     queryKey: ['user', userId],
@@ -327,7 +348,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
   });
 
   useEffect(() => {
-    if (!userId) { setShown(false); return; }
+    if (!userId) { setShown(false); setTab('profile'); return; }
     const t = requestAnimationFrame(() => setShown(true));
     return () => cancelAnimationFrame(t);
   }, [userId]);
@@ -343,12 +364,43 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
     setTimeout(() => setCopied(false), 1600);
   };
 
+  const drawerTabs = [
+    { key: 'profile' as const, label: 'Profile', icon: User, show: true },
+    { key: 'membership' as const, label: 'Membership', icon: Crown, show: can('finance.read') },
+    { key: 'tasks' as const, label: 'Tasks', icon: ListChecks, show: can('tasks.verify') },
+    { key: 'withdrawals' as const, label: 'Withdrawals', icon: Banknote, show: can('finance.read') },
+    { key: 'deposits' as const, label: 'Deposits', icon: CreditCard, show: can('finance.read') },
+  ].filter((t) => t.show);
+
+  const s = data?.summary;
+  const r = data?.recent;
+
+  const statusBadge = (st: string): 'success' | 'warning' | 'danger' | 'info' | 'default' =>
+    st === 'approved' || st === 'paid' || st === 'completed' || st === 'active' ? 'success'
+      : st === 'pending' ? 'warning'
+        : st === 'rejected' || st === 'failed' || st === 'banned' ? 'danger' : 'info';
+
+  const StatChips = ({ items }: { items: { label: string; value: number | string; tone?: string }[] }) => (
+    <div className="grid grid-cols-3 gap-2">
+      {items.map((it) => (
+        <div key={it.label} className="rounded-xl bg-white/[0.03] border border-white/[0.05] p-2.5 text-center">
+          <p className={cn('text-lg font-extrabold tabular-nums leading-none', it.tone ?? 'text-white')}>{it.value}</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1">{it.label}</p>
+        </div>
+      ))}
+    </div>
+  );
+
+  const EmptyRow = ({ msg }: { msg: string }) => (
+    <p className="text-sm text-zinc-600 py-5 text-center">{msg}</p>
+  );
+
   return (
     <>
       <div className={cn('fixed inset-0 z-40 bg-brand-navy/70 backdrop-blur-sm transition-opacity duration-300', shown ? 'opacity-100' : 'opacity-0')} onClick={onClose} />
       <aside
         className={cn(
-          'fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] flex flex-col bg-brand-navy border-l border-white/[0.1] transition-transform duration-300 ease-out',
+          'fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] flex flex-col bg-brand-navy border-l border-white/[0.1] transition-transform duration-300 ease-out',
           shown ? 'translate-x-0' : 'translate-x-full'
         )}
       >
@@ -390,6 +442,22 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
           </div>
         </div>
 
+        {/* tabs */}
+        <div className="relative shrink-0 flex gap-1 px-4 pt-3 pb-1 overflow-x-auto border-b border-white/[0.06]">
+          {drawerTabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all',
+                tab === t.key ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow' : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05]'
+              )}
+            >
+              <t.icon className="w-3.5 h-3.5" /> {t.label}
+            </button>
+          ))}
+        </div>
+
         {/* body */}
         <div className="relative flex-1 min-h-0 overflow-y-auto p-5 space-y-5">
           {isLoading || !data ? (
@@ -398,7 +466,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
               <div className="h-4 w-40 rounded bg-white/[0.05] animate-pulse" />
               {[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}
             </div>
-          ) : (
+          ) : tab === 'profile' ? (
             <>
               {/* balance tiles */}
               <div className="grid grid-cols-3 gap-3">
@@ -417,6 +485,26 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                   <p className="text-lg font-extrabold text-white tabular-nums leading-none">{data.referralCount}</p>
                   <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1.5">Referrals</p>
                 </div>
+              </div>
+
+              {/* profile meta */}
+              <div className="glass p-4 space-y-2.5">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-1">
+                  <User className="w-3.5 h-3.5 text-accent-blue/80" /> Profile
+                </p>
+                {[
+                  ['Unique ID', u?.referralCode],
+                  ['DOB', u?.dob ? formatDate(u.dob) : '—'],
+                  ['KYC', u?.kycStatus ?? 'none'],
+                  ['Membership', u?.membershipStatus ?? 'none'],
+                  ['Last login', u?.lastLoginAt ? rel(u.lastLoginAt) : '—'],
+                  ['Joined', u?.createdAt ? formatDate(u.createdAt) : '—'],
+                ].map(([k, v]) => (
+                  <div key={k as string} className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-zinc-500">{k as string}</span>
+                    <span className="text-zinc-200 font-medium capitalize truncate">{v as string || '—'}</span>
+                  </div>
+                ))}
               </div>
 
               {/* ledger */}
@@ -448,7 +536,149 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 </div>
               </div>
             </>
-          )}
+          ) : tab === 'membership' && s ? (
+            <>
+              <div className="glass p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                    <Crown className="w-3.5 h-3.5 text-accent-gold/80" /> Membership
+                  </p>
+                  <Badge variant={s.membership.status === 'active' ? 'success' : s.membership.status === 'pending' ? 'warning' : 'default'}>
+                    {s.membership.status}
+                  </Badge>
+                </div>
+                <StatChips items={[
+                  { label: 'Pending', value: s.membership.requests.pending ?? 0, tone: 'text-accent-gold' },
+                  { label: 'Approved', value: s.membership.requests.approved ?? 0, tone: 'text-accent-green' },
+                  { label: 'Rejected', value: s.membership.requests.rejected ?? 0, tone: 'text-accent-red' },
+                ]} />
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent requests</p>
+                {r?.membership?.length === 0 || !r?.membership ? <EmptyRow msg="No membership requests." /> : (
+                  <div className="space-y-2">
+                    {r.membership.map((mem) => (
+                      <div key={mem._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                        <span className="p-2 rounded-lg bg-accent-gold/10 text-accent-gold shrink-0"><Crown className="w-4 h-4" /></span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white font-medium">{formatCoins(mem.amount)} <span className="text-xs text-zinc-500 font-normal">· {mem.method}</span></p>
+                          <p className="text-[11px] text-zinc-600">{formatDate(mem.createdAt)}</p>
+                        </div>
+                        <Badge variant={statusBadge(mem.status)}>{mem.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : tab === 'tasks' && s ? (
+            <>
+              <div className="glass p-4">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                  <ListChecks className="w-3.5 h-3.5 text-accent-blue/80" /> Task submissions
+                </p>
+                <StatChips items={[
+                  { label: 'Pending', value: s.tasks.pending, tone: 'text-accent-gold' },
+                  { label: 'Approved', value: s.tasks.approved, tone: 'text-accent-green' },
+                  { label: 'Rejected', value: s.tasks.rejected, tone: 'text-accent-red' },
+                ]} />
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent submissions</p>
+                {r?.tasks?.length === 0 || !r?.tasks ? <EmptyRow msg="No task submissions." /> : (
+                  <div className="space-y-2">
+                    {r.tasks.map((t) => (
+                      <div key={t._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                        <span className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue shrink-0"><ListChecks className="w-4 h-4" /></span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white font-medium truncate">{t.task?.title ?? 'Task'}</p>
+                          <p className="text-[11px] text-zinc-600">
+                            {t.task?.rewardCoins != null && <span className="text-accent-gold">+{formatCoins(t.task.rewardCoins)} coins · </span>}
+                            {formatDate(t.createdAt)}
+                          </p>
+                        </div>
+                        <Badge variant={statusBadge(t.status)}>{t.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : tab === 'withdrawals' && s ? (
+            <>
+              <div className="glass p-4">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                  <Banknote className="w-3.5 h-3.5 text-accent-green/80" /> Withdrawals
+                </p>
+                <StatChips items={[
+                  { label: 'Pending', value: s.withdrawals.pending, tone: 'text-accent-gold' },
+                  { label: 'Paid', value: s.withdrawals.paid ?? 0, tone: 'text-accent-green' },
+                  { label: 'Total', value: s.withdrawals.total, tone: 'text-white' },
+                ]} />
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="rounded-xl bg-accent-gold/[0.07] border border-accent-gold/15 p-2.5 text-center">
+                    <p className="text-sm font-bold text-accent-gold tabular-nums">{formatCoins(s.withdrawals.sums.pending)}</p>
+                    <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Pending amount</p>
+                  </div>
+                  <div className="rounded-xl bg-accent-green/[0.07] border border-accent-green/15 p-2.5 text-center">
+                    <p className="text-sm font-bold text-accent-green tabular-nums">{formatCoins(s.withdrawals.sums.paid)}</p>
+                    <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Paid amount</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent withdrawals</p>
+                {r?.withdrawals?.length === 0 || !r?.withdrawals ? <EmptyRow msg="No withdrawals." /> : (
+                  <div className="space-y-2">
+                    {r.withdrawals.map((w) => (
+                      <div key={w._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                        <span className="p-2 rounded-lg bg-accent-green/10 text-accent-green shrink-0"><Banknote className="w-4 h-4" /></span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white font-medium">{formatCoins(w.amount)} <span className="text-xs text-zinc-500 font-normal">· {w.method} · {w.wallet}</span></p>
+                          <p className="text-[11px] text-zinc-600">{formatDate(w.createdAt)}</p>
+                        </div>
+                        <Badge variant={statusBadge(w.status)}>{w.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : tab === 'deposits' && s ? (
+            <>
+              <div className="glass p-4">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                  <CreditCard className="w-3.5 h-3.5 text-accent-violet/80" /> Deposits
+                </p>
+                <StatChips items={[
+                  { label: 'Pending', value: s.deposits.pending, tone: 'text-accent-gold' },
+                  { label: 'Completed', value: s.deposits.completed ?? 0, tone: 'text-accent-green' },
+                  { label: 'Failed', value: s.deposits.failed ?? 0, tone: 'text-accent-red' },
+                ]} />
+                <div className="mt-3 rounded-xl bg-accent-violet/[0.07] border border-accent-violet/15 p-2.5 text-center">
+                  <p className="text-sm font-bold text-accent-violet tabular-nums">{formatCoins(s.deposits.sums.completed)}</p>
+                  <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Completed amount</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent deposits</p>
+                {r?.deposits?.length === 0 || !r?.deposits ? <EmptyRow msg="No deposits." /> : (
+                  <div className="space-y-2">
+                    {r.deposits.map((d) => (
+                      <div key={d._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                        <span className="p-2 rounded-lg bg-accent-violet/10 text-accent-violet shrink-0"><CreditCard className="w-4 h-4" /></span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white font-medium">{formatCoins(d.amount)} <span className="text-xs text-zinc-500 font-normal">· {d.gateway}</span></p>
+                          <p className="text-[11px] text-zinc-600">{formatDate(d.createdAt)}</p>
+                        </div>
+                        <Badge variant={statusBadge(d.status)}>{d.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : null}
         </div>
 
         {/* footer actions */}
