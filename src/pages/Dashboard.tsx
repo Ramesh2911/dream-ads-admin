@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid,
 } from 'recharts';
 import {
   Users, UserPlus, ListChecks, Banknote, TrendingUp, Coins, Inbox,
-  ArrowRight, History, Rocket, CalendarDays, CheckCircle2,
+  ArrowRight, History, Rocket, CalendarDays, CheckCircle2, UserCheck, UserX, Wallet, RefreshCw, PiggyBank, HandCoins, Clock,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
@@ -21,6 +21,8 @@ interface Dash {
   totalVideoEarned: number;
   pendingLeads?: number;
   signups7d?: { date: string; count: number }[];
+  cards?: { totalUsers: number; activeUsers: number; blockedUsers: number; walletLiability: number; todayReferrals: number };
+  walletAnalytics?: { holdings: number; withdrawals: number; pending: number };
 }
 interface Log { _id: string; actorEmail: string; action: string; entity: string; createdAt: string }
 interface Lead { _id: string; name: string; email: string; status: string; createdAt: string }
@@ -88,8 +90,9 @@ function SectionTitle({ icon: Icon, title, hint }: {
 
 export default function Dashboard() {
   const { admin, can } = useAuth();
+  const qc = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['dashboard'],
     queryFn: async (): Promise<Dash> => (await api.get('/admin/dashboard')).data.data,
   });
@@ -166,6 +169,14 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-wrap gap-3 shrink-0">
+            <button
+              onClick={() => qc.invalidateQueries({ queryKey: ['dashboard'] })}
+              disabled={isFetching}
+              className="btn-ghost !border !border-white/[0.12] bg-white/[0.05] hover:border-accent-blue/40 hover:text-accent-blue !py-2.5 disabled:opacity-60"
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+              {isFetching ? 'Refreshing…' : 'Refresh Data'}
+            </button>
             {can('tasks.verify') && (
               <Link to="/tasks" className="btn-gold shine !py-2.5">Verify tasks <ArrowRight className="w-4 h-4" /></Link>
             )}
@@ -178,14 +189,59 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ============ KPI GRID ============ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-        <Kpi label="Total Users" value={dash(d?.userCount)} sub="registered accounts" icon={Users} tone="violet" />
-        <Kpi label="New Today" value={dash(d?.newUsersToday)} sub="joined since midnight" icon={UserPlus} tone="green" />
-        <Kpi label="Pending Tasks" value={dash(d?.pendingTasks)} sub="awaiting your review" icon={ListChecks} tone="blue" />
-        <Kpi label="Redeems" value={dash(d?.pendingWithdrawals)} sub="requests to process" icon={Banknote} tone="gold" />
-        <Kpi label="Activations" value={dash(d?.pendingDeposits)} sub="awaiting confirmation" icon={TrendingUp} tone="green" />
-        <Kpi label="Coins Earned" value={dash(d?.totalVideoEarned)} sub="lifetime distributed" icon={Coins} tone="gold" />
+      {/* ============ 5-CARDS ROW ============ */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+        <Kpi label="Total Users" value={dash(d?.cards?.totalUsers)} sub="registered accounts" icon={Users} tone="violet" />
+        <Kpi label="Active Users" value={dash(d?.cards?.activeUsers)} sub="currently active" icon={UserCheck} tone="green" />
+        <Kpi label="Blocked Users" value={dash(d?.cards?.blockedUsers)} sub="banned or suspended" icon={UserX} tone="red" />
+        <Kpi label="Total Wallet Liability" value={dash(d?.cards?.walletLiability)} sub="current user balance" icon={Wallet} tone="blue" />
+        <Kpi label="Today's Referrals" value={dash(d?.cards?.todayReferrals)} sub="joined via referral" icon={UserPlus} tone="gold" />
+      </div>
+
+      {/* ============ WALLET ANALYTICS ============ */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="group relative overflow-hidden glass glass-hover p-5 animate-slide-up">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-blue/50 to-transparent" />
+          <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-brand-blue/15 opacity-70" />
+          <div className="relative flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Total Holdings</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.holdings)}</p>
+              <p className="mt-2 text-[11px] text-zinc-500">Current user balance</p>
+            </div>
+            <div className="p-3 rounded-xl bg-gradient-to-br from-brand-blue/30 to-brand-blue/5 text-accent-blue shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+              <PiggyBank className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+        <div className="group relative overflow-hidden glass glass-hover p-5 animate-slide-up">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-green/50 to-transparent" />
+          <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-accent-green/10 opacity-70" />
+          <div className="relative flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Total Withdrawals</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.withdrawals)}</p>
+              <p className="mt-2 text-[11px] text-zinc-500">Approved &amp; completed</p>
+            </div>
+            <div className="p-3 rounded-xl bg-gradient-to-br from-accent-green/25 to-accent-green/5 text-accent-green shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+              <HandCoins className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+        <div className="group relative overflow-hidden glass glass-hover p-5 animate-slide-up">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-red/50 to-transparent" />
+          <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-accent-red/10 opacity-70" />
+          <div className="relative flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Pending Amount</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.pending)}</p>
+              <p className="mt-2 text-[11px] text-zinc-500">Awaiting approval</p>
+            </div>
+            <div className="p-3 rounded-xl bg-gradient-to-br from-accent-red/25 to-accent-red/5 text-accent-red shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ============ CHARTS ROW ============ */}
