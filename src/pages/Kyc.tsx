@@ -18,6 +18,7 @@ interface KycRow {
   referralCode: string;
   status: string;
   kycStatus: string;
+  kycDocType?: 'aadhar' | 'pan' | 'voter' | null;
   avatar?: string;
   aadharFront?: string;
   aadharBack?: string;
@@ -45,6 +46,13 @@ const KYC_META: Record<string, { label: string; badge: 'success' | 'warning' | '
   rejected: { label: 'Rejected', badge: 'danger' },
 };
 const meta = (s: string) => KYC_META[s] ?? KYC_META.none;
+
+const DOC_META: Record<string, { label: string; front: string; back: string }> = {
+  aadhar: { label: 'Aadhar', front: 'Aadhar front', back: 'Aadhar back' },
+  pan: { label: 'PAN', front: 'PAN front', back: 'PAN back' },
+  voter: { label: 'Voter ID', front: 'Voter front', back: 'Voter back' },
+};
+const docMeta = (t?: string | null) => DOC_META[String(t || 'aadhar')] ?? DOC_META.aadhar;
 
 export default function Kyc() {
   const [search, setSearch] = useState('');
@@ -80,7 +88,7 @@ export default function Kyc() {
             <span className="p-2 rounded-xl bg-accent-blue/10 border border-accent-blue/20"><BadgeCheck className="w-5 h-5 text-accent-blue" /></span>
             KYC Verification
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Review Aadhar documents and approve or reject identity verification</p>
+          <p className="mt-1.5 text-sm text-zinc-500">Review Aadhar, PAN and Voter ID documents — approve or reject identity verification</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-zinc-500">
           <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse" /> {counts.pending ?? 0} awaiting review
@@ -152,6 +160,7 @@ export default function Kyc() {
 
           {users.map((u, i) => {
             const m = meta(u.kycStatus);
+            const dm = docMeta(u.kycDocType);
             const docs = (u.aadharFront ? 1 : 0) + (u.aadharBack ? 1 : 0);
             return (
               <div
@@ -169,11 +178,18 @@ export default function Kyc() {
                     <p className="text-xs text-zinc-500 truncate">{u.email || u.mobile || '—'}</p>
                     <div className="flex items-center gap-2 mt-1.5 md:hidden">
                       <Badge variant={m.badge}>{m.label}</Badge>
-                      <span className="text-[11px] text-zinc-600">{docs}/2 docs</span>
+                      <span className="text-[11px] text-zinc-600">{dm.label} · {docs}/2 docs</span>
                     </div>
                   </div>
                 </div>
-                <div className="hidden md:block"><Badge variant={m.badge}>{m.label}</Badge></div>
+                <div className="hidden md:block">
+                  <div className="flex flex-col gap-1">
+                    <Badge variant={m.badge}>{m.label}</Badge>
+                    <span className="inline-flex self-start px-2 py-0.5 rounded-md text-[10px] font-semibold border bg-accent-violet/10 text-accent-violet border-accent-violet/25">
+                      {dm.label}
+                    </span>
+                  </div>
+                </div>
                 <div className="hidden md:flex items-center gap-1.5">
                   <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border', u.aadharFront ? 'bg-accent-green/10 text-accent-green border-accent-green/25' : 'bg-white/[0.04] text-zinc-600 border-white/[0.08]')}>
                     {u.aadharFront ? <CheckCircle className="w-3 h-3" /> : <FileX className="w-3 h-3" />} Front
@@ -282,6 +298,7 @@ function ReviewModal({ userId, onClose }: { userId: string | null; onClose: () =
 
   const u = data;
   const m = u ? meta(u.kycStatus) : null;
+  const dm = u ? docMeta(u.kycDocType) : docMeta(null);
   const hasDocs = !!u?.aadharFront || !!u?.aadharBack;
   const allowed = can('users.update');
 
@@ -305,6 +322,9 @@ function ReviewModal({ userId, onClose }: { userId: string | null; onClose: () =
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-semibold text-white">{u.name}</p>
                 <Badge variant={m.badge}>{m.label}</Badge>
+                <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-semibold border bg-accent-violet/10 text-accent-violet border-accent-violet/25">
+                  {dm.label}
+                </span>
               </div>
               <p className="text-xs text-zinc-500 mt-0.5">{u.email || '—'} {u.mobile ? `· ${u.mobile}` : ''}</p>
               <p className="text-[11px] text-zinc-600 mt-1">
@@ -320,12 +340,12 @@ function ReviewModal({ userId, onClose }: { userId: string | null; onClose: () =
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">Aadhar front</p>
-                {u.aadharFront ? <DocImage userId={u._id} kind="aadharFront" alt="Aadhar front" /> : <MissingDoc />}
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">{dm.front}</p>
+                {u.aadharFront ? <DocImage userId={u._id} kind="aadharFront" alt={dm.front} /> : <MissingDoc />}
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">Aadhar back</p>
-                {u.aadharBack ? <DocImage userId={u._id} kind="aadharBack" alt="Aadhar back" /> : <MissingDoc />}
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">{dm.back}</p>
+                {u.aadharBack ? <DocImage userId={u._id} kind="aadharBack" alt={dm.back} /> : <MissingDoc />}
               </div>
             </div>
           )}
