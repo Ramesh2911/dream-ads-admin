@@ -698,7 +698,7 @@ function BannersTab() {
                 <div className="p-4">
                   <p className="font-semibold text-white text-sm truncate">{b.title}</p>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap text-[10px] text-zinc-500">
-                    {b.targetUrl && <span className="truncate max-w-[140px]">â†’ {b.targetUrl}</span>}
+                    {b.targetUrl && <span className="truncate max-w-[140px]">{b.targetUrl}</span>}
                     {b.startsAt && <span>from {formatDate(b.startsAt)}</span>}
                     {b.endsAt && <span>to {formatDate(b.endsAt)}</span>}
                   </div>
