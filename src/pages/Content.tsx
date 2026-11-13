@@ -1105,7 +1105,7 @@ function AdsTab() {
   );
 }
 
-interface AnnouncementItem { _id: string; text: string; priority: number; isActive: boolean; createdAt: string }
+interface AnnouncementItem { _id: string; text: string; instruction?: string; priority: number; isActive: boolean; createdAt: string }
 
 function AnnouncementsTab() {
   const { can } = useAuth();
@@ -1113,7 +1113,7 @@ function AnnouncementsTab() {
   const invalidate = useInvalidateContent();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<AnnouncementItem | null>(null);
-  const [form, setForm] = useState({ text: '', priority: '1', isActive: true });
+  const [form, setForm] = useState({ text: '', instruction: '', priority: '1', isActive: true });
   const [formErr, setFormErr] = useState('');
   const [deleting, setDeleting] = useState<AnnouncementItem | null>(null);
 
@@ -1125,7 +1125,7 @@ function AnnouncementsTab() {
     },
   });
 
-  const body = () => ({ text: form.text.trim(), priority: Number(form.priority) || 0, isActive: form.isActive });
+  const body = () => ({ text: form.text.trim(), instruction: form.instruction.trim(), priority: Number(form.priority) || 0, isActive: form.isActive });
   const createMut = useMutation({
     mutationFn: () => api.post('/admin/announcements', body()),
     onSuccess: () => { invalidate(); setOpen(false); },
@@ -1154,7 +1154,7 @@ function AnnouncementsTab() {
         <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
           <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.filter((a) => a.isActive).length}</span> live of {items.length} announcements — scroll across the app home</p>
           {manage && (
-            <button onClick={() => { setEditing(null); setForm({ text: '', priority: '1', isActive: true }); setFormErr(''); setOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
+            <button onClick={() => { setEditing(null); setForm({ text: '', instruction: '', priority: '1', isActive: true }); setFormErr(''); setOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New announcement
             </button>
           )}
@@ -1181,7 +1181,7 @@ function AnnouncementsTab() {
                     <button onClick={() => toggleMut.mutate(a)} className="btn-ghost p-1.5 text-accent-blue" title={a.isActive ? 'Hide' : 'Show'}>
                       <Eye className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => { setEditing(a); setForm({ text: a.text, priority: String(a.priority), isActive: a.isActive }); setFormErr(''); setOpen(true); }} className="btn-ghost p-1.5 text-accent-gold"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => { setEditing(a); setForm({ text: a.text, instruction: a.instruction ?? '', priority: String(a.priority), isActive: a.isActive }); setFormErr(''); setOpen(true); }} className="btn-ghost p-1.5 text-accent-gold"><Pencil className="w-3.5 h-3.5" /></button>
                     <button onClick={() => setDeleting(a)} className="btn-ghost p-1.5 text-accent-red"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 )}
@@ -1203,6 +1203,17 @@ function AnnouncementsTab() {
               onChange={(e) => setForm({ ...form, text: e.target.value })}
             />
             <p className="text-[11px] text-zinc-600 mt-1">{form.text.length}/300 — keep it short, it scrolls horizontally</p>
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Instruction</label>
+            <textarea
+              className="field-gold min-h-[90px] resize-y"
+              value={form.instruction}
+              maxLength={1000}
+              placeholder="Optional detailed instructions users see with this announcement..."
+              onChange={(e) => setForm({ ...form, instruction: e.target.value })}
+            />
+            <p className="text-[11px] text-zinc-600 mt-1">{form.instruction.length}/1000 — optional, shown as detail text</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
