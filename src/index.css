@@ -5,6 +5,21 @@
 @layer base {
   * { @apply border-white/5; }
   html { color-scheme: dark; }
+  /* Native select popup: light system bg + inherited light text = invisible options.
+     Force dark scheme + explicit option colors so all dropdowns stay readable. */
+  select { color-scheme: dark; }
+  select option,
+  select optgroup {
+    background-color: #0A1540;
+    color: #e4e4e7;
+  }
+  select option:hover,
+  select option:checked,
+  select option:focus,
+  select option:active {
+    background-color: #2563EB;
+    color: #fff;
+  }
   body {
     @apply bg-brand-navy text-zinc-200 antialiased;
     background-image:
