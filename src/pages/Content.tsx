@@ -1,15 +1,15 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import {
   Clapperboard, FolderOpen, Image as ImageIcon, Megaphone, Plus, Pencil, Trash2,
-  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save, MessageSquare, Coins,
+  Eye, Heart, Star, Flame, Search, Inbox, Crown, Layers, PlayCircle, Save, MessageSquare, Coins, Upload, FileVideo,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
-import { cn, formatCoins, formatDate } from '../lib/utils';
+import { cn, formatCoins, formatDate, mediaSrc } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
 interface VideoItem {
@@ -199,7 +199,11 @@ function useInvalidateContent() {
   };
 }
 
-const emptyVideo = { title: '', url: '', thumbnail: '', description: '', category: '', rewardCoins: '10', rewardWallet: 'video', status: 'draft', isFeatured: false, isTrending: false };
+const emptyVideo = { title: '', description: '', category: '', rewardCoins: '10', rewardWallet: 'video', status: 'draft', isFeatured: false, isTrending: false };
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const MAX_THUMB_BYTES = 5 * 1024 * 1024;
+const VIDEO_MIME = ['video/mp4', 'video/webm', 'video/quicktime'];
+const IMAGE_MIME = ['image/png', 'image/jpeg', 'image/webp'];
 
 function VideosTab() {
   const [status, setStatus] = useState('');
@@ -210,9 +214,22 @@ function VideosTab() {
   const [form, setForm] = useState(emptyVideo);
   const [formErr, setFormErr] = useState('');
   const [deleting, setDeleting] = useState<VideoItem | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbFile, setThumbFile] = useState<File | null>(null);
+  const [thumbPreview, setThumbPreview] = useState('');
+  const [progress, setProgress] = useState<number | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const thumbInputRef = useRef<HTMLInputElement>(null);
   const { can } = useAuth();
   const manage = can('content.manage');
   const invalidate = useInvalidateContent();
+
+  useEffect(() => {
+    if (!thumbFile) return;
+    const url = URL.createObjectURL(thumbFile);
+    setThumbPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [thumbFile]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-videos', status, search, page],
@@ -226,32 +243,75 @@ function VideosTab() {
     enabled: formOpen,
   });
 
+  const buildFd = () => {
+    const fd = new FormData();
+    if (videoFile) fd.append('video', videoFile);
+    if (thumbFile) fd.append('thumbnail', thumbFile);
+    fd.append('title', form.title.trim());
+    if (form.description.trim()) fd.append('description', form.description.trim());
+    fd.append('category', form.category);
+    fd.append('rewardCoins', String(Math.max(0, Number(form.rewardCoins) || 0)));
+    fd.append('rewardWallet', form.rewardWallet);
+    fd.append('status', form.status);
+    fd.append('isFeatured', String(form.isFeatured));
+    fd.append('isTrending', String(form.isTrending));
+    return fd;
+  };
+  const onUploadProgress = (e: { loaded: number; total?: number }) =>
+    setProgress(e.total ? Math.min(100, Math.round((e.loaded / e.total) * 100)) : 0);
+
   const createMut = useMutation({
-    mutationFn: () => api.post('/admin/videos', { ...form, rewardCoins: Number(form.rewardCoins) }),
-    onSuccess: () => { invalidate(); setFormOpen(false); },
-    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create video'),
+    mutationFn: () => api.post('/admin/videos', buildFd(), { onUploadProgress }),
+    onSuccess: () => { invalidate(); setFormOpen(false); setProgress(null); },
+    onError: (e: unknown) => { setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create video'); setProgress(null); },
   });
   const updateMut = useMutation({
-    mutationFn: () => api.put(`/admin/videos/${editing!._id}`, { ...form, rewardCoins: Number(form.rewardCoins) }),
-    onSuccess: () => { invalidate(); setFormOpen(false); setEditing(null); },
-    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save video'),
+    mutationFn: () => api.put(`/admin/videos/${editing!._id}`, buildFd(), { onUploadProgress }),
+    onSuccess: () => { invalidate(); setFormOpen(false); setEditing(null); setProgress(null); },
+    onError: (e: unknown) => { setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save video'); setProgress(null); },
   });
   const delMut = useMutation({
     mutationFn: (id: string) => api.delete(`/admin/videos/${id}`),
     onSuccess: () => { invalidate(); setDeleting(null); },
   });
 
-  const openCreate = () => { setEditing(null); setForm(emptyVideo); setFormErr(''); setFormOpen(true); };
+  const openCreate = () => {
+    setEditing(null); setForm(emptyVideo); setFormErr(''); setFormOpen(true);
+    setVideoFile(null); setThumbFile(null); setThumbPreview(''); setProgress(null);
+  };
   const openEdit = (v: VideoItem) => {
     setEditing(v);
     setForm({
-      title: v.title, url: v.url, thumbnail: v.thumbnail, description: v.description ?? '',
+      title: v.title, description: v.description ?? '',
       category: v.category?._id ?? '', rewardCoins: String(v.rewardCoins), rewardWallet: v.rewardWallet,
       status: v.status, isFeatured: v.isFeatured, isTrending: v.isTrending,
     });
-    setFormErr(''); setFormOpen(true);
+    setVideoFile(null); setThumbFile(null); setThumbPreview(mediaSrc(v.thumbnail));
+    setFormErr(''); setFormOpen(true); setProgress(null);
   };
-  const valid = form.title.trim() && form.url.trim() && form.thumbnail.trim() && form.category && !(createMut.isPending || updateMut.isPending);
+  const closeForm = () => {
+    setFormOpen(false); setVideoFile(null); setThumbFile(null); setThumbPreview(''); setProgress(null); setFormErr('');
+  };
+
+  const onVideoPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = '';
+    if (!f) return;
+    if (!VIDEO_MIME.includes(f.type)) { setFormErr('Video must be MP4, WebM or MOV'); return; }
+    if (f.size > MAX_VIDEO_BYTES) { setFormErr('Video must be 100MB or smaller'); return; }
+    setFormErr(''); setVideoFile(f);
+  };
+  const onThumbPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = '';
+    if (!f) return;
+    if (!IMAGE_MIME.includes(f.type)) { setFormErr('Thumbnail must be PNG, JPG or WEBP'); return; }
+    if (f.size > MAX_THUMB_BYTES) { setFormErr('Thumbnail must be 5MB or smaller'); return; }
+    setFormErr(''); setThumbFile(f);
+  };
+
+  const busy = createMut.isPending || updateMut.isPending;
+  const valid = form.title.trim() && form.category && !busy && (editing ? true : !!videoFile && !!thumbFile);
 
   const items = data?.videos ?? [];
   const counts = data?.counts ?? {};
@@ -305,7 +365,7 @@ function VideosTab() {
             {items.map((v, i) => (
               <div key={v._id} style={{ animationDelay: `${Math.min(i, 11) * 35}ms` }} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
                 <div className="relative aspect-video overflow-hidden">
-                  <img src={v.thumbnail} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                  <img src={mediaSrc(v.thumbnail)} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-base-950/90 via-base-950/20 to-transparent" />
                   <span className={cn(
                     'absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold capitalize backdrop-blur-sm',
@@ -360,7 +420,7 @@ function VideosTab() {
       </div>
 
       {/* add/edit modal */}
-      <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? 'Edit video' : 'Add video'} wide>
+      <Modal open={formOpen} onClose={closeForm} title={editing ? 'Edit video' : 'Add video'} wide>
         <div className="space-y-4">
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
@@ -368,17 +428,54 @@ function VideosTab() {
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Video URL *</label>
-              <input className="field-gold" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Video file *</label>
+              <input ref={videoInputRef} type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" className="hidden" onChange={onVideoPick} />
+              <button
+                type="button"
+                onClick={() => videoInputRef.current?.click()}
+                disabled={busy}
+                className={cn(
+                  'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
+                  videoFile
+                    ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
+                    : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+                )}
+              >
+                {videoFile ? <FileVideo className="w-4 h-4 shrink-0" /> : <Upload className="w-4 h-4 shrink-0" />}
+                <span className="min-w-0 flex-1 truncate">
+                  {videoFile
+                    ? `${videoFile.name} · ${(videoFile.size / 1024 / 1024).toFixed(1)} MB`
+                    : 'Choose video (MP4 / WebM / MOV · max 100 MB)'}
+                </span>
+                {videoFile && <span className="text-[10px] font-bold shrink-0">CHANGE</span>}
+              </button>
+              {!videoFile && editing && <p className="mt-1.5 text-[11px] text-zinc-600">Current video kept — pick a file only to replace it.</p>}
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thumbnail URL *</label>
-              <input className="field-gold" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://...jpg" />
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thumbnail *</label>
+              <input ref={thumbInputRef} type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" className="hidden" onChange={onThumbPick} />
+              <button
+                type="button"
+                onClick={() => thumbInputRef.current?.click()}
+                disabled={busy}
+                className={cn(
+                  'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
+                  thumbFile
+                    ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
+                    : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+                )}
+              >
+                <ImageIcon className="w-4 h-4 shrink-0" />
+                <span className="min-w-0 flex-1 truncate">
+                  {thumbFile ? `${thumbFile.name} · ${(thumbFile.size / 1024 / 1024).toFixed(1)} MB` : 'Choose image (PNG / JPG / WEBP · max 5 MB)'}
+                </span>
+                {thumbFile && <span className="text-[10px] font-bold shrink-0">CHANGE</span>}
+              </button>
             </div>
           </div>
-          {form.thumbnail.trim() && (
+          {thumbPreview && (
             <div className="rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40 bg-white/[0.03]">
-              <img src={form.thumbnail} alt="" className="w-full h-full object-cover" />
+              <img src={thumbPreview} alt="" className="w-full h-full object-cover" />
             </div>
           )}
           <div>
@@ -424,10 +521,20 @@ function VideosTab() {
             </label>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
+          {progress !== null && (
+            <div>
+              <div className="flex justify-between text-[10px] text-zinc-500 mb-1">
+                <span>Uploading…</span><span className="tabular-nums font-semibold text-accent-gold">{progress}%</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent-gold to-accent-blue transition-all duration-300" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          )}
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
-            <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
+            <button onClick={closeForm} disabled={busy} className="btn-ghost !py-2 px-4 text-xs disabled:opacity-50">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create video'}
+              {busy ? 'Uploading...' : editing ? 'Save changes' : 'Create video'}
             </button>
           </div>
         </div>
@@ -438,7 +545,7 @@ function VideosTab() {
         {deleting && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-              <img src={deleting.thumbnail} alt="" className="w-14 h-9 rounded-lg object-cover" />
+              <img src={mediaSrc(deleting.thumbnail)} alt="" className="w-14 h-9 rounded-lg object-cover" />
               <div className="min-w-0">
                 <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
                 <p className="text-xs text-zinc-500">{deleting.views} views · {deleting.likes} likes</p>

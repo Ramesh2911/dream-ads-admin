@@ -8,7 +8,7 @@ import {
   Heart, Medal, Link2, Coins,
 } from 'lucide-react';
 import api from '../lib/api';
-import { cn, formatCoins, formatDate } from '../lib/utils';
+import { cn, formatCoins, formatDate, mediaSrc } from '../lib/utils';
 
 interface Totals {
   users: number; activeUsers: number; suspendedUsers: number; bannedUsers: number;
@@ -305,7 +305,7 @@ export default function Reports() {
             <div key={v._id} className="group flex items-center gap-3 px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative" style={{ animationDelay: `${i * 40}ms` }}>
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-blue/70 to-accent-violet/50 transition-all" />
               <span className="text-[10px] font-black text-zinc-600 w-4 shrink-0 tabular-nums">{i + 1}</span>
-              <img src={v.thumbnail} alt="" className="w-16 h-10 rounded-lg object-cover shrink-0" loading="lazy" />
+              <img src={mediaSrc(v.thumbnail)} alt="" className="w-16 h-10 rounded-lg object-cover shrink-0" loading="lazy" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-white truncate">{v.title}</p>
                 <div className="flex items-center gap-3 mt-1 text-[11px] text-zinc-500">
