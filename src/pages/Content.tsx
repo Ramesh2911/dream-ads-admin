@@ -239,9 +239,15 @@ function VideosTab() {
   });
   const cats = useQuery({
     queryKey: ['categories'],
-    queryFn: async (): Promise<{ categories: { _id: string; name: string }[] }> => (await api.get('/categories')).data.data,
+    queryFn: async (): Promise<{ _id: string; name: string }[]> => (await api.get('/categories')).data.data,
     enabled: formOpen,
   });
+  const catOptions = (() => {
+    const list = cats.data ?? [];
+    if (editing && form.category && !list.some((c) => c._id === form.category))
+      return [...list, { _id: form.category, name: 'Current (inactive)' }];
+    return list;
+  })();
 
   const buildFd = () => {
     const fd = new FormData();
@@ -487,7 +493,7 @@ function VideosTab() {
               <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Category *</label>
               <select className="field-gold" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                 <option value="">Pick...</option>
-                {cats.data?.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                {catOptions.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
             <div>
