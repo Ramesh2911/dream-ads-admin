@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Shield, ShieldCheck, Users, Plus, Pencil, Trash2, Search, Inbox, Scroll,
-  Lock, ChevronLeft, ChevronRight, Check,
+  Lock, ChevronLeft, ChevronRight, Check, Eye, EyeOff,
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
@@ -10,7 +10,7 @@ import { cn, formatDate } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
 interface RoleItem {
-  _id: string; name: string; permissions: string[]; isSystem: boolean; adminCount: number; createdAt: string;
+  _id: string; name: string; permissions: string[]; phone?: string; email?: string; isSystem: boolean; adminCount: number; createdAt: string;
 }
 interface RolesData {
   roles: RoleItem[];
@@ -226,6 +226,10 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
   const [modal, setModal] = useState<{ mode: 'create' | 'edit' | 'view'; role: RoleItem | null } | null>(null);
   const [name, setName] = useState('');
   const [perms, setPerms] = useState<string[]>([]);
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
   const [formErr, setFormErr] = useState('');
   const [deleting, setDeleting] = useState<RoleItem | null>(null);
   const { can } = useAuth();
@@ -236,12 +240,15 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
   const total = all.length || 1;
 
   const createMut = useMutation({
-    mutationFn: () => api.post('/admin/roles', { name: name.trim(), permissions: perms }),
+    mutationFn: () => api.post('/admin/roles', { name: name.trim(), permissions: perms, phone, email: email.trim(), password }),
     onSuccess: () => { invalidate(); setModal(null); },
     onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create role'),
   });
   const updateMut = useMutation({
-    mutationFn: () => api.put(`/admin/roles/${modal!.role!._id}`, { name: name.trim(), permissions: perms }),
+    mutationFn: () => api.put(`/admin/roles/${modal!.role!._id}`, {
+      name: name.trim(), permissions: perms, phone, email: email.trim(),
+      ...(password.trim() ? { password: password.trim() } : {}),
+    }),
     onSuccess: () => { invalidate(); setModal(null); },
     onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save role'),
   });
@@ -250,12 +257,21 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
     onSuccess: () => { invalidate(); setDeleting(null); },
   });
 
-  const openCreate = () => { setModal({ mode: 'create', role: null }); setName(''); setPerms([]); setFormErr(''); };
+  const openCreate = () => {
+    setModal({ mode: 'create', role: null });
+    setName(''); setPerms([]); setPhone(''); setEmail(''); setPassword(''); setShowPw(false); setFormErr('');
+  };
   const openEdit = (r: RoleItem) => {
     setModal({ mode: r.isSystem ? 'view' : 'edit', role: r });
-    setName(r.name); setPerms([...r.permissions]); setFormErr('');
+    setName(r.name); setPerms([...r.permissions]);
+    setPhone(r.phone ?? ''); setEmail(r.email ?? ''); setPassword(''); setShowPw(false);
+    setFormErr('');
   };
-  const canSave = name.trim().length >= 2 && !(createMut.isPending || updateMut.isPending);
+
+  const phoneOk = /^\d{10}$/.test(phone);
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const pwOk = modal?.mode === 'create' ? password.length >= 6 : password.length === 0 || password.length >= 6;
+  const canSave = name.trim().length >= 2 && phoneOk && emailOk && pwOk && !(createMut.isPending || updateMut.isPending);
 
   const roles = data?.roles ?? [];
 
@@ -347,6 +363,54 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
               <div>
                 <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Role name *</label>
                 <input className="field-gold" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Moderator" />
+              </div>
+            )}
+            {modal.mode !== 'view' && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Phone (10 digit) *</label>
+                  <input
+                    className="field-gold"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="9876543210"
+                  />
+                  {!phoneOk && <p className="text-[11px] text-accent-red/90 mt-1">Enter exactly 10 digits</p>}
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Email *</label>
+                  <input type="email" className="field-gold" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="role@example.com" />
+                  {!emailOk && <p className="text-[11px] text-accent-red/90 mt-1">Enter a valid email</p>}
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+                    Password {modal.mode === 'create' ? '*' : ''}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPw ? 'text' : 'password'}
+                      className="field-gold !pr-11"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={modal.mode === 'create' ? 'Minimum 6 characters' : 'Leave blank to keep current password'}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw((v) => !v)}
+                      tabIndex={-1}
+                      title={showPw ? 'Hide password' : 'Show password'}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors"
+                    >
+                      {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {password.length > 0 && password.length < 6 && (
+                    <p className="text-[11px] text-accent-red/90 mt-1">Minimum 6 characters</p>
+                  )}
+                </div>
               </div>
             )}
             {modal.mode === 'view' && (
