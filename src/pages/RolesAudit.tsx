@@ -360,15 +360,13 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
         {modal && (
           <div className="space-y-4">
             {modal.mode !== 'view' && (
-              <div>
-                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Role name *</label>
-                <input className="field-gold" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Moderator" />
-              </div>
-            )}
-            {modal.mode !== 'view' && (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Phone (10 digit) *</label>
+                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Role name *</label>
+                  <input className="field-gold" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Moderator" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Phone *</label>
                   <input
                     className="field-gold"
                     inputMode="numeric"
@@ -377,14 +375,12 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="9876543210"
                   />
-                  {!phoneOk && <p className="text-[11px] text-accent-red/90 mt-1">Enter exactly 10 digits</p>}
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Email *</label>
                   <input type="email" className="field-gold" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="role@example.com" />
-                  {!emailOk && <p className="text-[11px] text-accent-red/90 mt-1">Enter a valid email</p>}
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
                     Password {modal.mode === 'create' ? '*' : ''}
                   </label>
