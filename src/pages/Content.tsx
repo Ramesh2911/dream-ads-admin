@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import api from '../lib/api';
 import { Badge, Modal } from '../components/ui';
-import { cn, formatCoins, formatDate, mediaSrc } from '../lib/utils';
+import { cn, formatCoins, formatDate, mediaSrc, bannerSrc } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
 interface VideoItem {
@@ -719,7 +719,7 @@ function CategoriesTab() {
   );
 }
 
-const emptyBanner = { title: '', imageUrl: '', targetUrl: '', order: '0', isActive: true, startsAt: '', endsAt: '' };
+const emptyBanner = { title: '', targetUrl: '', order: '0', isActive: true, startsAt: '', endsAt: '' };
 
 function toLocalInput(iso?: string) {
   if (!iso) return '';
@@ -734,33 +734,49 @@ function BannersTab() {
   const [form, setForm] = useState(emptyBanner);
   const [formErr, setFormErr] = useState('');
   const [deleting, setDeleting] = useState<BannerItem | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [progress, setProgress] = useState<number | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const { can } = useAuth();
   const manage = can('content.manage');
   const invalidate = useInvalidateContent();
+
+  useEffect(() => {
+    if (!imageFile) return;
+    const url = URL.createObjectURL(imageFile);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-banners'],
     queryFn: async (): Promise<{ banners: BannerItem[] }> => (await api.get('/admin/banners')).data.data,
   });
 
-  const body = () => ({
-    title: form.title.trim(),
-    imageUrl: form.imageUrl.trim(),
-    targetUrl: form.targetUrl.trim() || undefined,
-    order: Number(form.order),
-    isActive: form.isActive,
-    startsAt: form.startsAt || undefined,
-    endsAt: form.endsAt || undefined,
-  });
+  const buildFd = () => {
+    const fd = new FormData();
+    if (imageFile) fd.append('image', imageFile);
+    fd.append('title', form.title.trim());
+    if (form.targetUrl.trim()) fd.append('targetUrl', form.targetUrl.trim());
+    fd.append('order', String(Math.max(0, Number(form.order) || 0)));
+    fd.append('isActive', String(form.isActive));
+    if (form.startsAt) fd.append('startsAt', form.startsAt);
+    if (form.endsAt) fd.append('endsAt', form.endsAt);
+    return fd;
+  };
+  const onUploadProgress = (e: { loaded: number; total?: number }) =>
+    setProgress(e.total ? Math.min(100, Math.round((e.loaded / e.total) * 100)) : 0);
+
   const createMut = useMutation({
-    mutationFn: () => api.post('/admin/banners', body()),
-    onSuccess: () => { invalidate(); setFormOpen(false); },
-    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create banner'),
+    mutationFn: () => api.post('/admin/banners', buildFd(), { onUploadProgress }),
+    onSuccess: () => { invalidate(); setFormOpen(false); setProgress(null); },
+    onError: (e: unknown) => { setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not create banner'); setProgress(null); },
   });
   const updateMut = useMutation({
-    mutationFn: () => api.put(`/admin/banners/${editing!._id}`, body()),
-    onSuccess: () => { invalidate(); setFormOpen(false); setEditing(null); },
-    onError: (e: unknown) => setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save banner'),
+    mutationFn: () => api.put(`/admin/banners/${editing!._id}`, buildFd(), { onUploadProgress }),
+    onSuccess: () => { invalidate(); setFormOpen(false); setEditing(null); setProgress(null); },
+    onError: (e: unknown) => { setFormErr((e as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Could not save banner'); setProgress(null); },
   });
   const toggleMut = useMutation({
     mutationFn: (b: BannerItem) => api.put(`/admin/banners/${b._id}`, { isActive: !b.isActive }),
@@ -771,8 +787,46 @@ function BannersTab() {
     onSuccess: () => { invalidate(); setDeleting(null); },
   });
 
+  const openCreate = () => {
+    setEditing(null); setForm(emptyBanner); setFormErr(''); setFormOpen(true);
+    setImageFile(null); setImagePreview(''); setProgress(null);
+  };
+  const openEdit = (b: BannerItem) => {
+    setEditing(b);
+    setForm({
+      title: b.title, targetUrl: b.targetUrl ?? '', order: String(b.order), isActive: b.isActive,
+      startsAt: toLocalInput(b.startsAt), endsAt: toLocalInput(b.endsAt),
+    });
+    setImageFile(null); setImagePreview(bannerSrc(b.imageUrl));
+    setFormErr(''); setFormOpen(true); setProgress(null);
+  };
+  const closeForm = () => {
+    setFormOpen(false); setImageFile(null); setImagePreview(''); setProgress(null); setFormErr('');
+  };
+  const onImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = '';
+    if (!f) return;
+    if (!IMAGE_MIME.includes(f.type)) { setFormErr('Banner must be PNG, JPG or WEBP'); return; }
+    if (f.size > MAX_THUMB_BYTES) { setFormErr('Banner image must be 5MB or smaller'); return; }
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      if (img.naturalWidth !== 1280 || img.naturalHeight !== 720) {
+        setFormErr(`Banner must be exactly 1280×720px (got ${img.naturalWidth}×${img.naturalHeight})`);
+        return;
+      }
+      setFormErr(''); setImageFile(f);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); setFormErr('Could not read that image'); };
+    img.src = url;
+  };
+
   const items = data?.banners ?? [];
-  const valid = form.title.trim().length >= 2 && form.imageUrl.trim().length > 0 && !(createMut.isPending || updateMut.isPending);
+  const busy = createMut.isPending || updateMut.isPending;
+  const valid = form.title.trim().length >= 2 && (editing ? true : !!imageFile) && !busy;
+  const previewSrc = imagePreview || (editing ? bannerSrc(editing.imageUrl) : '');
 
   return (
     <>
@@ -780,7 +834,7 @@ function BannersTab() {
         <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
           <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.filter((b) => b.isActive).length}</span> live of {items.length} banners</p>
           {manage && (
-            <button onClick={() => { setEditing(null); setForm(emptyBanner); setFormErr(''); setFormOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
+            <button onClick={openCreate} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New banner
             </button>
           )}
@@ -798,7 +852,7 @@ function BannersTab() {
             {items.map((b, i) => (
               <div key={b._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
                 <div className="relative h-32 overflow-hidden">
-                  <img src={b.imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                  <img src={bannerSrc(b.imageUrl)} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-base-950/80 to-transparent" />
                   <span className={cn(
                     'absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold backdrop-blur-sm',
@@ -826,7 +880,7 @@ function BannersTab() {
                     ) : <span />}
                     {manage && (
                       <div className="flex gap-1">
-                        <button onClick={() => { setEditing(b); setForm({ title: b.title, imageUrl: b.imageUrl, targetUrl: b.targetUrl ?? '', order: String(b.order), isActive: b.isActive, startsAt: toLocalInput(b.startsAt), endsAt: toLocalInput(b.endsAt) }); setFormErr(''); setFormOpen(true); }} className="btn-ghost p-1.5 text-accent-blue"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => openEdit(b)} className="btn-ghost p-1.5 text-accent-blue"><Pencil className="w-3.5 h-3.5" /></button>
                         <button onClick={() => setDeleting(b)} className="btn-ghost p-1.5 text-accent-red"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     )}
@@ -838,25 +892,43 @@ function BannersTab() {
         )}
       </div>
 
-      <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? 'Edit banner' : 'New banner'} wide>
+      <Modal open={formOpen} onClose={closeForm} title={editing ? 'Edit banner' : 'New banner'} wide>
         <div className="space-y-4">
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
             <input className="field-gold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Campaign title" />
           </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Image URL *</label>
-              <input className="field-gold" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://...jpg" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Target URL</label>
-              <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://..." />
-            </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Banner image *</label>
+            <input ref={imageInputRef} type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" className="hidden" onChange={onImagePick} />
+            <button
+              type="button"
+              onClick={() => imageInputRef.current?.click()}
+              disabled={busy}
+              className={cn(
+                'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
+                imageFile
+                  ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
+                  : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+              )}
+            >
+              {imageFile ? <ImageIcon className="w-4 h-4 shrink-0" /> : <Upload className="w-4 h-4 shrink-0" />}
+              <span className="min-w-0 flex-1 truncate">
+                {imageFile
+                  ? `${imageFile.name} · ${(imageFile.size / 1024 / 1024).toFixed(1)} MB`
+                  : 'Choose image (must be exactly 1280 × 720 px · PNG / JPG / WEBP · max 5 MB)'}
+              </span>
+              {imageFile && <span className="text-[10px] font-bold shrink-0">CHANGE</span>}
+            </button>
+            {!imageFile && editing && <p className="mt-1.5 text-[11px] text-zinc-600">Current image kept — pick a file only to replace it.</p>}
           </div>
-          {form.imageUrl.trim() && (
-            <div className="rounded-xl overflow-hidden border border-white/10 h-28 bg-white/[0.03]">
-              <img src={form.imageUrl} alt="" className="w-full h-full object-cover" />
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Target URL</label>
+            <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://... (optional)" />
+          </div>
+          {previewSrc && (
+            <div className="rounded-xl overflow-hidden border border-white/10 aspect-video max-h-44 bg-white/[0.03]">
+              <img src={previewSrc} alt="" className="w-full h-full object-contain" />
             </div>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -880,10 +952,20 @@ function BannersTab() {
             </div>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
+          {progress !== null && (
+            <div>
+              <div className="flex justify-between text-[10px] text-zinc-500 mb-1">
+                <span>Uploading…</span><span className="tabular-nums font-semibold text-accent-gold">{progress}%</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent-gold to-accent-blue transition-all duration-300" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          )}
           <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
-            <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
+            <button onClick={closeForm} disabled={busy} className="btn-ghost !py-2 px-4 text-xs disabled:opacity-50">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
-              {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create banner'}
+              {busy ? 'Saving...' : editing ? 'Save changes' : 'Create banner'}
             </button>
           </div>
         </div>
@@ -893,7 +975,7 @@ function BannersTab() {
         {deleting && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-              <img src={deleting.imageUrl} alt="" className="w-14 h-9 rounded-lg object-cover" />
+              <img src={bannerSrc(deleting.imageUrl)} alt="" className="w-14 h-9 rounded-lg object-cover" />
               <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
             </div>
             <p className="text-sm text-zinc-400">This permanently removes the banner. This cannot be undone.</p>

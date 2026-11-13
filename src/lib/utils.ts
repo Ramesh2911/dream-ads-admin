@@ -24,3 +24,10 @@ export function mediaSrc(file?: string | null): string {
   if (file.startsWith('http')) return file;
   return `${apiBase}/videos/media/${file}`;
 }
+
+/** Resolve a stored banner image: absolute URL (legacy) passthrough, else API banner media path. */
+export function bannerSrc(file?: string | null): string {
+  if (!file) return '';
+  if (file.startsWith('http')) return file;
+  return `${apiBase}/banners/media/${file}`;
+}
