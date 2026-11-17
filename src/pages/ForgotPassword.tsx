@@ -13,6 +13,7 @@ export default function ForgotPassword() {
   const [newPw, setNewPw] = useState('');
   const [confPw, setConfPw] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [showConf, setShowConf] = useState(false);
   const [err, setErr] = useState('');
   const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
@@ -266,7 +267,7 @@ export default function ForgotPassword() {
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
                   <input
                     id="fp-conf"
-                    type={showPw ? 'text' : 'password'}
+                    type={showConf ? 'text' : 'password'}
                     value={confPw}
                     onChange={(e) => setConfPw(e.target.value)}
                     className="field-gold pl-10 pr-11"
@@ -274,6 +275,14 @@ export default function ForgotPassword() {
                     autoComplete="new-password"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConf((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
+                    aria-label={showConf ? 'Hide password' : 'Show password'}
+                  >
+                    {showConf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
