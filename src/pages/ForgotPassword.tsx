@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, Eye, EyeOff, ShieldCheck, ArrowRight, ArrowLeft, KeyRound, Check, X } from 'lucide-react';
 import api from '../lib/api';
 
-type Step = 'email' | 'otp';
+type Step = 'email' | 'otp' | 'password';
 
 export default function ForgotPassword() {
   const nav = useNavigate();
@@ -42,6 +42,20 @@ export default function ForgotPassword() {
     }
   };
 
+  const verifyOtp = async () => {
+    if (!/^\d{6}$/.test(otp)) return;
+    setErr(''); setInfo(''); setLoading(true);
+    try {
+      await api.post('/admin/forgot-password/verify', { email, otp });
+      setStep('password');
+      setInfo('OTP verified — now set your new password');
+    } catch (e) {
+      setErr(errMsg(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const reset = async () => {
     if (newPw !== confPw) { setErr('Passwords do not match'); return; }
     setErr(''); setLoading(true);
@@ -62,7 +76,23 @@ export default function ForgotPassword() {
     { ok: newPw.length > 0 && newPw === confPw, label: 'Passwords match' },
   ];
   const validOtp = /^\d{6}$/.test(otp);
-  const canReset = validOtp && checks.every((c) => c.ok) && !loading;
+  const canVerify = validOtp && !loading;
+  const canReset = checks.every((c) => c.ok) && !loading;
+
+  const resetOtpFlow = () => { setStep('email'); setErr(''); setInfo(''); setOtp(''); setNewPw(''); setConfPw(''); };
+
+  const headerIcon =
+    step === 'email' ? <Mail className="w-5 h-5 text-accent-gold" />
+    : step === 'otp' ? <KeyRound className="w-5 h-5 text-accent-gold" />
+    : <ShieldCheck className="w-5 h-5 text-accent-gold" />;
+  const headerTitle =
+    step === 'email' ? 'Forgot password?'
+    : step === 'otp' ? 'Enter reset code'
+    : 'Set new password';
+  const headerSub =
+    step === 'email' ? "We'll email you a 6-digit OTP"
+    : step === 'otp' ? `Code sent to ${email}`
+    : `OTP verified for ${email}`;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-5 bg-brand-navy relative overflow-hidden">
@@ -90,22 +120,21 @@ export default function ForgotPassword() {
         </div>
 
         <form
-          onSubmit={(e) => { e.preventDefault(); step === 'email' ? sendOtp() : reset(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (step === 'email') sendOtp();
+            else if (step === 'otp') verifyOtp();
+            else reset();
+          }}
           className="p-7 sm:p-9 rounded-2xl border border-white/[0.1] bg-brand-navyLight/60 backdrop-blur-xl shadow-glow-blueSoft"
         >
           <div className="mb-6 flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/30 flex items-center justify-center shrink-0">
-              {step === 'email' ? <Mail className="w-5 h-5 text-accent-gold" /> : <KeyRound className="w-5 h-5 text-accent-gold" />}
+              {headerIcon}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">
-                {step === 'email' ? 'Forgot password?' : 'Enter reset code'}
-              </h2>
-              <p className="text-sm text-zinc-500 mt-1">
-                {step === 'email'
-                  ? "We'll email you a 6-digit OTP"
-                  : `Code sent to ${email}`}
-              </p>
+              <h2 className="text-xl font-bold text-white">{headerTitle}</h2>
+              <p className="text-sm text-zinc-500 mt-1">{headerSub}</p>
             </div>
           </div>
 
@@ -122,6 +151,7 @@ export default function ForgotPassword() {
             </div>
           )}
 
+          {/* Step 1 — email */}
           {step === 'email' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -152,6 +182,7 @@ export default function ForgotPassword() {
             </div>
           )}
 
+          {/* Step 2 — OTP verify only */}
           {step === 'otp' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -170,6 +201,39 @@ export default function ForgotPassword() {
                 />
               </div>
 
+              <button type="submit" disabled={!canVerify} className="btn-gold w-full shine !py-3 disabled:opacity-50">
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Verifying…
+                  </span>
+                ) : (
+                  <>Verify OTP <ShieldCheck className="w-4 h-4" /></>
+                )}
+              </button>
+
+              <div className="flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={resetOtpFlow}
+                  className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Change email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sendOtp(true)}
+                  disabled={cooldown > 0 || loading}
+                  className="text-accent-gold hover:text-accent-gold/80 hover:underline disabled:text-zinc-600 disabled:no-underline transition-colors"
+                >
+                  {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend OTP'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3 — new password only (OTP already verified) */}
+          {step === 'password' && (
+            <div className="space-y-4">
               <div className="space-y-1.5">
                 <label htmlFor="fp-new" className="text-xs font-medium text-zinc-400">New password</label>
                 <div className="relative">
@@ -182,6 +246,7 @@ export default function ForgotPassword() {
                     className="field-gold pl-10 pr-11"
                     placeholder="••••••••"
                     autoComplete="new-password"
+                    autoFocus
                     required
                   />
                   <button
@@ -231,21 +296,13 @@ export default function ForgotPassword() {
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-start text-xs">
                 <button
                   type="button"
-                  onClick={() => { setStep('email'); setErr(''); setInfo(''); setOtp(''); setNewPw(''); setConfPw(''); }}
+                  onClick={() => { setStep('otp'); setErr(''); setInfo(''); setNewPw(''); setConfPw(''); }}
                   className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" /> Change email
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sendOtp(true)}
-                  disabled={cooldown > 0 || loading}
-                  className="text-accent-gold hover:text-accent-gold/80 hover:underline disabled:text-zinc-600 disabled:no-underline transition-colors"
-                >
-                  {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend OTP'}
+                  <ArrowLeft className="w-3.5 h-3.5" /> Change OTP
                 </button>
               </div>
             </div>
