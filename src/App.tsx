@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import AdminLayout from './layouts/AdminLayout';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
@@ -32,9 +33,10 @@ function Protected({ children }: { children: ReactNode }) {
 
 export default function App() {
   return (
-    <QueryClientProvider client={qc}>
-      <AuthProvider>
-        <BrowserRouter>
+    <ThemeProvider>
+      <QueryClientProvider client={qc}>
+        <AuthProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -61,6 +63,7 @@ export default function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+﻿import { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -20,9 +20,9 @@ export function StatCard({ label, value, icon, accent = 'violet', sub }: {
     <div className="glass glass-hover p-5 animate-slide-up group">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">{label}</p>
-          <p className="mt-2 text-2xl font-bold text-white tabular-nums">{value}</p>
-          {sub && <p className="mt-1 text-xs text-zinc-500">{sub}</p>}
+          <p className="text-xs uppercase tracking-wider text-faint font-medium">{label}</p>
+          <p className="mt-2 text-2xl font-bold text-heading tabular-nums">{value}</p>
+          {sub && <p className="mt-1 text-xs text-faint">{sub}</p>}
         </div>
         <div className={cn('p-3 rounded-xl bg-gradient-to-br group-hover:scale-110 transition-transform', accents[accent])}>
           {icon}
@@ -34,7 +34,7 @@ export function StatCard({ label, value, icon, accent = 'violet', sub }: {
 
 export function Badge({ children, variant = 'default' }: { children: ReactNode; variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' }) {
   const styles = {
-    default: 'bg-white/10 text-zinc-300',
+    default: 'bg-overlay/10 text-body',
     success: 'bg-accent-green/15 text-accent-green',
     warning: 'bg-accent-gold/15 text-accent-gold',
     danger: 'bg-accent-red/15 text-accent-red',
@@ -47,8 +47,8 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 animate-slide-up">
       <div>
-        <h1 className="text-2xl font-bold text-white">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-zinc-500">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-heading">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-faint">{subtitle}</p>}
       </div>
       {actions && <div className="flex items-center gap-3">{actions}</div>}
     </div>
@@ -61,9 +61,9 @@ export function Table({ headers, children }: { headers: string[]; children: Reac
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/[0.08] bg-white/[0.02]">
+            <tr className="border-b border-overlay/[0.08] bg-overlay/[0.02]">
               {headers.map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500">{h}</th>
+                <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-faint">{h}</th>
               ))}
             </tr>
           </thead>
@@ -78,10 +78,10 @@ export function EmptyState({ title, sub, action }: { title: string; sub?: string
   return (
     <div className="glass p-12 text-center animate-fade-in">
       <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/20 to-accent-blue/10 flex items-center justify-center mb-4">
-        <span className="text-2xl">✦</span>
+        <span className="text-2xl">âœ¦</span>
       </div>
-      <p className="text-white font-semibold">{title}</p>
-      {sub && <p className="mt-1 text-sm text-zinc-500">{sub}</p>}
+      <p className="text-heading font-semibold">{title}</p>
+      {sub && <p className="mt-1 text-sm text-faint">{sub}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
@@ -94,7 +94,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className={cn('glass relative animate-slide-up max-h-[85vh] overflow-y-auto p-6 w-full', wide ? 'max-w-2xl' : 'max-w-md')}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-white">{title}</h3>
+          <h3 className="text-lg font-bold text-heading">{title}</h3>
           <button onClick={onClose} className="btn-ghost p-2"><X className="w-4 h-4" /></button>
         </div>
         {children}
@@ -112,7 +112,7 @@ export function Tabs({ tabs, active, onChange }: { tabs: { key: string; label: s
           onClick={() => onChange(t.key)}
           className={cn(
             'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
-            active === t.key ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
+            active === t.key ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow' : 'text-muted hover:text-heading hover:bg-overlay/[0.04]'
           )}
         >
           {t.label}

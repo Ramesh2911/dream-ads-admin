@@ -37,7 +37,7 @@ interface ContentStats {
 const V_STATUS: Record<string, { cls: string; dot: string }> = {
   published: { cls: 'text-accent-green bg-accent-green/10 border-accent-green/25', dot: 'bg-accent-green' },
   draft: { cls: 'text-accent-gold bg-accent-gold/10 border-accent-gold/25', dot: 'bg-accent-gold' },
-  archived: { cls: 'text-zinc-400 bg-white/[0.06] border-white/10', dot: 'bg-zinc-500' },
+  archived: { cls: 'text-muted bg-overlay/[0.06] border-overlay/10', dot: 'bg-zinc-500' },
 };
 const FORMAT_TONE: Record<string, { cls: string; icon: typeof ImageIcon }> = {
   banner: { cls: 'from-brand-blue/25 to-brand-blue/5 text-accent-blue', icon: ImageIcon },
@@ -74,13 +74,13 @@ export default function Content() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Clapperboard className="w-5 h-5 text-accent-gold" /></span>
             Content & Ads
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Manage videos, categories, banners and ad placements</p>
+          <p className="mt-1.5 text-sm text-faint">Manage videos, categories, banners and ad placements</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -91,9 +91,9 @@ export default function Content() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -104,10 +104,10 @@ export default function Content() {
         <div className="lg:col-span-3 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Clapperboard className="w-4 h-4 text-accent-gold" /></span>
-            <h3 className="font-semibold text-white">Videos added · last 7 days</h3>
+            <h3 className="font-semibold text-heading">Videos added · last 7 days</h3>
           </div>
           {statsLoading ? (
-            <div className="h-[230px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[230px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={chartData} margin={{ top: 6, right: 8, left: -22, bottom: 0 }}>
@@ -129,20 +129,20 @@ export default function Content() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Crown className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Top categories</h3>
+            <h3 className="font-semibold text-heading">Top categories</h3>
           </div>
-          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
-          {!statsLoading && topCats.length === 0 && <p className="text-sm text-zinc-500 py-8 text-center">No categorized videos yet.</p>}
+          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
+          {!statsLoading && topCats.length === 0 && <p className="text-sm text-faint py-8 text-center">No categorized videos yet.</p>}
           <div className="space-y-2.5">
             {topCats.map((c, i) => (
-              <div key={c.categoryId ?? `c-${i}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+              <div key={c.categoryId ?? `c-${i}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                 <div className="absolute inset-y-0 left-0 bg-accent-blue opacity-15" style={{ width: `${Math.max(6, Math.round((c.count / maxCat) * 100))}%` }} />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0 flex items-center gap-2.5">
                     <span className="text-[10px] font-bold text-accent-gold shrink-0">#{i + 1}</span>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{c.name}</p>
-                      <p className="text-[10px] text-zinc-500">{c.count} videos</p>
+                      <p className="text-xs font-semibold text-heading truncate">{c.name}</p>
+                      <p className="text-[10px] text-faint">{c.count} videos</p>
                     </div>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function Content() {
       </div>
 
       {/* tabs */}
-      <div className="flex flex-wrap items-center gap-1 p-1.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] w-fit mb-6 animate-fade-in">
+      <div className="flex flex-wrap items-center gap-1 p-1.5 rounded-2xl bg-overlay/[0.04] border border-overlay/[0.08] w-fit mb-6 animate-fade-in">
         {([
           ['videos', 'Videos', Clapperboard],
           ['categories', 'Categories', FolderOpen],
@@ -168,7 +168,7 @@ export default function Content() {
               'flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all',
               tab === k
                 ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
             )}
           >
             <Icon className="w-3.5 h-3.5" /> {l}
@@ -326,13 +326,13 @@ function VideosTab() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
+        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-overlay/[0.08]">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
             <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search by title..." />
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08]">
               {[{ k: '', l: 'All' }, { k: 'published', l: 'Published' }, { k: 'draft', l: 'Drafts' }, { k: 'archived', l: 'Archived' }].map((s) => (
                 <button
                   key={s.k}
@@ -341,7 +341,7 @@ function VideosTab() {
                     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
                     status === s.k
                       ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                      : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
                   )}
                 >
                   {s.l} <span className="opacity-60">{s.k ? (counts[s.k] ?? 0) : total}</span>
@@ -356,20 +356,20 @@ function VideosTab() {
 
         {isLoading ? (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
-            {[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="h-56 rounded-2xl bg-white/[0.03] animate-pulse" />)}
+            {[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="h-56 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}
           </div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
               <Inbox className="w-6 h-6 text-accent-gold" />
             </div>
-            <p className="text-white font-semibold">No videos found</p>
-            <p className="mt-1 text-sm text-zinc-500">{search || status ? 'Try different filters.' : 'Add your first video to the catalog.'}</p>
+            <p className="text-heading font-semibold">No videos found</p>
+            <p className="mt-1 text-sm text-faint">{search || status ? 'Try different filters.' : 'Add your first video to the catalog.'}</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
             {items.map((v, i) => (
-              <div key={v._id} style={{ animationDelay: `${Math.min(i, 11) * 35}ms` }} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
+              <div key={v._id} style={{ animationDelay: `${Math.min(i, 11) * 35}ms` }} className="group rounded-2xl bg-overlay/[0.03] border border-overlay/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
                 <div className="relative aspect-video overflow-hidden">
                   <img src={mediaSrc(v.thumbnail)} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-base-950/90 via-base-950/20 to-transparent" />
@@ -383,24 +383,24 @@ function VideosTab() {
                     {v.isFeatured && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-gold/90 text-base-950 text-[10px] font-bold"><Star className="w-2.5 h-2.5" />F</span>}
                     {v.isTrending && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-red/90 text-white text-[10px] font-bold"><Flame className="w-2.5 h-2.5" />T</span>}
                   </div>
-                  <div className="absolute bottom-2.5 left-2.5 flex items-center gap-3 text-[10px] text-zinc-300">
+                  <div className="absolute bottom-2.5 left-2.5 flex items-center gap-3 text-[10px] text-body">
                     <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{v.views}</span>
                     <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{v.likes}</span>
                     <span className="flex items-center gap-1 text-accent-gold font-bold"><Coins className="w-3 h-3" />{formatCoins(v.rewardCoins)}</span>
                   </div>
                 </div>
                 <div className="p-4">
-                  <p className="font-semibold text-white text-sm leading-snug line-clamp-1">{v.title}</p>
+                  <p className="font-semibold text-heading text-sm leading-snug line-clamp-1">{v.title}</p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.08] text-zinc-400 border border-white/10">
+                    <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-overlay/[0.08] text-muted border border-overlay/10">
                       {v.category?.name ?? 'Uncategorized'}
                     </span>
                     <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize bg-brand-blue/10 text-accent-blue border border-brand-blue/25">
                       {v.rewardWallet} passbook
                     </span>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
-                    <p className="text-[11px] text-zinc-600">{formatDate(v.createdAt)}</p>
+                  <div className="mt-3 pt-3 border-t border-overlay/[0.06] flex items-center justify-between">
+                    <p className="text-[11px] text-dim">{formatDate(v.createdAt)}</p>
                     {manage && (
                       <div className="flex gap-1">
                         <button onClick={() => openEdit(v)} className="btn-ghost p-1.5 text-accent-blue"><Pencil className="w-3.5 h-3.5" /></button>
@@ -415,8 +415,8 @@ function VideosTab() {
         )}
 
         {data && data.pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> · {total} videos</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+            <p className="text-xs text-faint">Page <span className="text-body font-medium">{page}</span> of <span className="text-body font-medium">{data.pages}</span> · {total} videos</p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
@@ -429,12 +429,12 @@ function VideosTab() {
       <Modal open={formOpen} onClose={closeForm} title={editing ? 'Edit video' : 'Add video'} wide>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Title *</label>
             <input className="field-gold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Video title" />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Video file *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Video file *</label>
               <input ref={videoInputRef} type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime" className="hidden" onChange={onVideoPick} />
               <button
                 type="button"
@@ -444,7 +444,7 @@ function VideosTab() {
                   'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
                   videoFile
                     ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
-                    : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+                    : 'border-overlay/[0.12] bg-overlay/[0.04] text-muted hover:border-accent-gold/40 hover:text-accent-gold'
                 )}
               >
                 {videoFile ? <FileVideo className="w-4 h-4 shrink-0" /> : <Upload className="w-4 h-4 shrink-0" />}
@@ -455,10 +455,10 @@ function VideosTab() {
                 </span>
                 {videoFile && <span className="text-[10px] font-bold shrink-0">CHANGE</span>}
               </button>
-              {!videoFile && editing && <p className="mt-1.5 text-[11px] text-zinc-600">Current video kept — pick a file only to replace it.</p>}
+              {!videoFile && editing && <p className="mt-1.5 text-[11px] text-dim">Current video kept — pick a file only to replace it.</p>}
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thumbnail *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Thumbnail *</label>
               <input ref={thumbInputRef} type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" className="hidden" onChange={onThumbPick} />
               <button
                 type="button"
@@ -468,7 +468,7 @@ function VideosTab() {
                   'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
                   thumbFile
                     ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
-                    : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+                    : 'border-overlay/[0.12] bg-overlay/[0.04] text-muted hover:border-accent-gold/40 hover:text-accent-gold'
                 )}
               >
                 <ImageIcon className="w-4 h-4 shrink-0" />
@@ -480,35 +480,35 @@ function VideosTab() {
             </div>
           </div>
           {thumbPreview && (
-            <div className="rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40 bg-white/[0.03]">
+            <div className="rounded-xl overflow-hidden border border-overlay/10 aspect-video max-h-40 bg-overlay/[0.03]">
               <img src={thumbPreview} alt="" className="w-full h-full object-cover" />
             </div>
           )}
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Description</label>
             <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional description..." />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Category *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Category *</label>
               <select className="field-gold" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                 <option value="">Pick...</option>
                 {catOptions.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Reward coins</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Reward coins</label>
               <input type="number" min={0} className="field-gold" value={form.rewardCoins} onChange={(e) => setForm({ ...form, rewardCoins: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Passbook</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Passbook</label>
               <select className="field-gold" value={form.rewardWallet} onChange={(e) => setForm({ ...form, rewardWallet: e.target.value })}>
                 <option value="video">Video</option>
                 <option value="social">Social</option>
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Status</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Status</label>
               <select className="field-gold" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -519,25 +519,25 @@ function VideosTab() {
           <div className="flex gap-5">
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-              <span className="text-sm text-zinc-300">Featured</span>
+              <span className="text-sm text-body">Featured</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" checked={form.isTrending} onChange={(e) => setForm({ ...form, isTrending: e.target.checked })} className="w-4 h-4 accent-[#F87171]" />
-              <span className="text-sm text-zinc-300">Trending</span>
+              <span className="text-sm text-body">Trending</span>
             </label>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
           {progress !== null && (
             <div>
-              <div className="flex justify-between text-[10px] text-zinc-500 mb-1">
+              <div className="flex justify-between text-[10px] text-faint mb-1">
                 <span>Uploading…</span><span className="tabular-nums font-semibold text-accent-gold">{progress}%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-overlay/10 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-accent-gold to-accent-blue transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
             </div>
           )}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={closeForm} disabled={busy} className="btn-ghost !py-2 px-4 text-xs disabled:opacity-50">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {busy ? 'Uploading...' : editing ? 'Save changes' : 'Create video'}
@@ -550,15 +550,15 @@ function VideosTab() {
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete video">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <img src={mediaSrc(deleting.thumbnail)} alt="" className="w-14 h-9 rounded-lg object-cover" />
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
-                <p className="text-xs text-zinc-500">{deleting.views} views · {deleting.likes} likes</p>
+                <p className="text-sm text-heading font-semibold truncate">{deleting.title}</p>
+                <p className="text-xs text-faint">{deleting.views} views · {deleting.likes} likes</p>
               </div>
             </div>
-            <p className="text-sm text-zinc-400">This permanently removes the video and its catalog entry. This cannot be undone.</p>
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <p className="text-sm text-muted">This permanently removes the video and its catalog entry. This cannot be undone.</p>
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting...' : 'Delete'}
@@ -613,8 +613,8 @@ function CategoriesTab() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.length}</span> categories · ordered by display order</p>
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-overlay/[0.08]">
+          <p className="text-sm text-faint"><span className="text-heading font-semibold">{items.length}</span> categories · ordered by display order</p>
           {manage && (
             <button onClick={() => { setEditing(null); setForm(emptyCat); setFormErr(''); setFormOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New category
@@ -622,32 +622,32 @@ function CategoriesTab() {
           )}
         </div>
         {isLoading ? (
-          <div>{[0, 1, 2].map((i) => <div key={i} className="h-16 border-b border-white/[0.05] bg-white/[0.02] animate-pulse" />)}</div>
+          <div>{[0, 1, 2].map((i) => <div key={i} className="h-16 border-b border-overlay/[0.05] bg-overlay/[0.02] animate-pulse" />)}</div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><FolderOpen className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No categories</p>
-            <p className="mt-1 text-sm text-zinc-500">Create categories to organize videos.</p>
+            <p className="text-heading font-semibold">No categories</p>
+            <p className="mt-1 text-sm text-faint">Create categories to organize videos.</p>
           </div>
         ) : (
           items.map((c, i) => (
-            <div key={c._id} style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }} className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_auto_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative">
+            <div key={c._id} style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }} className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_auto_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative">
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
               <div className="flex items-center gap-3 min-w-0">
                 <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center text-lg shrink-0">{c.icon || '📁'}</span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{c.name}</p>
-                  <p className="text-[11px] text-zinc-600 font-mono truncate">{c.slug}</p>
+                  <p className="text-sm font-semibold text-heading truncate">{c.name}</p>
+                  <p className="text-[11px] text-dim font-mono truncate">{c.slug}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.08] text-zinc-400 border border-white/10">order {c.order}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-overlay/[0.08] text-muted border border-overlay/10">order {c.order}</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-blue/10 text-accent-blue border border-brand-blue/25">{c.videoCount} videos</span>
               </div>
               {manage ? (
                 <button
                   onClick={() => toggleMut.mutate(c)}
-                  className={cn('relative w-10 h-6 rounded-full transition-colors border justify-self-start', c.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-white/[0.06] border-white/10')}
+                  className={cn('relative w-10 h-6 rounded-full transition-colors border justify-self-start', c.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-overlay/[0.06] border-overlay/10')}
                   title={c.isActive ? 'Disable' : 'Enable'}
                 >
                   <span className={cn('absolute top-0.5 w-4 h-4 rounded-full transition-all shadow', c.isActive ? 'left-5 bg-accent-green' : 'left-0.5 bg-zinc-500')} />
@@ -669,25 +669,25 @@ function CategoriesTab() {
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? 'Edit category' : 'New category'}>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Name *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Name *</label>
             <input className="field-gold" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Entertainment" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Icon (emoji)</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Icon (emoji)</label>
               <input className="field-gold" maxLength={4} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="e.g. icon" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Display order</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Display order</label>
               <input type="number" min={0} className="field-gold" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} />
             </div>
           </div>
           <label className="flex items-center gap-2.5 cursor-pointer select-none">
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-            <span className="text-sm text-zinc-300">Active (visible to users)</span>
+            <span className="text-sm text-body">Active (visible to users)</span>
           </label>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {(createMut.isPending || updateMut.isPending) ? 'Saving...' : editing ? 'Save changes' : 'Create'}
@@ -699,14 +699,14 @@ function CategoriesTab() {
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete category">
         {deleting && (
           <div className="space-y-4">
-            <p className="text-sm text-zinc-400">
-              Delete <span className="text-white font-semibold">{deleting.name}</span>?
+            <p className="text-sm text-muted">
+              Delete <span className="text-heading font-semibold">{deleting.name}</span>?
               {deleting.videoCount > 0 && <span className="text-accent-red block mt-2">This category has {deleting.videoCount} video(s) — deletion will be blocked. Reassign them first.</span>}
             </p>
             {delMut.isError && (
               <p className="text-xs text-accent-red">{(delMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}</p>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending || deleting.videoCount > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting...' : 'Delete'}
@@ -831,8 +831,8 @@ function BannersTab() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.filter((b) => b.isActive).length}</span> live of {items.length} banners</p>
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-overlay/[0.08]">
+          <p className="text-sm text-faint"><span className="text-heading font-semibold">{items.filter((b) => b.isActive).length}</span> live of {items.length} banners</p>
           {manage && (
             <button onClick={openCreate} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New banner
@@ -840,40 +840,40 @@ function BannersTab() {
           )}
         </div>
         {isLoading ? (
-          <div className="grid sm:grid-cols-2 gap-4 p-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-44 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
+          <div className="grid sm:grid-cols-2 gap-4 p-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-44 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}</div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><ImageIcon className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No banners</p>
-            <p className="mt-1 text-sm text-zinc-500">Create banners to promote campaigns on home screens.</p>
+            <p className="text-heading font-semibold">No banners</p>
+            <p className="mt-1 text-sm text-faint">Create banners to promote campaigns on home screens.</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4 p-4">
             {items.map((b, i) => (
-              <div key={b._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
+              <div key={b._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group rounded-2xl bg-overlay/[0.03] border border-overlay/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
                 <div className="relative h-32 overflow-hidden">
                   <img src={bannerSrc(b.imageUrl)} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-base-950/80 to-transparent" />
                   <span className={cn(
                     'absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold backdrop-blur-sm',
-                    b.isActive ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-white/[0.1] text-zinc-400 border-white/15'
+                    b.isActive ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-overlay/[0.1] text-muted border-overlay/15'
                   )}>
                     <span className={cn('w-1.5 h-1.5 rounded-full', b.isActive ? 'bg-accent-green' : 'bg-zinc-500')} /> {b.isActive ? 'Live' : 'Off'}
                   </span>
-                  <span className="absolute bottom-2 right-2 text-[10px] px-2 py-0.5 rounded-full bg-base-950/70 text-zinc-300 border border-white/10">order {b.order}</span>
+                  <span className="absolute bottom-2 right-2 text-[10px] px-2 py-0.5 rounded-full bg-base-950/70 text-body border border-overlay/10">order {b.order}</span>
                 </div>
                 <div className="p-4">
-                  <p className="font-semibold text-white text-sm truncate">{b.title}</p>
-                  <div className="flex items-center gap-2 mt-1.5 flex-wrap text-[10px] text-zinc-500">
+                  <p className="font-semibold text-heading text-sm truncate">{b.title}</p>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap text-[10px] text-faint">
                     {b.targetUrl && <span className="truncate max-w-[140px]">{b.targetUrl}</span>}
                     {b.startsAt && <span>from {formatDate(b.startsAt)}</span>}
                     {b.endsAt && <span>to {formatDate(b.endsAt)}</span>}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+                  <div className="mt-3 pt-3 border-t border-overlay/[0.06] flex items-center justify-between">
                     {manage ? (
                       <button
                         onClick={() => toggleMut.mutate(b)}
-                        className={cn('relative w-10 h-6 rounded-full transition-colors border', b.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-white/[0.06] border-white/10')}
+                        className={cn('relative w-10 h-6 rounded-full transition-colors border', b.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-overlay/[0.06] border-overlay/10')}
                       >
                         <span className={cn('absolute top-0.5 w-4 h-4 rounded-full transition-all shadow', b.isActive ? 'left-5 bg-accent-green' : 'left-0.5 bg-zinc-500')} />
                       </button>
@@ -895,11 +895,11 @@ function BannersTab() {
       <Modal open={formOpen} onClose={closeForm} title={editing ? 'Edit banner' : 'New banner'} wide>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Title *</label>
             <input className="field-gold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Campaign title" />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Banner image *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Banner image *</label>
             <input ref={imageInputRef} type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" className="hidden" onChange={onImagePick} />
             <button
               type="button"
@@ -909,7 +909,7 @@ function BannersTab() {
                 'w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left text-sm transition-all',
                 imageFile
                   ? 'border-accent-green/40 bg-accent-green/[0.07] text-accent-green'
-                  : 'border-white/[0.12] bg-white/[0.04] text-zinc-400 hover:border-accent-gold/40 hover:text-accent-gold'
+                  : 'border-overlay/[0.12] bg-overlay/[0.04] text-muted hover:border-accent-gold/40 hover:text-accent-gold'
               )}
             >
               {imageFile ? <ImageIcon className="w-4 h-4 shrink-0" /> : <Upload className="w-4 h-4 shrink-0" />}
@@ -920,49 +920,49 @@ function BannersTab() {
               </span>
               {imageFile && <span className="text-[10px] font-bold shrink-0">CHANGE</span>}
             </button>
-            {!imageFile && editing && <p className="mt-1.5 text-[11px] text-zinc-600">Current image kept — pick a file only to replace it.</p>}
+            {!imageFile && editing && <p className="mt-1.5 text-[11px] text-dim">Current image kept — pick a file only to replace it.</p>}
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Target URL</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Target URL</label>
             <input className="field-gold" value={form.targetUrl} onChange={(e) => setForm({ ...form, targetUrl: e.target.value })} placeholder="https://... (optional)" />
           </div>
           {previewSrc && (
-            <div className="rounded-xl overflow-hidden border border-white/10 aspect-video max-h-44 bg-white/[0.03]">
+            <div className="rounded-xl overflow-hidden border border-overlay/10 aspect-video max-h-44 bg-overlay/[0.03]">
               <img src={previewSrc} alt="" className="w-full h-full object-contain" />
             </div>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Order</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Order</label>
               <input type="number" min={0} className="field-gold" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Starts</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Starts</label>
               <input type="datetime-local" className="field-gold" value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Ends</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Ends</label>
               <input type="datetime-local" className="field-gold" value={form.endsAt} onChange={(e) => setForm({ ...form, endsAt: e.target.value })} />
             </div>
             <div className="flex items-end pb-1">
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
                 <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-                <span className="text-sm text-zinc-300">Live</span>
+                <span className="text-sm text-body">Live</span>
               </label>
             </div>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
           {progress !== null && (
             <div>
-              <div className="flex justify-between text-[10px] text-zinc-500 mb-1">
+              <div className="flex justify-between text-[10px] text-faint mb-1">
                 <span>Uploading…</span><span className="tabular-nums font-semibold text-accent-gold">{progress}%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-overlay/10 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-accent-gold to-accent-blue transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
             </div>
           )}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={closeForm} disabled={busy} className="btn-ghost !py-2 px-4 text-xs disabled:opacity-50">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {busy ? 'Saving...' : editing ? 'Save changes' : 'Create banner'}
@@ -974,12 +974,12 @@ function BannersTab() {
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete banner">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <img src={bannerSrc(deleting.imageUrl)} alt="" className="w-14 h-9 rounded-lg object-cover" />
-              <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
+              <p className="text-sm text-heading font-semibold truncate">{deleting.title}</p>
             </div>
-            <p className="text-sm text-zinc-400">This permanently removes the banner. This cannot be undone.</p>
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <p className="text-sm text-muted">This permanently removes the banner. This cannot be undone.</p>
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting...' : 'Delete'}
@@ -1032,17 +1032,17 @@ function AdsTab() {
     <div className="space-y-4 animate-fade-in">
       <div className="glass p-4 flex items-start gap-3">
         <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Megaphone className="w-4 h-4 text-accent-gold" /></span>
-        <p className="text-xs text-zinc-500 leading-relaxed">
+        <p className="text-xs text-faint leading-relaxed">
           Configure banner, interstitial and rewarded ad placements. Ads must comply with network policy — no hidden or forced background ads. Disabling a slot stops it from being requested by apps immediately.
         </p>
       </div>
 
       {isLoading ? (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">{[0, 1, 2].map((i) => <div key={i} className="h-56 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">{[0, 1, 2].map((i) => <div key={i} className="h-56 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}</div>
       ) : placements.length === 0 ? (
         <div className="glass p-12 text-center">
           <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Megaphone className="w-6 h-6 text-accent-gold" /></div>
-          <p className="text-white font-semibold">No ad placements</p>
+          <p className="text-heading font-semibold">No ad placements</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1058,39 +1058,39 @@ function AdsTab() {
                   <button
                     disabled={!manage}
                     onClick={() => setDrafts({ ...drafts, [p._id]: { ...d, enabled: !d.enabled } })}
-                    className={cn('relative w-10 h-6 rounded-full transition-colors border', d.enabled ? 'bg-accent-green/25 border-accent-green/40' : 'bg-white/[0.06] border-white/10', !manage && 'opacity-50 cursor-not-allowed')}
+                    className={cn('relative w-10 h-6 rounded-full transition-colors border', d.enabled ? 'bg-accent-green/25 border-accent-green/40' : 'bg-overlay/[0.06] border-overlay/10', !manage && 'opacity-50 cursor-not-allowed')}
                   >
                     <span className={cn('absolute top-0.5 w-4 h-4 rounded-full transition-all shadow', d.enabled ? 'left-5 bg-accent-green' : 'left-0.5 bg-zinc-500')} />
                   </button>
                 </div>
-                <p className="font-semibold text-white text-sm">{p.name}</p>
-                <p className="text-[11px] text-zinc-600 font-mono mt-0.5">{p.placementKey}</p>
+                <p className="font-semibold text-heading text-sm">{p.name}</p>
+                <p className="text-[11px] text-dim font-mono mt-0.5">{p.placementKey}</p>
                 <span className={cn('mt-2 inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize border', tone.cls.includes('blue') ? 'bg-brand-blue/10 text-accent-blue border-brand-blue/25' : tone.cls.includes('green') ? 'bg-accent-green/10 text-accent-green border-accent-green/25' : 'bg-accent-violet/10 text-accent-violet border-accent-violet/25')}>
                   {p.format}
                 </span>
                 <div className="mt-4 space-y-3">
                   <div>
-                    <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Network</label>
+                    <label className="block text-[10px] font-semibold text-faint uppercase tracking-wider mb-1">Network</label>
                     <input disabled={!manage} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.network} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, network: e.target.value } })} placeholder="admob / unity..." />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Unit ID</label>
+                    <label className="block text-[10px] font-semibold text-faint uppercase tracking-wider mb-1">Unit ID</label>
                     <input disabled={!manage} className="field-gold !py-1.5 text-xs font-mono disabled:opacity-50" value={d.unitId} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, unitId: e.target.value } })} placeholder="ca-app-pub-..." />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Frequency cap (per session)</label>
+                    <label className="block text-[10px] font-semibold text-faint uppercase tracking-wider mb-1">Frequency cap (per session)</label>
                     <input disabled={!manage} type="number" min={0} className="field-gold !py-1.5 text-xs disabled:opacity-50" value={d.frequencyCap} onChange={(e) => setDrafts({ ...drafts, [p._id]: { ...d, frequencyCap: e.target.value } })} placeholder="e.g. 3" />
                   </div>
                 </div>
                 {manage && (
-                  <div className="mt-4 pt-4 border-t border-white/[0.08] flex items-center justify-between">
-                    <span className={cn('text-[10px] font-semibold', dirty(p) ? 'text-accent-gold' : 'text-zinc-600')}>
+                  <div className="mt-4 pt-4 border-t border-overlay/[0.08] flex items-center justify-between">
+                    <span className={cn('text-[10px] font-semibold', dirty(p) ? 'text-accent-gold' : 'text-dim')}>
                       {dirty(p) ? 'Unsaved changes' : savedId === p._id ? 'Saved ✓' : 'Up to date'}
                     </span>
                     <button
                       onClick={() => saveMut.mutate({ id: p._id, d })}
                       disabled={!dirty(p) || saveMut.isPending}
-                      className={cn('btn !py-1.5 px-3 text-xs', dirty(p) ? 'btn-gold' : 'bg-white/[0.06] text-zinc-500 cursor-not-allowed')}
+                      className={cn('btn !py-1.5 px-3 text-xs', dirty(p) ? 'btn-gold' : 'bg-overlay/[0.06] text-faint cursor-not-allowed')}
                     >
                       <Save className="w-3 h-3" /> {saveMut.isPending && saveMut.variables?.id === p._id ? 'Saving...' : 'Save'}
                     </button>
@@ -1151,8 +1151,8 @@ function AnnouncementsTab() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{items.filter((a) => a.isActive).length}</span> live of {items.length} announcements — scroll across the app home</p>
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-overlay/[0.08]">
+          <p className="text-sm text-faint"><span className="text-heading font-semibold">{items.filter((a) => a.isActive).length}</span> live of {items.length} announcements — scroll across the app home</p>
           {manage && (
             <button onClick={() => { setEditing(null); setForm({ text: '', instruction: '', priority: '1', isActive: true }); setFormErr(''); setOpen(true); }} className="btn-gold !py-2 px-3.5 text-xs">
               <Plus className="w-3.5 h-3.5" /> New announcement
@@ -1160,20 +1160,20 @@ function AnnouncementsTab() {
           )}
         </div>
         {isLoading ? (
-          <div className="space-y-3 p-4">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+          <div className="space-y-3 p-4">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><MessageSquare className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No announcements</p>
-            <p className="mt-1 text-sm text-zinc-500">Create one to show a scrolling ticker on the app home screen.</p>
+            <p className="text-heading font-semibold">No announcements</p>
+            <p className="mt-1 text-sm text-faint">Create one to show a scrolling ticker on the app home screen.</p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-overlay/[0.06]">
             {items.map((a) => (
               <div key={a._id} className="flex items-center gap-3 p-4">
-                <span className="text-[10px] font-bold px-2 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-zinc-500 tabular-nums shrink-0">P{a.priority}</span>
-                <p className="text-sm text-zinc-300 flex-1 min-w-0 truncate">{a.text}</p>
-                <span className={cn('text-[10px] px-2 py-1 rounded-full border shrink-0', a.isActive ? 'bg-accent-green/10 text-accent-green border-accent-green/25' : 'bg-white/[0.06] text-zinc-500 border-white/10')}>
+                <span className="text-[10px] font-bold px-2 py-1 rounded-lg bg-overlay/[0.06] border border-overlay/[0.08] text-faint tabular-nums shrink-0">P{a.priority}</span>
+                <p className="text-sm text-body flex-1 min-w-0 truncate">{a.text}</p>
+                <span className={cn('text-[10px] px-2 py-1 rounded-full border shrink-0', a.isActive ? 'bg-accent-green/10 text-accent-green border-accent-green/25' : 'bg-overlay/[0.06] text-faint border-overlay/10')}>
                   {a.isActive ? 'Live' : 'Off'}
                 </span>
                 {manage && (
@@ -1194,7 +1194,7 @@ function AnnouncementsTab() {
       <Modal open={open} onClose={() => setOpen(false)} title={editing ? 'Edit announcement' : 'New announcement'}>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Text *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Text *</label>
             <textarea
               className="field-gold min-h-[90px] resize-y"
               value={form.text}
@@ -1202,10 +1202,10 @@ function AnnouncementsTab() {
               placeholder="e.g. Get 10 coins daily — complete all daily tasks!"
               onChange={(e) => setForm({ ...form, text: e.target.value })}
             />
-            <p className="text-[11px] text-zinc-600 mt-1">{form.text.length}/300 — keep it short, it scrolls horizontally</p>
+            <p className="text-[11px] text-dim mt-1">{form.text.length}/300 — keep it short, it scrolls horizontally</p>
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Instruction</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Instruction</label>
             <textarea
               className="field-gold min-h-[90px] resize-y"
               value={form.instruction}
@@ -1213,22 +1213,22 @@ function AnnouncementsTab() {
               placeholder="Optional detailed instructions users see with this announcement..."
               onChange={(e) => setForm({ ...form, instruction: e.target.value })}
             />
-            <p className="text-[11px] text-zinc-600 mt-1">{form.instruction.length}/1000 — optional, shown as detail text</p>
+            <p className="text-[11px] text-dim mt-1">{form.instruction.length}/1000 — optional, shown as detail text</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Priority</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Priority</label>
               <input type="number" min={0} className="field-gold" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} />
             </div>
             <div className="flex items-end pb-1">
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
                 <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-                <span className="text-sm text-zinc-300">Live</span>
+                <span className="text-sm text-body">Live</span>
               </label>
             </div>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={() => setOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create announcement'}
@@ -1240,12 +1240,12 @@ function AnnouncementsTab() {
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete announcement">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <MessageSquare className="w-4 h-4 text-accent-gold shrink-0" />
-              <p className="text-sm text-white truncate">{deleting.text}</p>
+              <p className="text-sm text-heading truncate">{deleting.text}</p>
             </div>
-            <p className="text-sm text-zinc-400">This permanently removes the announcement. This cannot be undone.</p>
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <p className="text-sm text-muted">This permanently removes the announcement. This cannot be undone.</p>
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting…' : 'Delete'}

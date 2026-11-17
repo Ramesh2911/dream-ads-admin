@@ -42,7 +42,7 @@ const T_STATUS: Record<string, { cls: string; dot: string }> = {
   active: { cls: 'text-accent-green bg-accent-green/10 border-accent-green/25', dot: 'bg-accent-green' },
   draft: { cls: 'text-accent-gold bg-accent-gold/10 border-accent-gold/25', dot: 'bg-accent-gold' },
   paused: { cls: 'text-accent-blue bg-brand-blue/10 border-brand-blue/25', dot: 'bg-accent-blue' },
-  completed: { cls: 'text-zinc-400 bg-white/[0.06] border-white/10', dot: 'bg-zinc-500' },
+  completed: { cls: 'text-muted bg-overlay/[0.06] border-overlay/10', dot: 'bg-zinc-500' },
 };
 const S_STATUS: Record<string, { cls: string; dot: string }> = {
   pending: { cls: 'text-accent-gold bg-accent-gold/10 border-accent-gold/25', dot: 'bg-accent-gold' },
@@ -96,13 +96,13 @@ export default function Tasks() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><ListChecks className="w-5 h-5 text-accent-gold" /></span>
             Tasks & Verification
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Create tasks, review proofs and release rewards</p>
+          <p className="mt-1.5 text-sm text-faint">Create tasks, review proofs and release rewards</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -113,9 +113,9 @@ export default function Tasks() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -127,15 +127,15 @@ export default function Tasks() {
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><ListChecks className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Submissions · last 7 days</h3>
+              <h3 className="font-semibold text-heading truncate">Submissions · last 7 days</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
+            <span className="text-[11px] text-faint shrink-0 hidden sm:flex items-center gap-3">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> approved</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-gold" /> pending</span>
             </span>
           </div>
           {statsLoading ? (
-            <div className="h-[230px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[230px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={230}>
               <ComposedChart data={chartData} margin={{ top: 6, right: 8, left: -22, bottom: 0 }}>
@@ -158,20 +158,20 @@ export default function Tasks() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Crown className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Busiest tasks</h3>
+            <h3 className="font-semibold text-heading">Busiest tasks</h3>
           </div>
-          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
-          {!statsLoading && top.length === 0 && <p className="text-sm text-zinc-500 py-8 text-center">No submissions yet.</p>}
+          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
+          {!statsLoading && top.length === 0 && <p className="text-sm text-faint py-8 text-center">No submissions yet.</p>}
           <div className="space-y-2.5">
             {top.map((r, i) => (
-              <div key={r.taskId ?? `t-${i}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+              <div key={r.taskId ?? `t-${i}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                 <div className="absolute inset-y-0 left-0 bg-accent-violet opacity-15" style={{ width: `${Math.max(6, Math.round((r.count / maxTop) * 100))}%` }} />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white truncate flex items-center gap-1.5">
+                    <p className="text-xs font-semibold text-heading truncate flex items-center gap-1.5">
                       <span className="text-[10px] font-bold text-accent-gold">#{i + 1}</span> {r.title}
                     </p>
-                    <p className="text-[10px] text-zinc-500">{r.count} subs · {r.pending} pending · {formatCoins(r.rewardCoins)} coins</p>
+                    <p className="text-[10px] text-faint">{r.count} subs · {r.pending} pending · {formatCoins(r.rewardCoins)} coins</p>
                   </div>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export default function Tasks() {
 
       {/* tabs */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
-        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
+        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-overlay/[0.1] shadow-glow-goldSoft">
           {([['tasks', 'Tasks', ListChecks], ['submissions', 'Submissions', Eye]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
@@ -191,7 +191,7 @@ export default function Tasks() {
                 'flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all',
                 tab === k
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
               )}
             >
               <Icon className="w-3.5 h-3.5" /> {l}
@@ -310,13 +310,13 @@ function TasksTab() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
+        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-overlay/[0.08]">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
             <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search tasks..." />
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08]">
               {[{ k: '', l: 'All' }, { k: 'active', l: 'Active' }, { k: 'draft', l: 'Drafts' }, { k: 'paused', l: 'Paused' }, { k: 'completed', l: 'Done' }].map((s) => (
                 <button
                   key={s.k}
@@ -325,7 +325,7 @@ function TasksTab() {
                     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
                     status === s.k
                       ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                      : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
                   )}
                 >
                   {s.l} <span className="opacity-60">{s.k ? (counts[s.k] ?? 0) : total}</span>
@@ -340,20 +340,20 @@ function TasksTab() {
 
         {isLoading ? (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
-            {[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="h-52 rounded-2xl bg-white/[0.03] animate-pulse" />)}
+            {[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="h-52 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}
           </div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Inbox className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No tasks found</p>
-            <p className="mt-1 text-sm text-zinc-500">{search || status ? 'Try different filters.' : 'Create your first task to engage users.'}</p>
+            <p className="text-heading font-semibold">No tasks found</p>
+            <p className="mt-1 text-sm text-faint">{search || status ? 'Try different filters.' : 'Create your first task to engage users.'}</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
             {items.map((t, i) => {
               const P = PROOF_TONE[t.proofType] ?? PROOF_TONE.text;
               return (
-                <div key={t._id} style={{ animationDelay: `${Math.min(i, 11) * 35}ms` }} className="group p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in relative overflow-hidden">
+                <div key={t._id} style={{ animationDelay: `${Math.min(i, 11) * 35}ms` }} className="group p-5 rounded-2xl bg-overlay/[0.03] border border-overlay/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in relative overflow-hidden">
                   <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-accent-violet/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="relative flex items-start justify-between mb-3">
                     <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-semibold', (T_STATUS[t.status] ?? T_STATUS.draft).cls)}>
@@ -368,15 +368,15 @@ function TasksTab() {
                       </span>
                     </div>
                   </div>
-                  <p className="font-semibold text-white text-sm leading-snug line-clamp-1">{t.title}</p>
-                  <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{t.description}</p>
-                  <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(t.rewardCoins)} <span className="text-xs font-semibold text-zinc-500">coins · {t.rewardWallet} passbook</span></p>
+                  <p className="font-semibold text-heading text-sm leading-snug line-clamp-1">{t.title}</p>
+                  <p className="text-xs text-faint mt-1 line-clamp-2">{t.description}</p>
+                  <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(t.rewardCoins)} <span className="text-xs font-semibold text-faint">coins · {t.rewardWallet} passbook</span></p>
                   <div className="mt-3">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-1">
+                    <div className="flex items-center justify-between text-[10px] text-faint mb-1">
                       <span>Slots</span>
-                      <span className="text-zinc-300 font-medium">{t.totalSlots != null ? `${t.filledSlots}/${t.totalSlots}` : `${t.filledSlots} filled · unlimited`}</span>
+                      <span className="text-body font-medium">{t.totalSlots != null ? `${t.filledSlots}/${t.totalSlots}` : `${t.filledSlots} filled · unlimited`}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-overlay/[0.06] overflow-hidden">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-accent-gold to-accent-violet"
                         style={{ width: t.totalSlots ? `${Math.min(100, Math.round((t.filledSlots / t.totalSlots) * 100))}%` : '14%' }}
@@ -387,10 +387,10 @@ function TasksTab() {
                     <div className="flex flex-wrap gap-1.5 mt-2.5">
                       {t.eligibility?.requiresKyc && <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent-pink/10 text-accent-pink border border-accent-pink/25">KYC required</span>}
                       {t.eligibility?.minLevel && <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-blue/10 text-accent-blue border border-brand-blue/25">Lvl {t.eligibility.minLevel}+</span>}
-                      {t.eligibility?.maxSubmissions && <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.08] text-zinc-400 border border-white/10">max {t.eligibility.maxSubmissions}/user</span>}
+                      {t.eligibility?.maxSubmissions && <span className="text-[10px] px-2 py-0.5 rounded-full bg-overlay/[0.08] text-muted border border-overlay/10">max {t.eligibility.maxSubmissions}/user</span>}
                     </div>
                   )}
-                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
+                  <div className="mt-3 pt-3 border-t border-overlay/[0.06] flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 text-[10px]">
                       <span className="text-accent-gold font-semibold">{t.submissions.pending} pend</span>
                       <span className="text-accent-green font-semibold">{t.submissions.approved} ok</span>
@@ -416,8 +416,8 @@ function TasksTab() {
         )}
 
         {data && data.pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">Page <span className="text-zinc-300 font-medium">{page}</span> of <span className="text-zinc-300 font-medium">{data.pages}</span> · {total} tasks</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+            <p className="text-xs text-faint">Page <span className="text-body font-medium">{page}</span> of <span className="text-body font-medium">{data.pages}</span> · {total} tasks</p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
@@ -430,20 +430,20 @@ function TasksTab() {
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? 'Edit task' : 'New task'} wide>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Title *</label>
             <input className="field-gold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Follow our Instagram" />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Description *</label>
             <textarea className="field-gold resize-none" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What users must do…" />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Instructions</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Instructions</label>
             <textarea className="field-gold resize-none" rows={2} value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} placeholder="Step-by-step guide (optional)…" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Proof type *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Proof type *</label>
               <select className="field-gold" value={form.proofType} onChange={(e) => setForm({ ...form, proofType: e.target.value })}>
                 <option value="screenshot">Screenshot</option>
                 <option value="url">URL</option>
@@ -451,18 +451,18 @@ function TasksTab() {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Reward coins *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Reward coins *</label>
               <input type="number" min={1} className="field-gold" value={form.rewardCoins} onChange={(e) => setForm({ ...form, rewardCoins: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Passbook</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Passbook</label>
               <select className="field-gold" value={form.rewardWallet} onChange={(e) => setForm({ ...form, rewardWallet: e.target.value })}>
                 <option value="social">Social</option>
                 <option value="video">Video</option>
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Status</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Status</label>
               <select className="field-gold" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                 <option value="draft">Draft</option>
                 <option value="active">Active</option>
@@ -472,40 +472,40 @@ function TasksTab() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Total slots</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Total slots</label>
               <input type="number" min={1} className="field-gold" value={form.totalSlots} onChange={(e) => setForm({ ...form, totalSlots: e.target.value })} placeholder="unlimited" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Min level</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Min level</label>
               <input type="number" min={0} className="field-gold" value={form.minLevel} onChange={(e) => setForm({ ...form, minLevel: e.target.value })} placeholder="—" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Max / user</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Max / user</label>
               <input type="number" min={1} className="field-gold" value={form.maxSubmissions} onChange={(e) => setForm({ ...form, maxSubmissions: e.target.value })} placeholder="—" />
             </div>
             <div className="flex items-end pb-1 gap-4">
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
                 <input type="checkbox" checked={form.requiresKyc} onChange={(e) => setForm({ ...form, requiresKyc: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-                <span className="text-sm text-zinc-300">KYC required</span>
+                <span className="text-sm text-body">KYC required</span>
               </label>
               <label className="flex items-center gap-2.5 cursor-pointer select-none" title="Users can submit once per calendar day; counts toward the daily goal">
                 <input type="checkbox" checked={form.isDaily} onChange={(e) => setForm({ ...form, isDaily: e.target.checked })} className="w-4 h-4 accent-[#FFD86F]" />
-                <span className="text-sm text-zinc-300">Daily task</span>
+                <span className="text-sm text-body">Daily task</span>
               </label>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Starts</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Starts</label>
               <input type="datetime-local" className="field-gold" value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Ends</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Ends</label>
               <input type="datetime-local" className="field-gold" value={form.endsAt} onChange={(e) => setForm({ ...form, endsAt: e.target.value })} />
             </div>
           </div>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create task'}
@@ -518,18 +518,18 @@ function TasksTab() {
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete task">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><Trash2 className="w-4 h-4 text-accent-red" /></span>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
-                <p className="text-xs text-zinc-500">{deleting.submissions.total} submissions</p>
+                <p className="text-sm text-heading font-semibold truncate">{deleting.title}</p>
+                <p className="text-xs text-faint">{deleting.submissions.total} submissions</p>
               </div>
             </div>
             {deleting.submissions.total > 0 && <p className="text-xs text-accent-red">Deletion will be blocked — pause it instead.</p>}
             {delMut.isError && (
               <p className="text-xs text-accent-red">{(delMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}</p>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending || deleting.submissions.total > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting…' : 'Delete'}
@@ -571,7 +571,7 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+        <div className="flex flex-wrap items-center gap-2 p-4 border-b border-overlay/[0.08]">
           {[{ k: 'pending', l: 'Pending' }, { k: 'approved', l: 'Approved' }, { k: 'rejected', l: 'Rejected' }].map((s) => (
             <button
               key={s.k}
@@ -582,7 +582,7 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                   ? s.k === 'approved' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
                   : s.k === 'rejected' ? 'bg-accent-red/15 text-accent-red border-accent-red/30'
                   : 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 shadow-glow-goldSoft'
-                  : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                  : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
                 )}
               >
                 {s.l} <span className="ml-1 opacity-60">{counts[s.k] ?? 0}</span>
@@ -596,18 +596,18 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
           {isLoading ? (
             <div>
               {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                  <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                  <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                  <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                  <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
                 </div>
               ))}
             </div>
           ) : items.length === 0 ? (
             <div className="p-12 text-center">
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Inbox className="w-6 h-6 text-accent-gold" /></div>
-              <p className="text-white font-semibold">No {status} submissions</p>
-              <p className="mt-1 text-sm text-zinc-500">User proofs land here for review.</p>
+              <p className="text-heading font-semibold">No {status} submissions</p>
+              <p className="mt-1 text-sm text-faint">User proofs land here for review.</p>
             </div>
           ) : (
             items.map((s, i) => {
@@ -616,7 +616,7 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                 <div
                   key={s._id}
                   style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-                  className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1.7fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+                  className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1.7fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
                 >
                   <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
                   <div className="flex items-center gap-3 min-w-0">
@@ -624,12 +624,12 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                       {s.user?.name?.[0]?.toUpperCase() ?? '?'}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{s.user?.name ?? 'Unknown user'}</p>
-                      <p className="text-[11px] text-zinc-500 truncate">{s.user?.email ?? '—'}</p>
+                      <p className="text-sm font-medium text-heading truncate">{s.user?.name ?? 'Unknown user'}</p>
+                      <p className="text-[11px] text-faint truncate">{s.user?.email ?? '—'}</p>
                     </div>
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <p className="text-sm font-semibold text-white truncate flex items-center gap-2">
+                    <p className="text-sm font-semibold text-heading truncate flex items-center gap-2">
                       <ListChecks className="w-3.5 h-3.5 text-accent-violet shrink-0" />
                       {s.task?.title ?? 'Deleted task'}
                       <span className="text-accent-gold text-xs font-bold shrink-0">{formatCoins(s.task?.rewardCoins ?? 0)}</span>
@@ -646,7 +646,7 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                       <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold capitalize', (S_STATUS[s.status] ?? S_STATUS.pending).cls)}>
                         <span className={cn('w-1.5 h-1.5 rounded-full', (S_STATUS[s.status] ?? S_STATUS.pending).dot)} /> {s.status}
                       </span>
-                      <p className="text-[11px] text-zinc-600 md:text-right" title={formatDate(s.createdAt)}>{rel(s.createdAt)}</p>
+                      <p className="text-[11px] text-dim md:text-right" title={formatDate(s.createdAt)}>{rel(s.createdAt)}</p>
                     </div>
                     <button onClick={() => { setReview(s); setReason(''); }} className="btn-ghost !py-1.5 px-3 text-xs text-accent-blue">
                       <Eye className="w-3.5 h-3.5" /> Review
@@ -658,11 +658,11 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
           )}
 
           {data && data.pages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-              <p className="text-xs text-zinc-500">Showing <span className="text-zinc-300 font-medium">{(page - 1) * 30 + 1}–{Math.min(page * 30, total)}</span> of <span className="text-zinc-300 font-medium">{total}</span></p>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+              <p className="text-xs text-faint">Showing <span className="text-body font-medium">{(page - 1) * 30 + 1}–{Math.min(page * 30, total)}</span> of <span className="text-body font-medium">{total}</span></p>
               <div className="flex items-center gap-2">
                 <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
-                <span className="text-xs text-zinc-500 px-2">Page {page} / {data.pages}</span>
+                <span className="text-xs text-faint px-2">Page {page} / {data.pages}</span>
                 <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
               </div>
             </div>
@@ -674,28 +674,28 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
           {review && (
             <div className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-3">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white text-xs font-bold shrink-0">
                     {review.user?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-white font-semibold truncate">{review.user?.name}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">{review.user?.email}</p>
+                    <p className="text-sm text-heading font-semibold truncate">{review.user?.name}</p>
+                    <p className="text-[11px] text-faint truncate">{review.user?.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
                   <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Coins className="w-4 h-4 text-accent-gold" /></span>
                   <div className="min-w-0">
-                    <p className="text-sm text-white font-semibold truncate">{review.task?.title ?? 'Task'}</p>
-                    <p className="text-[11px] text-zinc-500">reward {formatCoins(review.task?.rewardCoins ?? 0)} · {review.task?.rewardWallet} passbook</p>
+                    <p className="text-sm text-heading font-semibold truncate">{review.task?.title ?? 'Task'}</p>
+                    <p className="text-[11px] text-faint">reward {formatCoins(review.task?.rewardCoins ?? 0)} · {review.task?.rewardWallet} passbook</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Proof</p>
+              <div className="p-4 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
+                <p className="text-[11px] font-semibold text-muted uppercase tracking-wider mb-2">Proof</p>
                 {review.proofUrl && isImage(review.proofUrl) && (
-                  <a href={review.proofUrl} target="_blank" rel="noreferrer" className="block rounded-xl overflow-hidden border border-white/10 mb-3 hover:border-accent-gold/40 transition-colors">
+                  <a href={review.proofUrl} target="_blank" rel="noreferrer" className="block rounded-xl overflow-hidden border border-overlay/10 mb-3 hover:border-accent-gold/40 transition-colors">
                     <img src={review.proofUrl} alt="Proof" className="w-full max-h-72 object-contain bg-base-950/60" />
                   </a>
                 )}
@@ -705,21 +705,21 @@ function SubmissionsTab({ onTab }: { onTab: (t: TabKey) => void }) {
                   </a>
                 )}
                 {review.proofText && (
-                  <p className="text-sm text-zinc-300 whitespace-pre-wrap mt-1">{review.proofText}</p>
+                  <p className="text-sm text-body whitespace-pre-wrap mt-1">{review.proofText}</p>
                 )}
-                {!review.proofUrl && !review.proofText && <p className="text-sm text-zinc-500">No proof provided.</p>}
+                {!review.proofUrl && !review.proofText && <p className="text-sm text-faint">No proof provided.</p>}
               </div>
 
               {review.status === 'pending' && verify && (
                 <>
                   <div>
-                    <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Rejection reason</label>
+                    <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Rejection reason</label>
                     <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="field-gold resize-none" placeholder="e.g. proof unclear, task not completed…" />
                   </div>
                   {mut.isError && (
                     <p className="text-xs text-accent-red">{(mut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Failed'}</p>
                   )}
-                  <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+                  <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
                     <button
                       onClick={() => mut.mutate({ id: review._id, status: 'rejected', rejectionReason: reason.trim() || 'No reason provided' })}
                       disabled={mut.isPending}

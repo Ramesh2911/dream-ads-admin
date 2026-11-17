@@ -2,16 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---- Theme tokens ------------------------------------------------------ */
+/* Dark is the default (:root). Light = html.light set by ThemeContext /
+   pre-paint script in index.html. All tokens are raw RGB triplets so
+   Tailwind <alpha-value> (e.g. bg-overlay/[0.04]) works. */
+:root {
+  --heading: 255 255 255;   /* text-white */
+  --body: 212 212 217;      /* zinc-300 */
+  --muted: 161 161 170;     /* zinc-400 */
+  --faint: 113 113 122;     /* zinc-500 */
+  --dim: 82 82 91;          /* zinc-600 */
+  --overlay: 255 255 255;   /* white-alpha overlays (cards, chips, tabs) */
+  --panel: 5 11 31;         /* brand.navy — sidebar / header / chrome */
+  --panel2: 10 21 64;       /* brand.navyLight — dropdowns */
+  --bg: 5 11 31;            /* body canvas */
+  color-scheme: dark;
+}
+
+html.light {
+  --heading: 9 9 11;        /* zinc-950 */
+  --body: 63 63 70;         /* zinc-700 */
+  --muted: 82 82 91;        /* zinc-600 */
+  --faint: 113 113 122;     /* zinc-500 */
+  --dim: 113 113 122;       /* zinc-500 */
+  --overlay: 24 24 27;      /* zinc-900-alpha overlays */
+  --panel: 255 255 255;     /* white chrome */
+  --panel2: 255 255 255;
+  --bg: 244 245 247;        /* zinc-100 canvas */
+  color-scheme: light;
+}
+
 @layer base {
-  * { @apply border-white/5; }
-  html { color-scheme: dark; }
-  /* Native select popup: light system bg + inherited light text = invisible options.
-     Force dark scheme + explicit option colors so all dropdowns stay readable. */
-  select { color-scheme: dark; }
+  * { border-color: rgb(var(--overlay) / 0.05); }
+  /* Native select popup follows the active color-scheme; explicit option
+     colors keep every dropdown readable in both themes. */
   select option,
   select optgroup {
-    background-color: #0A1540;
-    color: #e4e4e7;
+    background-color: rgb(var(--panel2));
+    color: rgb(var(--body));
   }
   select option:hover,
   select option:checked,
@@ -21,12 +49,19 @@
     color: #fff;
   }
   body {
-    @apply bg-brand-navy text-zinc-200 antialiased;
+    @apply antialiased;
+    background-color: rgb(var(--bg));
+    color: rgb(var(--body));
     background-image:
       radial-gradient(ellipse at top, rgba(46, 107, 255, 0.10), transparent 55%),
       radial-gradient(ellipse at bottom left, rgba(255, 216, 111, 0.06), transparent 50%);
     background-attachment: fixed;
     font-feature-settings: 'tnum' 1, 'cv02' 1, 'cv03' 1;
+  }
+  html.light body {
+    background-image:
+      radial-gradient(ellipse at top, rgba(46, 107, 255, 0.05), transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(255, 216, 111, 0.05), transparent 50%);
   }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
@@ -36,15 +71,15 @@
 
 @layer components {
   .glass {
-    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+    @apply backdrop-blur-xl border border-overlay/[0.08] bg-overlay/[0.04] rounded-2xl;
   }
   .glass-hover {
-    @apply transition-all duration-200 hover:bg-white/[0.07] hover:border-white/[0.14] hover:shadow-glow;
+    @apply transition-all duration-200 hover:bg-overlay/[0.07] hover:border-overlay/[0.14] hover:shadow-glow;
   }
   .glass-input {
-    @apply w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-2.5 text-sm text-zinc-200
-      placeholder-zinc-500 outline-none transition-all duration-200
-      focus:border-accent-violet/60 focus:bg-white/[0.07] focus:shadow-glow;
+    @apply w-full bg-overlay/[0.05] border border-overlay/[0.1] rounded-xl px-4 py-2.5 text-sm text-body
+      placeholder-faint outline-none transition-all duration-200
+      focus:border-accent-violet/60 focus:bg-overlay/[0.07] focus:shadow-glow;
   }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
@@ -54,11 +89,11 @@
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
-      text-zinc-300 hover:bg-white/[0.06] active:scale-[0.98] transition-all duration-150;
+      text-body hover:bg-overlay/[0.06] active:scale-[0.98] transition-all duration-150;
   }
   .btn-danger {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
-      bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/25
+      bg-red-500/15 text-red-500 border border-red-500/20 hover:bg-red-500/25
       active:scale-[0.98] transition-all duration-150;
   }
   .btn-gold {
@@ -70,15 +105,15 @@
     @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
   .table-row {
-    @apply border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors;
+    @apply border-b border-overlay/[0.04] hover:bg-overlay/[0.03] transition-colors;
   }
 
   /* Login: gold-focused field (scoped, leaves global glass-input violet focus intact) */
   .field-gold {
-    @apply w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-zinc-200
-      placeholder-zinc-500 outline-none transition-all duration-200
-      hover:border-white/20
-      focus:border-accent-gold/60 focus:bg-white/[0.07] focus:shadow-glow-gold;
+    @apply w-full bg-overlay/[0.05] border border-overlay/[0.1] rounded-xl px-4 py-3 text-sm text-body
+      placeholder-faint outline-none transition-all duration-200
+      hover:border-overlay/20
+      focus:border-accent-gold/60 focus:bg-overlay/[0.07] focus:shadow-glow-gold;
   }
 
   /* Login: shine sweep on hover (works with btn-gold / glass cards) */
@@ -92,7 +127,7 @@
     left: 0;
     width: 60%;
     height: 100%;
-    background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%);
+    background: linear-gradient(105deg, transparent 20%, rgb(var(--overlay) / 0.35) 50%, transparent 80%);
     transform: translateX(-160%) skewX(-18deg);
     transition: transform 0.7s ease;
     pointer-events: none;
@@ -103,7 +138,7 @@
 
   /* Dot-grid backdrop for brand panel */
   .dots-grid {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+    background-image: radial-gradient(rgb(var(--overlay) / 0.09) 1px, transparent 1px);
     background-size: 26px 26px;
   }
 }
@@ -113,4 +148,17 @@
 }
 .text-gradient-gold {
   @apply bg-gradient-to-r from-accent-gold to-accent-goldDark bg-clip-text text-transparent;
+}
+
+/* ---- Recharts: light-mode overrides ------------------------------------
+   Chart pages keep their dark inline values (grid stroke, tooltipStyle);
+   these rules flip them when html.light is set. CSS beats presentation
+   attributes, and !important beats the tooltip's inline styles. */
+html.light .recharts-cartesian-grid line[stroke^='rgba(255'] {
+  stroke: rgba(24, 24, 27, 0.08);
+}
+html.light .recharts-default-tooltip {
+  background: #ffffff !important;
+  border-color: rgba(24, 24, 27, 0.12) !important;
+  color: #18181b !important;
 }

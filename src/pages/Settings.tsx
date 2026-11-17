@@ -3,11 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Settings2, Smartphone, Wallet, ShieldAlert, CheckCircle2, AlertTriangle, XCircle,
   Save, RotateCcw, ExternalLink, Server, Clock, QrCode, Crown, Upload, Share2, FileText, Target, Plus, Trash2,
+  Sun, Moon,
 } from 'lucide-react';
 import api from '../lib/api';
 import { cn, formatDateTime } from '../lib/utils';
 import { Modal } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface SettingsPayload {
   data: Record<string, unknown>;
@@ -52,15 +54,16 @@ type SocialLink = { platform: string; url: string };
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div>
-      <label className="text-xs font-medium text-zinc-400">{label}</label>
+      <label className="text-xs font-medium text-muted">{label}</label>
       {children}
-      {hint && <p className="text-[11px] text-zinc-600 mt-1">{hint}</p>}
+      {hint && <p className="text-[11px] text-dim mt-1">{hint}</p>}
     </div>
   );
 }
 
 export default function Settings() {
   const { can } = useAuth();
+  const { theme, setTheme } = useTheme();
   const qc = useQueryClient();
   const editable = can('settings.manage');
 
@@ -234,15 +237,15 @@ export default function Settings() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Settings2 className="w-5 h-5 text-accent-gold" /></span>
             Platform Settings
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">App identity, economy rules and maintenance control</p>
+          <p className="mt-1.5 text-sm text-faint">App identity, economy rules and maintenance control</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap justify-sm-end">
           {lastSaved > 0 && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-zinc-500 px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08]">
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-faint px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08]">
               <Clock className="w-3 h-3" /> Saved {formatDateTime(new Date(lastSaved).toISOString())}
             </span>
           )}
@@ -256,7 +259,7 @@ export default function Settings() {
               <ShieldAlert className="w-3 h-3" /> Read-only
             </span>
           )}
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-zinc-500 px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08]">
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-faint px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08]">
             <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
           </span>
         </div>
@@ -274,6 +277,44 @@ export default function Settings() {
         </div>
       )}
 
+      {/* appearance (personal preference — applies to this browser) */}
+      <div className="glass p-5 sm:p-6 mb-6 animate-slide-up" style={{ animationDelay: '35ms' }}>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-start gap-3 min-w-0">
+            <span className="p-2 rounded-lg border bg-overlay/[0.05] border-overlay/[0.08] shrink-0">
+              {theme === 'dark'
+                ? <Moon className="w-4 h-4 text-accent-violet" />
+                : <Sun className="w-4 h-4 text-accent-gold" />}
+            </span>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-heading">Appearance</h3>
+              <p className="text-sm text-muted mt-0.5">Dark or light — the whole panel follows your choice. Saved to this browser.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08]">
+            {([
+              { key: 'dark' as const, icon: Moon, label: 'Dark' },
+              { key: 'light' as const, icon: Sun, label: 'Light' },
+            ]).map(({ key, icon: Icon, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setTheme(key)}
+                aria-pressed={theme === key}
+                className={cn(
+                  'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150',
+                  theme === key
+                    ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow'
+                    : 'text-muted hover:text-heading hover:bg-overlay/[0.06]',
+                )}
+              >
+                <Icon className="w-4 h-4" /> {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* form column */}
         <div className="lg:col-span-3 space-y-6">
@@ -281,10 +322,10 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up">
             <div className="flex items-center gap-2.5 mb-5">
               <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Smartphone className="w-4 h-4 text-accent-blue" /></span>
-              <h3 className="font-semibold text-white">General</h3>
+              <h3 className="font-semibold text-heading">General</h3>
             </div>
             {isLoading ? (
-              <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-4">
                 <Field label="App name" hint="Displayed in header, splash and download pages">
@@ -305,7 +346,7 @@ export default function Settings() {
                       onChange={(e) => setForm({ ...form, androidDownloadUrl: e.target.value })}
                     />
                     {form.androidDownloadUrl && isValidUrl(form.androidDownloadUrl) && (
-                      <a href={form.androidDownloadUrl} target="_blank" rel="noreferrer" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors">
+                      <a href={form.androidDownloadUrl} target="_blank" rel="noreferrer" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors">
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     )}
@@ -321,7 +362,7 @@ export default function Settings() {
                       onChange={(e) => setForm({ ...form, iosDownloadUrl: e.target.value })}
                     />
                     {form.iosDownloadUrl && isValidUrl(form.iosDownloadUrl) && (
-                      <a href={form.iosDownloadUrl} target="_blank" rel="noreferrer" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors">
+                      <a href={form.iosDownloadUrl} target="_blank" rel="noreferrer" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors">
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     )}
@@ -335,15 +376,15 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '70ms' }}>
             <div className="flex items-center gap-2.5 mb-5">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Wallet className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white">Economy</h3>
-              <span className="text-[11px] text-zinc-500">coin rules</span>
+              <h3 className="font-semibold text-heading">Economy</h3>
+              <span className="text-[11px] text-faint">coin rules</span>
             </div>
             {isLoading ? (
-              <div className="grid sm:grid-cols-2 gap-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="grid sm:grid-cols-2 gap-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-zinc-400">Minimum redeem</label>
+                  <label className="text-xs font-medium text-muted">Minimum redeem</label>
                   <div className="relative mt-1">
                     <input
                       className="glass-input pr-16 tabular-nums"
@@ -354,10 +395,10 @@ export default function Settings() {
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
                   </div>
-                  <p className="text-[11px] text-zinc-600 mt-1">Redeems below {Number(form.minWithdrawal) || 0} coins are blocked</p>
+                  <p className="text-[11px] text-dim mt-1">Redeems below {Number(form.minWithdrawal) || 0} coins are blocked</p>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-400">Signup bonus</label>
+                  <label className="text-xs font-medium text-muted">Signup bonus</label>
                   <div className="relative mt-1">
                     <input
                       className="glass-input pr-16 tabular-nums"
@@ -368,7 +409,7 @@ export default function Settings() {
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
                   </div>
-                  <p className="text-[11px] text-zinc-600 mt-1">Credited to social passbook on account creation</p>
+                  <p className="text-[11px] text-dim mt-1">Credited to social passbook on account creation</p>
                 </div>
               </div>
             )}
@@ -378,16 +419,16 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '105ms' }}>
             <div className="flex items-center gap-2.5 mb-5">
               <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
-              <h3 className="font-semibold text-white">Membership Activation</h3>
-              <span className="text-[11px] text-zinc-500">fee & payment QRs</span>
+              <h3 className="font-semibold text-heading">Membership Activation</h3>
+              <span className="text-[11px] text-faint">fee & payment QRs</span>
             </div>
             {isLoading ? (
-              <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-zinc-400">Activation fee</label>
+                    <label className="text-xs font-medium text-muted">Activation fee</label>
                     <div className="relative mt-1">
                       <input
                         className="glass-input pr-14 tabular-nums"
@@ -398,10 +439,10 @@ export default function Settings() {
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">points</span>
                     </div>
-                    <p className="text-[11px] text-zinc-600 mt-1">Shown in-app as a plain number (no currency symbols)</p>
+                    <p className="text-[11px] text-dim mt-1">Shown in-app as a plain number (no currency symbols)</p>
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-zinc-400">Minimum USDT (BEP-20)</label>
+                    <label className="text-xs font-medium text-muted">Minimum USDT (BEP-20)</label>
                     <div className="relative mt-1">
                       <input
                         className="glass-input pr-14 tabular-nums"
@@ -412,30 +453,30 @@ export default function Settings() {
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">USDT</span>
                     </div>
-                    <p className="text-[11px] text-zinc-600 mt-1">Minimum activation amount for the USDT option</p>
+                    <p className="text-[11px] text-dim mt-1">Minimum activation amount for the USDT option</p>
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   {([['upi', 'Digital handle QR', 'Digital ID QR shown to users'], ['usdt', 'USDT BEP-20 QR', 'BSC (BEP-20) network only']] as const).map(([kind, label, hint]) => (
-                    <div key={kind} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                    <div key={kind} className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><QrCode className="w-3.5 h-3.5" /> {label}</p>
-                          <p className="text-[11px] text-zinc-600 mt-0.5">{hint}</p>
+                          <p className="text-xs font-medium text-muted flex items-center gap-1.5"><QrCode className="w-3.5 h-3.5" /> {label}</p>
+                          <p className="text-[11px] text-dim mt-0.5">{hint}</p>
                         </div>
                         {form[kind === 'upi' ? 'upiQr' : 'usdtQr'] && (
                           <img
                             src={qrSrc(kind, form[kind === 'upi' ? 'upiQr' : 'usdtQr'])}
                             alt={label}
-                            className="w-16 h-16 rounded-lg object-cover border border-white/[0.12] bg-white"
+                            className="w-16 h-16 rounded-lg object-cover border border-overlay/[0.12] bg-white"
                           />
                         )}
                       </div>
                       <label className={cn(
                         'mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
                         !editable || qrUploading
-                          ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                          ? 'opacity-40 cursor-not-allowed border-overlay/[0.1] text-faint'
                           : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
                       )}>
                         <input
@@ -473,18 +514,18 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '120ms' }}>
             <div className="flex items-center gap-2.5 mb-5">
               <span className="p-2 rounded-lg bg-accent-pink/10 border border-accent-pink/20"><Share2 className="w-4 h-4 text-accent-pink" /></span>
-              <h3 className="font-semibold text-white">Daily goal & sharing</h3>
-              <span className="text-[11px] text-zinc-500">reward · socials · landing PDF</span>
+              <h3 className="font-semibold text-heading">Daily goal & sharing</h3>
+              <span className="text-[11px] text-faint">reward · socials · landing PDF</span>
             </div>
             {isLoading ? (
-              <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-6">
                 {/* daily goal reward */}
-                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
+                <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
                   <div className="flex flex-wrap items-end gap-3">
                     <div className="flex-1 min-w-[160px]">
-                      <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Daily goal reward</label>
+                      <label className="text-xs font-medium text-muted flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Daily goal reward</label>
                       <div className="relative mt-1">
                         <input
                           className="glass-input pr-16 tabular-nums"
@@ -495,7 +536,7 @@ export default function Settings() {
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">coins</span>
                       </div>
-                      <p className="text-[11px] text-zinc-600 mt-1">Credited once per day when every active daily task is approved</p>
+                      <p className="text-[11px] text-dim mt-1">Credited once per day when every active daily task is approved</p>
                     </div>
                     <button
                       onClick={() => saveGoal.mutate()}
@@ -508,9 +549,9 @@ export default function Settings() {
                 </div>
 
                 {/* social media links */}
-                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
-                  <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><Share2 className="w-3.5 h-3.5" /> Social media links</label>
-                  <p className="text-[11px] text-zinc-600 mt-0.5 mb-3">Shown in the app profile — tap to open in the browser</p>
+                <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
+                  <label className="text-xs font-medium text-muted flex items-center gap-1.5"><Share2 className="w-3.5 h-3.5" /> Social media links</label>
+                  <p className="text-[11px] text-dim mt-0.5 mb-3">Shown in the app profile — tap to open in the browser</p>
                   <div className="space-y-2">
                     {socialLinks.map((l, i) => (
                       <div key={i} className="flex gap-2">
@@ -532,14 +573,14 @@ export default function Settings() {
                         <button
                           onClick={() => setSocialLinks(socialLinks.filter((_, j) => j !== i))}
                           disabled={!editable}
-                          className="px-2.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-zinc-500 hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
+                          className="px-2.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08] text-faint hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
                           aria-label="Remove link"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     ))}
-                    {socialLinks.length === 0 && <p className="text-[11px] text-zinc-600">No links yet.</p>}
+                    {socialLinks.length === 0 && <p className="text-[11px] text-dim">No links yet.</p>}
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <button
@@ -560,9 +601,9 @@ export default function Settings() {
                 </div>
 
                 {/* landing page pdf */}
-                <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3.5">
-                  <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> Landing page PDF</label>
-                  <p className="text-[11px] text-zinc-600 mt-0.5">Company profile / Get Started brochure — opened from the app profile</p>
+                <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
+                  <label className="text-xs font-medium text-muted flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> Landing page PDF</label>
+                  <p className="text-[11px] text-dim mt-0.5">Company profile / Get Started brochure — opened from the app profile</p>
                   <div className="flex flex-wrap items-center gap-2 mt-3">
                     {landingPdf ? (
                       <>
@@ -570,14 +611,14 @@ export default function Settings() {
                           href={`${apiBase}/landing-pdf`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.10] text-xs font-semibold text-accent-blue hover:bg-white/[0.09] transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-overlay/[0.05] border border-overlay/[0.10] text-xs font-semibold text-accent-blue hover:bg-overlay/[0.09] transition-colors"
                         >
                           <ExternalLink className="w-3.5 h-3.5" /> Open current PDF
                         </a>
                         <label className={cn(
                           'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
                           !editable || pdfUploading
-                            ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                            ? 'opacity-40 cursor-not-allowed border-overlay/[0.1] text-faint'
                             : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
                         )}>
                           <input
@@ -592,7 +633,7 @@ export default function Settings() {
                         <button
                           onClick={() => removePdf.mutate()}
                           disabled={!editable || removePdf.isPending}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.10] text-xs font-semibold text-zinc-400 hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-overlay/[0.05] border border-overlay/[0.10] text-xs font-semibold text-muted hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
                         >
                           <Trash2 className="w-3.5 h-3.5" /> Remove
                         </button>
@@ -601,7 +642,7 @@ export default function Settings() {
                       <label className={cn(
                         'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
                         !editable || pdfUploading
-                          ? 'opacity-40 cursor-not-allowed border-white/[0.1] text-zinc-500'
+                          ? 'opacity-40 cursor-not-allowed border-overlay/[0.1] text-faint'
                           : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
                       )}>
                         <input
@@ -624,19 +665,19 @@ export default function Settings() {
           {/* maintenance */}
           <div className={cn(
             'glass p-5 sm:p-6 border animate-slide-up transition-colors',
-            form.maintenanceMode ? 'border-accent-red/40 bg-accent-red/[0.06]' : 'border-white/[0.07]',
+            form.maintenanceMode ? 'border-accent-red/40 bg-accent-red/[0.06]' : 'border-overlay/[0.07]',
           )} style={{ animationDelay: '140ms' }}>
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3 min-w-0">
                 <span className={cn(
                   'p-2 rounded-lg border shrink-0',
-                  form.maintenanceMode ? 'bg-accent-red/15 border-accent-red/30' : 'bg-white/[0.05] border-white/[0.08]'
+                  form.maintenanceMode ? 'bg-accent-red/15 border-accent-red/30' : 'bg-overlay/[0.05] border-overlay/[0.08]'
                 )}>
-                  <ShieldAlert className={cn('w-4 h-4', form.maintenanceMode ? 'text-accent-red' : 'text-zinc-500')} />
+                  <ShieldAlert className={cn('w-4 h-4', form.maintenanceMode ? 'text-accent-red' : 'text-faint')} />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-white">Maintenance mode</h3>
-                  <p className="text-sm text-zinc-500 mt-0.5">
+                  <h3 className="font-semibold text-heading">Maintenance mode</h3>
+                  <p className="text-sm text-faint mt-0.5">
                     {form.maintenanceMode
                       ? '⚠ Users are currently blocked from the app — only admins can log in.'
                       : 'When enabled, the user app is blocked while you ship fixes.'}
@@ -652,7 +693,7 @@ export default function Settings() {
                 onClick={() => toggleMaintenance(!form.maintenanceMode)}
                 className={cn(
                   'relative w-12 h-[26px] rounded-full transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed',
-                  form.maintenanceMode ? 'bg-accent-red shadow-[0_0_14px_rgba(248,113,113,0.4)]' : 'bg-white/[0.12]'
+                  form.maintenanceMode ? 'bg-accent-red shadow-[0_0_14px_rgba(248,113,113,0.4)]' : 'bg-overlay/[0.12]'
                 )}
               >
                 <span className={cn(
@@ -671,7 +712,7 @@ export default function Settings() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Server className="w-4 h-4 text-accent-green" /></span>
-                <h3 className="font-semibold text-white">Config health</h3>
+                <h3 className="font-semibold text-heading">Config health</h3>
               </div>
               <span className={cn(
                 'text-[11px] font-bold px-2 py-1 rounded-lg border',
@@ -687,7 +728,7 @@ export default function Settings() {
               {checks.map((c) => {
                 const warn = 'warn' in c && c.warn;
                 return (
-                  <div key={c.label} className="flex items-start gap-2.5 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                  <div key={c.label} className="flex items-start gap-2.5 p-2.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                     {c.ok && !warn ? (
                       <CheckCircle2 className="w-4 h-4 text-accent-green shrink-0 mt-0.5" />
                     ) : warn ? (
@@ -696,8 +737,8 @@ export default function Settings() {
                       <XCircle className="w-4 h-4 text-accent-red shrink-0 mt-0.5" />
                     )}
                     <div className="min-w-0">
-                      <p className={cn('text-xs font-semibold', c.ok && !warn ? 'text-white' : warn ? 'text-accent-gold' : 'text-accent-red')}>{c.label}</p>
-                      <p className="text-[10px] text-zinc-600 truncate">{c.hint}</p>
+                      <p className={cn('text-xs font-semibold', c.ok && !warn ? 'text-heading' : warn ? 'text-accent-gold' : 'text-accent-red')}>{c.label}</p>
+                      <p className="text-[10px] text-dim truncate">{c.hint}</p>
                     </div>
                   </div>
                 );
@@ -705,7 +746,7 @@ export default function Settings() {
             </div>
 
             {/* actions */}
-            <div className="mt-5 pt-4 border-t border-white/[0.08] space-y-3">
+            <div className="mt-5 pt-4 border-t border-overlay/[0.08] space-y-3">
               {errors.length > 0 && (
                 <ul className="space-y-1">
                   {errors.map((e) => (
@@ -726,7 +767,7 @@ export default function Settings() {
                 <button
                   onClick={() => setForm(server)}
                   disabled={!editable || !dirty || mut.isPending}
-                  className="px-4 rounded-xl bg-white/[0.06] border border-white/[0.10] text-zinc-300 hover:bg-white/[0.1] transition-colors font-semibold text-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-4 rounded-xl bg-overlay/[0.06] border border-overlay/[0.10] text-body hover:bg-overlay/[0.1] transition-colors font-semibold text-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <RotateCcw className="w-4 h-4" /> Reset
                 </button>
@@ -743,20 +784,20 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '140ms' }}>
             <div className="flex items-center gap-2.5 mb-4">
               <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Clock className="w-4 h-4 text-accent-violet" /></span>
-              <h3 className="font-semibold text-white">Key history</h3>
+              <h3 className="font-semibold text-heading">Key history</h3>
             </div>
             {isLoading ? (
-              <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-9 rounded-lg bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-9 rounded-lg bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-1.5">
                 {Object.entries(res?.meta ?? {}).map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05]">
-                    <span className="text-xs text-zinc-400 font-mono truncate">{k}</span>
-                    <span className="text-[10px] text-zinc-600 shrink-0">{formatDateTime(v)}</span>
+                  <div key={k} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-overlay/[0.03] border border-overlay/[0.05]">
+                    <span className="text-xs text-muted font-mono truncate">{k}</span>
+                    <span className="text-[10px] text-dim shrink-0">{formatDateTime(v)}</span>
                   </div>
                 ))}
                 {Object.keys(res?.meta ?? {}).length === 0 && (
-                  <p className="text-xs text-zinc-600">No keys stored yet.</p>
+                  <p className="text-xs text-dim">No keys stored yet.</p>
                 )}
               </div>
             )}
@@ -769,15 +810,15 @@ export default function Settings() {
         <div className="space-y-4">
           <div className="flex items-start gap-3 p-3.5 rounded-xl bg-accent-red/10 border border-accent-red/25">
             <AlertTriangle className="w-5 h-5 text-accent-red shrink-0 mt-0.5" />
-            <p className="text-sm text-zinc-300 leading-relaxed">
-              The user app will <b className="text-white">immediately block all user access</b> until you turn this off.
+            <p className="text-sm text-body leading-relaxed">
+              The user app will <b className="text-heading">immediately block all user access</b> until you turn this off.
                Existing sessions cannot redeem, watch or claim while maintenance is on.
             </p>
           </div>
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setConfirmMaint(false)}
-              className="px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-zinc-300 hover:bg-white/[0.1] transition-colors text-sm font-semibold"
+              className="px-4 py-2.5 rounded-xl bg-overlay/[0.06] border border-overlay/[0.10] text-body hover:bg-overlay/[0.1] transition-colors text-sm font-semibold"
             >
               Cancel
             </button>

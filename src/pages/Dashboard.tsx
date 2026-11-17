@@ -56,13 +56,13 @@ function Kpi({ label, value, sub, icon: Icon, tone }: {
   };
   return (
     <div className="group relative overflow-hidden glass glass-hover p-5 animate-slide-up">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-overlay/25 to-transparent" />
       <div className={`absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl ${orbs[tone]} opacity-70`} />
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">{label}</p>
-          <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{value}</p>
-          <p className="mt-2 text-[11px] text-zinc-500">{sub}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-faint font-semibold">{label}</p>
+          <p className="mt-2 text-[26px] leading-none font-extrabold text-heading tabular-nums">{value}</p>
+          <p className="mt-2 text-[11px] text-faint">{sub}</p>
         </div>
         <div className={`p-3 rounded-xl bg-gradient-to-br shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 ${tones[tone]}`}>
           <Icon className="w-5 h-5" />
@@ -81,9 +81,9 @@ function SectionTitle({ icon: Icon, title, hint }: {
         <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20">
           <Icon className="w-4 h-4 text-accent-gold" />
         </span>
-        <h3 className="font-semibold text-white truncate">{title}</h3>
+        <h3 className="font-semibold text-heading truncate">{title}</h3>
       </div>
-      {hint && <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:block">{hint}</span>}
+      {hint && <span className="text-[11px] text-faint shrink-0 hidden sm:block">{hint}</span>}
     </div>
   );
 }
@@ -140,7 +140,7 @@ export default function Dashboard() {
   return (
     <div>
       {/* ============ HERO ============ */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/[0.1] bg-brand-navyLight/50 backdrop-blur-xl shadow-glow-blueSoft mb-6 animate-slide-up">
+      <section className="relative overflow-hidden rounded-3xl border border-overlay/[0.1] bg-brand-navyLight/50 backdrop-blur-xl shadow-glow-blueSoft mb-6 animate-slide-up">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(46,107,255,0.28),transparent_55%)]" />
         <div className="absolute -left-16 -bottom-20 w-56 h-56 rounded-full bg-accent-gold/10 blur-[80px]" />
         <div className="absolute inset-0 dots-grid opacity-25" />
@@ -151,18 +151,18 @@ export default function Dashboard() {
             <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-gold">
               <Rocket className="w-3.5 h-3.5" /> {greet}, {admin?.name?.split(' ')[0]}
             </p>
-            <h1 className="mt-2.5 text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+            <h1 className="mt-2.5 text-2xl sm:text-3xl font-extrabold text-heading leading-tight">
               Here's what's happening <span className="text-gradient-gold">across Dream Ads</span> today
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-300">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-body">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" /> All systems operational
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-muted">
                 <CalendarDays className="w-3.5 h-3.5 text-accent-gold/70" />
                 {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </span>
-              <span className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+              <span className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-muted">
                 Signed in as <span className="text-accent-gold font-semibold ml-1">{admin?.role}</span>
               </span>
             </div>
@@ -172,7 +172,7 @@ export default function Dashboard() {
             <button
               onClick={() => qc.invalidateQueries({ queryKey: ['dashboard'] })}
               disabled={isFetching}
-              className="btn-ghost !border !border-white/[0.12] bg-white/[0.05] hover:border-accent-blue/40 hover:text-accent-blue !py-2.5 disabled:opacity-60"
+              className="btn-ghost !border !border-overlay/[0.12] bg-overlay/[0.05] hover:border-accent-blue/40 hover:text-accent-blue !py-2.5 disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
               {isFetching ? 'Refreshing…' : 'Refresh Data'}
@@ -181,7 +181,7 @@ export default function Dashboard() {
               <Link to="/tasks" className="btn-gold shine !py-2.5">Verify tasks <ArrowRight className="w-4 h-4" /></Link>
             )}
             {can('leads.read') && (
-              <Link to="/leads" className="btn-ghost !border !border-white/[0.12] bg-white/[0.05] hover:border-accent-gold/40 hover:text-accent-gold !py-2.5">
+              <Link to="/leads" className="btn-ghost !border !border-overlay/[0.12] bg-overlay/[0.05] hover:border-accent-gold/40 hover:text-accent-gold !py-2.5">
                 Review leads <Inbox className="w-4 h-4" />
               </Link>
             )}
@@ -205,9 +205,9 @@ export default function Dashboard() {
           <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-brand-blue/15 opacity-70" />
           <div className="relative flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Total Holdings</p>
-              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.holdings)}</p>
-              <p className="mt-2 text-[11px] text-zinc-500">Current user balance</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-faint font-semibold">Total Holdings</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-heading tabular-nums">{dash(d?.walletAnalytics?.holdings)}</p>
+              <p className="mt-2 text-[11px] text-faint">Current user balance</p>
             </div>
             <div className="p-3 rounded-xl bg-gradient-to-br from-brand-blue/30 to-brand-blue/5 text-accent-blue shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
               <PiggyBank className="w-5 h-5" />
@@ -219,9 +219,9 @@ export default function Dashboard() {
           <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-accent-green/10 opacity-70" />
           <div className="relative flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Total Withdrawals</p>
-              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.withdrawals)}</p>
-              <p className="mt-2 text-[11px] text-zinc-500">Approved &amp; completed</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-faint font-semibold">Total Withdrawals</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-heading tabular-nums">{dash(d?.walletAnalytics?.withdrawals)}</p>
+              <p className="mt-2 text-[11px] text-faint">Approved &amp; completed</p>
             </div>
             <div className="p-3 rounded-xl bg-gradient-to-br from-accent-green/25 to-accent-green/5 text-accent-green shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
               <HandCoins className="w-5 h-5" />
@@ -233,9 +233,9 @@ export default function Dashboard() {
           <div className="absolute -right-6 -bottom-8 w-24 h-24 rounded-full blur-2xl bg-accent-red/10 opacity-70" />
           <div className="relative flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Pending Amount</p>
-              <p className="mt-2 text-[26px] leading-none font-extrabold text-white tabular-nums">{dash(d?.walletAnalytics?.pending)}</p>
-              <p className="mt-2 text-[11px] text-zinc-500">Awaiting approval</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-faint font-semibold">Pending Amount</p>
+              <p className="mt-2 text-[26px] leading-none font-extrabold text-heading tabular-nums">{dash(d?.walletAnalytics?.pending)}</p>
+              <p className="mt-2 text-[11px] text-faint">Awaiting approval</p>
             </div>
             <div className="p-3 rounded-xl bg-gradient-to-br from-accent-red/25 to-accent-red/5 text-accent-red shrink-0 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
               <Clock className="w-5 h-5" />
@@ -250,7 +250,7 @@ export default function Dashboard() {
         <div className="lg:col-span-3 glass p-5 sm:p-6 animate-slide-up">
           <SectionTitle icon={TrendingUp} title="User growth" hint="Last 7 days · new signups" />
           {isLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={chartData} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
@@ -279,14 +279,14 @@ export default function Dashboard() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <SectionTitle icon={Inbox} title="Action queue" hint="Pending work" />
           {isLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : queueTotal === 0 ? (
             <div className="h-[250px] flex flex-col items-center justify-center gap-3 text-center">
               <span className="p-4 rounded-full bg-accent-green/10 border border-accent-green/25">
                 <CheckCircle2 className="w-8 h-8 text-accent-green" />
               </span>
-              <p className="text-sm font-semibold text-white">All clear!</p>
-              <p className="text-xs text-zinc-500 px-6">Nothing is waiting in any queue right now.</p>
+              <p className="text-sm font-semibold text-heading">All clear!</p>
+              <p className="text-xs text-faint px-6">Nothing is waiting in any queue right now.</p>
             </div>
           ) : (
             <>
@@ -300,17 +300,17 @@ export default function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-2xl font-extrabold text-white tabular-nums leading-none">{queueTotal}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1">pending</p>
+                  <p className="text-2xl font-extrabold text-heading tabular-nums leading-none">{queueTotal}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-faint mt-1">pending</p>
                 </div>
               </div>
               <div className="mt-3 space-y-1.5">
                 {queue.map((q) => (
-                  <Link key={q.name} to={q.href} className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors group">
+                  <Link key={q.name} to={q.href} className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-overlay/[0.05] transition-colors group">
                     <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: q.color }} />
-                    <span className="text-xs text-zinc-400 group-hover:text-zinc-200 flex-1 truncate">{q.name}</span>
-                    <span className="text-xs font-bold text-white tabular-nums">{q.value}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-accent-gold group-hover:translate-x-0.5 transition-all" />
+                    <span className="text-xs text-muted group-hover:text-body flex-1 truncate">{q.name}</span>
+                    <span className="text-xs font-bold text-heading tabular-nums">{q.value}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-dim group-hover:text-accent-gold group-hover:translate-x-0.5 transition-all" />
                   </Link>
                 ))}
               </div>
@@ -326,17 +326,17 @@ export default function Dashboard() {
           <SectionTitle icon={Rocket} title="Action center" hint="Needs attention" />
           <div className="space-y-2.5">
             {overview.map((row) => (
-              <Link key={row.label} to={row.href} className="group flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-accent-gold/40 hover:bg-accent-gold/[0.05] transition-all">
+              <Link key={row.label} to={row.href} className="group flex items-center gap-3 p-3.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] hover:border-accent-gold/40 hover:bg-accent-gold/[0.05] transition-all">
                 <span className={`p-2.5 rounded-lg shrink-0 ${row.color}`}>
                   <row.icon className="w-4 h-4" />
                 </span>
-                <span className="text-sm text-zinc-400 group-hover:text-zinc-200 flex-1 min-w-0 truncate">{row.label}</span>
-                <span className="text-lg font-bold text-white tabular-nums">{isLoading ? '—' : row.value}</span>
-                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-accent-gold group-hover:translate-x-0.5 transition-all shrink-0" />
+                <span className="text-sm text-muted group-hover:text-body flex-1 min-w-0 truncate">{row.label}</span>
+                <span className="text-lg font-bold text-heading tabular-nums">{isLoading ? '—' : row.value}</span>
+                <ArrowRight className="w-4 h-4 text-dim group-hover:text-accent-gold group-hover:translate-x-0.5 transition-all shrink-0" />
               </Link>
             ))}
             {overview.length === 0 && !isLoading && (
-              <p className="text-sm text-zinc-500 py-6 text-center">No pending actions for your role.</p>
+              <p className="text-sm text-faint py-6 text-center">No pending actions for your role.</p>
             )}
           </div>
         </div>
@@ -344,9 +344,9 @@ export default function Dashboard() {
         {/* audit timeline */}
         <div className="glass p-5 sm:p-6 animate-slide-up">
           <SectionTitle icon={History} title="Recent admin actions" hint="Audit trail" />
-          {recent.isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-12 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {recent.isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-12 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!recent.isLoading && (recent.data?.logs?.length ?? 0) === 0 && (
-            <p className="text-sm text-zinc-500 py-6 text-center">No recent activity.</p>
+            <p className="text-sm text-faint py-6 text-center">No recent activity.</p>
           )}
           <div className="space-y-4">
             {(recent.data?.logs ?? []).map((log, i, arr) => (
@@ -357,11 +357,11 @@ export default function Dashboard() {
                 <span className={`relative z-10 mt-1 shrink-0 w-3.5 h-3.5 rounded-full ring-2 ring-brand-navy ${i === 0 ? 'bg-accent-gold shadow-glow-gold' : 'bg-brand-blue/70'}`} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className="text-sm text-white font-medium truncate">{log.action}</p>
-                    <span className="text-[11px] text-zinc-600 shrink-0">{ago(log.createdAt)}</span>
+                    <p className="text-sm text-heading font-medium truncate">{log.action}</p>
+                    <span className="text-[11px] text-dim shrink-0">{ago(log.createdAt)}</span>
                   </div>
-                  <p className="text-xs text-zinc-500 truncate mt-0.5">{log.entity} · {log.actorEmail}</p>
-                  <p className="text-[10px] text-zinc-600 mt-0.5 hidden sm:block">{formatDateTime(log.createdAt)}</p>
+                  <p className="text-xs text-faint truncate mt-0.5">{log.entity} · {log.actorEmail}</p>
+                  <p className="text-[10px] text-dim mt-0.5 hidden sm:block">{formatDateTime(log.createdAt)}</p>
                 </div>
               </div>
             ))}
@@ -372,25 +372,25 @@ export default function Dashboard() {
         {can('leads.read') && (
           <div className="glass p-5 sm:p-6 animate-slide-up">
             <SectionTitle icon={Inbox} title="Fresh leads" hint={leads.data ? `${leads.data.total} total` : undefined} />
-            {leads.isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-12 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+            {leads.isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-12 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
             {!leads.isLoading && (leads.data?.items?.length ?? 0) === 0 && (
-              <p className="text-sm text-zinc-500 py-6 text-center">No inquiries yet.</p>
+              <p className="text-sm text-faint py-6 text-center">No inquiries yet.</p>
             )}
             <div className="space-y-2.5">
               {(leads.data?.items ?? []).map((l) => (
-                <Link key={l._id} to="/leads" className="group flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-accent-blue/40 transition-all">
+                <Link key={l._id} to="/leads" className="group flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] hover:border-accent-blue/40 transition-all">
                   <span className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white text-xs font-bold shrink-0">
                     {l.name?.[0]?.toUpperCase() ?? '?'}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-white font-medium truncate">{l.name}</span>
-                    <span className="block text-xs text-zinc-500 truncate">{l.email}</span>
+                    <span className="block text-sm text-heading font-medium truncate">{l.name}</span>
+                    <span className="block text-xs text-faint truncate">{l.email}</span>
                   </span>
                   <Badge variant={leadBadge(l.status)}>{l.status}</Badge>
                 </Link>
               ))}
             </div>
-            <Link to="/leads" className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-gold hover:text-white transition-colors">
+            <Link to="/leads" className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-gold hover:text-heading transition-colors">
               View all leads <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

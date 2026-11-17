@@ -66,7 +66,7 @@ function rel(iso: string) {
 }
 
 function StatusPill({ status, map }: { status: string; map: Record<string, { cls: string; dot: string }> }) {
-  const s = map[status] ?? { cls: 'bg-white/[0.08] text-zinc-300 border-white/10', dot: 'bg-zinc-500' };
+  const s = map[status] ?? { cls: 'bg-overlay/[0.08] text-body border-overlay/10', dot: 'bg-zinc-500' };
   return (
     <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold capitalize', s.cls)}>
       <span className={cn('w-1.5 h-1.5 rounded-full', s.dot)} /> {status}
@@ -89,13 +89,13 @@ export default function Finance() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Landmark className="w-5 h-5 text-accent-gold" /></span>
             Finance Operations
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Review payout requests and activations — every action is audited</p>
+          <p className="mt-1.5 text-sm text-faint">Review payout requests and activations — every action is audited</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function Finance() {
 
       {/* tab switcher (bottom, sticky-feel) */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
-        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
+        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-overlay/[0.1] shadow-glow-goldSoft">
           {([['withdrawals', 'Redeems', Landmark], ['deposits', 'Activations', Wallet], ['membership', 'Membership', Crown]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
@@ -113,7 +113,7 @@ export default function Finance() {
                 'flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all',
                 tab === k
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
               )}
             >
               <Icon className="w-3.5 h-3.5" /> {l}
@@ -157,9 +157,9 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -171,15 +171,15 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Landmark className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Points flow</h3>
+              <h3 className="font-semibold text-heading truncate">Points flow</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
+            <span className="text-[11px] text-faint shrink-0 hidden sm:flex items-center gap-3">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> activations</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-gold" /> payouts</span>
             </span>
           </div>
           {statsLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <ComposedChart data={chartData} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
@@ -203,40 +203,40 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Banknote className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Channels</h3>
+            <h3 className="font-semibold text-heading">Channels</h3>
           </div>
-          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!statsLoading && (stats?.byMethod.length ?? 0) === 0 && (stats?.byGateway.length ?? 0) === 0 && (
-            <p className="text-sm text-zinc-500 py-8 text-center">No payout or activation activity yet.</p>
+            <p className="text-sm text-faint py-8 text-center">No payout or activation activity yet.</p>
           )}
           <div className="space-y-2">
             {(stats?.byMethod ?? []).map((r) => (
-              <div key={`m-${r.method}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+              <div key={`m-${r.method}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                 <div className="absolute inset-y-0 left-0 bg-accent-violet opacity-15" style={{ width: `${Math.max(6, Math.round((r.sum / maxBreak) * 100))}%` }} />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0 flex items-center gap-2">
                     {r.method === 'upi' ? <Smartphone className="w-3.5 h-3.5 text-accent-violet shrink-0" /> : r.method === 'bank' ? <Building2 className="w-3.5 h-3.5 text-accent-blue shrink-0" /> : <Banknote className="w-3.5 h-3.5 text-accent-pink shrink-0" />}
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white uppercase truncate">{METHOD_LABEL[r.method] ?? r.method}</p>
-                      <p className="text-[10px] text-zinc-500">{r.count} payouts · active</p>
+                      <p className="text-xs font-semibold text-heading uppercase truncate">{METHOD_LABEL[r.method] ?? r.method}</p>
+                      <p className="text-[10px] text-faint">{r.count} payouts · active</p>
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-zinc-200 tabular-nums shrink-0">{formatCoins(r.sum)}</p>
+                  <p className="text-sm font-bold text-body tabular-nums shrink-0">{formatCoins(r.sum)}</p>
                 </div>
               </div>
             ))}
             {(stats?.byGateway ?? []).map((r) => (
-              <div key={`g-${r.gateway}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+              <div key={`g-${r.gateway}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                 <div className="absolute inset-y-0 left-0 bg-accent-green opacity-15" style={{ width: `${Math.max(6, Math.round((r.sum / maxBreak) * 100))}%` }} />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0 flex items-center gap-2">
                     <Coins className="w-3.5 h-3.5 text-accent-green shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white capitalize truncate">{r.gateway}</p>
-                      <p className="text-[10px] text-zinc-500">{r.count} activations</p>
+                      <p className="text-xs font-semibold text-heading capitalize truncate">{r.gateway}</p>
+                      <p className="text-[10px] text-faint">{r.count} activations</p>
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-zinc-200 tabular-nums shrink-0">{formatCoins(r.sum)}</p>
+                  <p className="text-sm font-bold text-body tabular-nums shrink-0">{formatCoins(r.sum)}</p>
                 </div>
               </div>
             ))}
@@ -252,15 +252,15 @@ function FinanceOverview({ stats, statsLoading, children }: { stats?: FinStats; 
 function Pagination({ page, pages, total, start, end, setPage }: { page: number; pages: number; total: number; start: number; end: number; setPage: (fn: (p: number) => number) => void }) {
   if (pages <= 1) return null;
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-      <p className="text-xs text-zinc-500">
-        Showing <span className="text-zinc-300 font-medium">{start}–{end}</span> of <span className="text-zinc-300 font-medium">{total}</span>
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+      <p className="text-xs text-faint">
+        Showing <span className="text-body font-medium">{start}–{end}</span> of <span className="text-body font-medium">{total}</span>
       </p>
       <div className="flex items-center gap-2">
         <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">
           <ChevronLeft className="w-4 h-4" /> Prev
         </button>
-        <span className="text-xs text-zinc-500 px-2">Page {page} / {pages}</span>
+        <span className="text-xs text-faint px-2">Page {page} / {pages}</span>
         <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page >= pages} className="btn-ghost !py-1.5 disabled:opacity-40">
           Next <ChevronRight className="w-4 h-4" />
         </button>
@@ -316,7 +316,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
       <FinanceOverview stats={stats} statsLoading={statsLoading}>
         <div className="glass overflow-hidden animate-fade-in">
           {/* status pills */}
-          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-overlay/[0.08]">
             {['pending', 'approved', 'paid', 'rejected'].map((s) => (
               <button
                 key={s}
@@ -328,7 +328,7 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                     : s === 'paid' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
                     : s === 'rejected' ? 'bg-accent-red/15 text-accent-red border-accent-red/30'
                     : 'bg-brand-blue/15 text-accent-blue border-brand-blue/30'
-                    : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                    : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
                 )}
               >
                 {s} <span className="ml-1 opacity-60">{counts[s] ?? 0}</span>
@@ -342,10 +342,10 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
           {isLoading ? (
             <div>
               {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                  <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                  <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                  <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                  <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
                 </div>
               ))}
             </div>
@@ -354,15 +354,15 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-gold" />
               </div>
-              <p className="text-white font-semibold">No {status} redeems</p>
-              <p className="mt-1 text-sm text-zinc-500">Requests appear here the moment users request a payout.</p>
+              <p className="text-heading font-semibold">No {status} redeems</p>
+              <p className="mt-1 text-sm text-faint">Requests appear here the moment users request a payout.</p>
             </div>
           ) : (
             items.map((w, i) => (
               <div
                 key={w._id}
                 style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_auto_minmax(0,1.5fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_auto_minmax(0,1.5fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
                 <div className="flex items-center gap-3 min-w-0">
@@ -370,8 +370,8 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                     {w.user?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{w.user?.name ?? 'Unknown user'}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">{w.user?.mobile ?? w.user?.email ?? '—'}</p>
+                    <p className="text-sm font-medium text-heading truncate">{w.user?.name ?? 'Unknown user'}</p>
+                    <p className="text-[11px] text-faint truncate">{w.user?.mobile ?? w.user?.email ?? '—'}</p>
                   </div>
                 </div>
                 <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-1">
@@ -379,17 +379,17 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
                   <Badge variant={w.wallet === 'video' ? 'info' : 'warning'}>{w.wallet}</Badge>
                 </div>
                 <div className="min-w-0 space-y-1.5">
-                  <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold uppercase', METHOD_TONE[w.method] ?? 'bg-white/[0.08] text-zinc-300 border-white/10')}>
+                  <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold uppercase', METHOD_TONE[w.method] ?? 'bg-overlay/[0.08] text-body border-overlay/10')}>
                     {METHOD_LABEL[w.method] ?? w.method}
                   </span>
-                  <p className="text-[11px] text-zinc-500 truncate" title={w.destination}>{w.destination}</p>
-                  {w.status === 'paid' && w.paymentRef && <p className="text-[10px] text-zinc-600 truncate">ref: {w.paymentRef}</p>}
+                  <p className="text-[11px] text-faint truncate" title={w.destination}>{w.destination}</p>
+                  {w.status === 'paid' && w.paymentRef && <p className="text-[10px] text-dim truncate">ref: {w.paymentRef}</p>}
                   {w.status === 'rejected' && w.rejectionReason && <p className="text-[10px] text-accent-red/70 truncate">reason: {w.rejectionReason}</p>}
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                   <div className="flex flex-col md:items-end gap-1">
                     <StatusPill status={w.status} map={WD_STATUS} />
-                    <p className="text-[11px] text-zinc-600 md:text-right" title={formatDate(w.createdAt)}>{rel(w.createdAt)}</p>
+                    <p className="text-[11px] text-dim md:text-right" title={formatDate(w.createdAt)}>{rel(w.createdAt)}</p>
                   </div>
                   {manage && w.status === 'pending' && (
                     <div className="flex gap-1.5">
@@ -423,16 +423,16 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
       >
         {confirm && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Banknote className="w-4 h-4 text-accent-gold" /></span>
               <div>
-                <p className="text-sm text-white font-semibold">{confirm.name}</p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-sm text-heading font-semibold">{confirm.name}</p>
+                <p className="text-xs text-faint">
                   {formatCoins(confirm.amount)}
                   {'wallet' in confirm && <> · {confirm.wallet} passbook</>}
                 </p>
                 {'destination' in confirm && confirm.destination ? (
-                  <p className="text-xs text-zinc-400 font-mono mt-1.5 break-all bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 py-1.5" title={confirm.destination}>
+                  <p className="text-xs text-muted font-mono mt-1.5 break-all bg-overlay/[0.04] border border-overlay/[0.06] rounded-lg px-2 py-1.5" title={confirm.destination}>
                     {confirm.destination}
                   </p>
                 ) : null}
@@ -440,20 +440,20 @@ function Withdrawals({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void
             </div>
             {confirm.kind === 'reject' && (
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
+                <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
                 <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="field-gold resize-none" placeholder="e.g. invalid destination, failed verification…" />
-                <p className="mt-1.5 text-[11px] text-zinc-600">Coins are refunded to the {confirm.wallet} passbook automatically.</p>
+                <p className="mt-1.5 text-[11px] text-dim">Coins are refunded to the {confirm.wallet} passbook automatically.</p>
               </div>
             )}
             {confirm.kind === 'paid' && (
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Payment reference</label>
+                <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Payment reference</label>
                 <input value={payRef} onChange={(e) => setPayRef(e.target.value)} className="field-gold" placeholder="UTR / transaction id" />
               </div>
             )}
-            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">{formatCoins(confirm.amount)} will be credited to the user's social passbook and recorded in the ledger.</p>}
-            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this activation as failed. No coins are credited.</p>}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            {confirm.kind === 'complete' && <p className="text-sm text-muted">{formatCoins(confirm.amount)} will be credited to the user's social passbook and recorded in the ledger.</p>}
+            {confirm.kind === 'fail' && <p className="text-sm text-muted">Mark this activation as failed. No coins are credited.</p>}
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
                 onClick={runConfirm}
@@ -511,7 +511,7 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
     <>
       <FinanceOverview stats={stats} statsLoading={statsLoading}>
         <div className="glass overflow-hidden animate-fade-in">
-          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-overlay/[0.08]">
             {['pending', 'completed', 'failed'].map((s) => (
               <button
                 key={s}
@@ -522,7 +522,7 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
                     ? s === 'pending' ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 shadow-glow-goldSoft'
                     : s === 'completed' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
                     : 'bg-accent-red/15 text-accent-red border-accent-red/30'
-                    : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                    : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
                 )}
               >
                 {s} <span className="ml-1 opacity-60">{counts[s] ?? 0}</span>
@@ -536,10 +536,10 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
           {isLoading ? (
             <div>
               {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                  <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                  <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                  <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                  <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
                 </div>
               ))}
             </div>
@@ -548,15 +548,15 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-green/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-green" />
               </div>
-              <p className="text-white font-semibold">No {status} activations</p>
-              <p className="mt-1 text-sm text-zinc-500">Activation requests show up here instantly for review.</p>
+              <p className="text-heading font-semibold">No {status} activations</p>
+              <p className="mt-1 text-sm text-faint">Activation requests show up here instantly for review.</p>
             </div>
           ) : (
             items.map((d, i) => (
               <div
                 key={d._id}
                 style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_minmax(0,1.2fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_minmax(0,1.2fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-green/70 to-accent-blue/50 transition-all" />
                 <div className="flex items-center gap-3 min-w-0">
@@ -564,22 +564,22 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
                     {d.user?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{d.user?.name ?? 'Unknown user'}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">{d.user?.email ?? '—'}</p>
+                    <p className="text-sm font-medium text-heading truncate">{d.user?.name ?? 'Unknown user'}</p>
+                    <p className="text-[11px] text-faint truncate">{d.user?.email ?? '—'}</p>
                   </div>
                 </div>
                 <div className="flex md:flex-col items-center md:items-end gap-2">
                   <p className="text-base font-extrabold text-accent-green tabular-nums">+{formatCoins(d.amount)}</p>
-                  <span className="inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold capitalize bg-white/[0.08] text-zinc-300 border-white/10">
+                  <span className="inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold capitalize bg-overlay/[0.08] text-body border-overlay/10">
                     {d.gateway}
                   </span>
                 </div>
                 <div className="min-w-0">
                   <StatusPill status={d.status} map={DP_STATUS} />
-                  {d.gatewayRef && <p className="text-[10px] text-zinc-600 truncate mt-1">ref: {d.gatewayRef}</p>}
+                  {d.gatewayRef && <p className="text-[10px] text-dim truncate mt-1">ref: {d.gatewayRef}</p>}
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                  <p className="text-[11px] text-zinc-600" title={formatDate(d.createdAt)}>{rel(d.createdAt)}</p>
+                  <p className="text-[11px] text-dim" title={formatDate(d.createdAt)}>{rel(d.createdAt)}</p>
                   {manage && d.status === 'pending' && (
                     <div className="flex gap-1.5">
                       <button onClick={() => setConfirm({ kind: 'complete', id: d._id, name: d.user?.name ?? 'user', amount: d.amount })} className="btn-ghost !py-1.5 px-3 text-xs text-accent-green">
@@ -606,16 +606,16 @@ function Deposits({ onTab }: { onTab: (t: 'withdrawals' | 'deposits') => void })
       >
         {confirm && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Coins className="w-4 h-4 text-accent-green" /></span>
               <div>
-                <p className="text-sm text-white font-semibold">{confirm.name}</p>
-                <p className="text-xs text-zinc-500">{formatCoins(confirm.amount)}</p>
+                <p className="text-sm text-heading font-semibold">{confirm.name}</p>
+                <p className="text-xs text-faint">{formatCoins(confirm.amount)}</p>
               </div>
             </div>
-            {confirm.kind === 'complete' && <p className="text-sm text-zinc-400">Coins will be credited to the user's social passbook and recorded in the ledger.</p>}
-            {confirm.kind === 'fail' && <p className="text-sm text-zinc-400">Mark this activation as failed. No coins are credited.</p>}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            {confirm.kind === 'complete' && <p className="text-sm text-muted">Coins will be credited to the user's social passbook and recorded in the ledger.</p>}
+            {confirm.kind === 'fail' && <p className="text-sm text-muted">Mark this activation as failed. No coins are credited.</p>}
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
                 onClick={runConfirm}
@@ -712,9 +712,9 @@ function MembershipRequests() {
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+        <div className="flex flex-wrap items-center gap-2 p-4 border-b border-overlay/[0.08]">
           <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
-          <span className="text-sm font-semibold text-white mr-2">Membership activation requests</span>
+          <span className="text-sm font-semibold text-heading mr-2">Membership activation requests</span>
           {['pending', 'approved', 'rejected'].map((s) => (
             <button
               key={s}
@@ -725,7 +725,7 @@ function MembershipRequests() {
                   ? s === 'pending' ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 shadow-glow-goldSoft'
                   : s === 'approved' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
                   : 'bg-accent-red/15 text-accent-red border-accent-red/30'
-                  : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                  : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
               )}
             >
               {s} <span className="ml-1 opacity-60">{counts[s] ?? 0}</span>
@@ -736,10 +736,10 @@ function MembershipRequests() {
         {isLoading ? (
           <div>
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+              <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
               </div>
             ))}
           </div>
@@ -748,15 +748,15 @@ function MembershipRequests() {
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/20 to-accent-gold/10 flex items-center justify-center mb-4">
               <Crown className="w-6 h-6 text-accent-violet" />
             </div>
-            <p className="text-white font-semibold">No {status} membership requests</p>
-            <p className="mt-1 text-sm text-zinc-500">Users submit activation proof from the app — it lands here.</p>
+            <p className="text-heading font-semibold">No {status} membership requests</p>
+            <p className="mt-1 text-sm text-faint">Users submit activation proof from the app — it lands here.</p>
           </div>
         ) : (
           items.map((r, i) => (
             <div
               key={r._id}
               style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-              className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_auto_minmax(0,1.4fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+              className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_auto_minmax(0,1.4fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
             >
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-violet/70 to-accent-gold/50 transition-all" />
               <div className="flex items-center gap-3 min-w-0">
@@ -764,8 +764,8 @@ function MembershipRequests() {
                   {r.user?.name?.[0]?.toUpperCase() ?? '?'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{r.user?.name ?? 'Unknown user'}</p>
-                  <p className="text-[11px] text-zinc-500 truncate">{r.user?.mobile ?? r.user?.email ?? '—'}</p>
+                  <p className="text-sm font-medium text-heading truncate">{r.user?.name ?? 'Unknown user'}</p>
+                  <p className="text-[11px] text-faint truncate">{r.user?.mobile ?? r.user?.email ?? '—'}</p>
                 </div>
               </div>
               <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-1">
@@ -773,7 +773,7 @@ function MembershipRequests() {
                 <Badge variant={r.method === 'usdt' ? 'info' : 'warning'}>{r.method === 'usdt' ? 'USDT · BEP-20' : 'Digital handle'}</Badge>
               </div>
               <div className="min-w-0 space-y-1.5">
-                <p className="text-[11px] text-zinc-400 font-mono truncate" title={r.utr ?? r.txHash}>
+                <p className="text-[11px] text-muted font-mono truncate" title={r.utr ?? r.txHash}>
                   {r.method === 'usdt' ? `Tx: ${r.txHash ?? '—'}` : `UTR: ${r.utr ?? '—'}`}
                 </p>
                 <button onClick={() => openShot(r._id)} className="btn-ghost !py-1 px-2.5 text-xs text-accent-blue">
@@ -784,7 +784,7 @@ function MembershipRequests() {
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                 <div className="flex flex-col md:items-end gap-1">
                   <StatusPill status={r.status} map={MS_STATUS} />
-                  <p className="text-[11px] text-zinc-600 md:text-right" title={formatDate(r.createdAt)}>{rel(r.createdAt)}</p>
+                  <p className="text-[11px] text-dim md:text-right" title={formatDate(r.createdAt)}>{rel(r.createdAt)}</p>
                 </div>
                 {manage && r.status === 'pending' && (
                   <div className="flex gap-1.5">
@@ -807,11 +807,11 @@ function MembershipRequests() {
       {/* screenshot preview */}
       <Modal open={shotOpen} onClose={() => { setShotOpen(false); setShotUrl(''); }} title="Payment screenshot">
         {shotLoading ? (
-          <div className="h-64 rounded-xl bg-white/[0.03] animate-pulse" />
+          <div className="h-64 rounded-xl bg-overlay/[0.03] animate-pulse" />
         ) : shotUrl ? (
           <img src={shotUrl} alt="Payment proof" className="w-full max-h-[65vh] object-contain rounded-xl bg-base-950/60" />
         ) : (
-          <p className="text-sm text-zinc-500 text-center py-8">Screenshot could not be loaded.</p>
+          <p className="text-sm text-faint text-center py-8">Screenshot could not be loaded.</p>
         )}
       </Modal>
 
@@ -823,20 +823,20 @@ function MembershipRequests() {
       >
         {confirm && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
               <div>
-                <p className="text-sm text-white font-semibold">{confirm.name}</p>
-                <p className="text-xs text-zinc-500">{confirm.kind === 'approve' ? 'Membership status becomes active immediately.' : 'User can submit a new request after rejection.'}</p>
+                <p className="text-sm text-heading font-semibold">{confirm.name}</p>
+                <p className="text-xs text-faint">{confirm.kind === 'approve' ? 'Membership status becomes active immediately.' : 'User can submit a new request after rejection.'}</p>
               </div>
             </div>
             {confirm.kind === 'reject' && (
               <div>
-                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
+                <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Rejection reason (optional)</label>
                 <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="field-gold resize-none" placeholder="e.g. screenshot unreadable, UTR mismatch…" />
               </div>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setConfirm(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
                 onClick={runConfirm}

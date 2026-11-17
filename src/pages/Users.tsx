@@ -121,13 +121,13 @@ export default function Users() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Users2 className="w-5 h-5 text-accent-gold" /></span>
             Users
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Search, filter and manage user accounts</p>
+          <p className="mt-1.5 text-sm text-faint">Search, filter and manage user accounts</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -138,8 +138,8 @@ export default function Users() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
             </div>
           </div>
         ))}
@@ -148,7 +148,7 @@ export default function Users() {
       {/* toolbar */}
       <div className="flex flex-col lg:flex-row gap-3 mb-5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
           <input
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -156,7 +156,7 @@ export default function Users() {
             placeholder="Search by name, email, mobile or code…"
           />
         </div>
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08] overflow-x-auto shrink-0">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08] overflow-x-auto shrink-0">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -165,7 +165,7 @@ export default function Users() {
                 'px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200',
                 status === t.key
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
               )}
             >
               {t.label}
@@ -179,11 +179,11 @@ export default function Users() {
       {isLoading ? (
         <div className="glass overflow-hidden animate-fade-in">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05] last:border-0">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.06] animate-pulse" />
-              <div className="flex-1 space-y-2"><div className="h-3.5 w-40 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-56 rounded bg-white/[0.04] animate-pulse" /></div>
-              <div className="hidden md:block h-5 w-16 rounded-full bg-white/[0.06] animate-pulse" />
-              <div className="h-8 w-24 rounded-lg bg-white/[0.04] animate-pulse" />
+            <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05] last:border-0">
+              <div className="w-10 h-10 rounded-xl bg-overlay/[0.06] animate-pulse" />
+              <div className="flex-1 space-y-2"><div className="h-3.5 w-40 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-56 rounded bg-overlay/[0.04] animate-pulse" /></div>
+              <div className="hidden md:block h-5 w-16 rounded-full bg-overlay/[0.06] animate-pulse" />
+              <div className="h-8 w-24 rounded-lg bg-overlay/[0.04] animate-pulse" />
             </div>
           ))}
         </div>
@@ -192,11 +192,11 @@ export default function Users() {
       ) : (
         <div className="glass overflow-hidden animate-fade-in">
           {/* column headers */}
-          <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-white/[0.08] bg-white/[0.02]">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">User</p>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Status</p>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Joined</p>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 text-right">Actions</p>
+          <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-overlay/[0.08] bg-overlay/[0.02]">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">User</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">Status</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-faint">Joined</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-faint text-right">Actions</p>
           </div>
 
           {users.map((u, i) => {
@@ -206,7 +206,7 @@ export default function Users() {
                 key={u._id}
                 onClick={() => setDrawerId(u._id)}
                 style={{ animationDelay: `${i * 40}ms` }}
-                className="group grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_1fr_1fr_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] cursor-pointer transition-colors animate-fade-in relative"
+                className="group grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_1fr_1fr_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] cursor-pointer transition-colors animate-fade-in relative"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
                 <div className="flex items-center gap-3 min-w-0">
@@ -217,25 +217,25 @@ export default function Users() {
                     <span className={cn('absolute -bottom-1 -right-1 w-3 h-3 rounded-full ring-2 ring-base-950', m.dot)} />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-white truncate group-hover:text-accent-gold transition-colors">{u.name}</p>
+                    <p className="font-medium text-heading truncate group-hover:text-accent-gold transition-colors">{u.name}</p>
                     <p className="text-xs font-semibold text-accent-blue truncate tabular-nums" title={`Unique ID: ${u.referralCode}`}>{u.referralCode}</p>
-                    <p className="text-xs text-zinc-500 truncate">{u.email || u.mobile || '—'}</p>
+                    <p className="text-xs text-faint truncate">{u.email || u.mobile || '—'}</p>
                     <div className="flex items-center gap-2 mt-1.5 md:hidden">
                       <Badge variant={m.badge}>{m.label}</Badge>
-                      <span className="text-[11px] text-zinc-600">{rel(u.createdAt)}</span>
+                      <span className="text-[11px] text-dim">{rel(u.createdAt)}</span>
                     </div>
                   </div>
                 </div>
                 <div className="hidden md:block"><Badge variant={m.badge}>{m.label}</Badge></div>
                 <div className="hidden md:block">
-                  <p className="text-xs text-zinc-300" title={formatDate(u.createdAt)}>{rel(u.createdAt)}</p>
-                  <p className="text-[11px] text-zinc-600">{formatDate(u.createdAt)}</p>
+                  <p className="text-xs text-body" title={formatDate(u.createdAt)}>{rel(u.createdAt)}</p>
+                  <p className="text-[11px] text-dim">{formatDate(u.createdAt)}</p>
                 </div>
                 <div className="flex items-center gap-1.5 justify-start md:justify-end">
                   <button
                     onClick={(e) => { e.stopPropagation(); setDrawerId(u._id); }}
                     title="View details"
-                    className="p-2 rounded-lg text-zinc-500 hover:text-accent-blue hover:bg-accent-blue/10 transition-all"
+                    className="p-2 rounded-lg text-faint hover:text-accent-blue hover:bg-accent-blue/10 transition-all"
                   >
                     <Eye className="w-4 h-4" />
                   </button>
@@ -244,7 +244,7 @@ export default function Users() {
                       key={j}
                       onClick={a.onClick}
                       title={a.title}
-                      className={cn('p-2 rounded-lg text-zinc-500 transition-all', a.cls)}
+                      className={cn('p-2 rounded-lg text-faint transition-all', a.cls)}
                     >
                       <a.icon className="w-4 h-4" />
                     </button>
@@ -259,8 +259,8 @@ export default function Users() {
       {/* pagination */}
       {data && data.pages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-          <p className="text-xs text-zinc-500">
-            Showing <span className="text-zinc-300 font-medium">{start}–{end}</span> of <span className="text-zinc-300 font-medium">{total}</span> users
+          <p className="text-xs text-faint">
+            Showing <span className="text-body font-medium">{start}–{end}</span> of <span className="text-body font-medium">{total}</span> users
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -270,7 +270,7 @@ export default function Users() {
             >
               <ChevronLeft className="w-4 h-4" /> Prev
             </button>
-            <span className="text-xs text-zinc-500 px-2">Page {page} / {data.pages}</span>
+            <span className="text-xs text-faint px-2">Page {page} / {data.pages}</span>
             <button
               onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
               disabled={page >= data.pages}
@@ -294,12 +294,12 @@ export default function Users() {
       <Modal open={!!confirm} onClose={() => setConfirm(null)} title={confirm ? `Confirm — ${STATUS_META[confirm.to].label}` : 'Confirm'}>
         {confirm && (
           <div>
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.04] border border-white/[0.08] mb-4">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-overlay/[0.04] border border-overlay/[0.08] mb-4">
               <span className={cn('p-2 rounded-lg shrink-0', confirm.to === 'banned' ? 'bg-accent-red/10 text-accent-red' : confirm.to === 'active' ? 'bg-accent-green/10 text-accent-green' : 'bg-accent-gold/10 text-accent-gold')}>
                 {confirm.to === 'banned' ? <Ban className="w-5 h-5" /> : confirm.to === 'active' ? <CheckCircle className="w-5 h-5" /> : <PauseCircle className="w-5 h-5" />}
               </span>
-              <div className="text-sm text-zinc-300 leading-relaxed">
-                {confirm.name ? <span className="font-semibold text-white">{confirm.name}</span> : null}
+              <div className="text-sm text-body leading-relaxed">
+                {confirm.name ? <span className="font-semibold text-heading">{confirm.name}</span> : null}
                 {confirm.name ? ' will be ' : 'Change status to '}
                 <span className={cn('font-semibold', confirm.to === 'banned' ? 'text-accent-red' : confirm.to === 'active' ? 'text-accent-green' : 'text-accent-gold')}>
                   {STATUS_META[confirm.to].label}
@@ -308,7 +308,7 @@ export default function Users() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setConfirm(null)} className="btn-ghost flex-1 border border-white/[0.1]">Cancel</button>
+              <button onClick={() => setConfirm(null)} className="btn-ghost flex-1 border border-overlay/[0.1]">Cancel</button>
               <button
                 onClick={() => statusMut.mutate({ id: confirm.id, status: confirm.to })}
                 disabled={statusMut.isPending}
@@ -383,16 +383,16 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
   const StatChips = ({ items }: { items: { label: string; value: number | string; tone?: string }[] }) => (
     <div className="grid grid-cols-3 gap-2">
       {items.map((it) => (
-        <div key={it.label} className="rounded-xl bg-white/[0.03] border border-white/[0.05] p-2.5 text-center">
-          <p className={cn('text-lg font-extrabold tabular-nums leading-none', it.tone ?? 'text-white')}>{it.value}</p>
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1">{it.label}</p>
+        <div key={it.label} className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] p-2.5 text-center">
+          <p className={cn('text-lg font-extrabold tabular-nums leading-none', it.tone ?? 'text-heading')}>{it.value}</p>
+          <p className="text-[10px] uppercase tracking-wider text-faint mt-1">{it.label}</p>
         </div>
       ))}
     </div>
   );
 
   const EmptyRow = ({ msg }: { msg: string }) => (
-    <p className="text-sm text-zinc-600 py-5 text-center">{msg}</p>
+    <p className="text-sm text-dim py-5 text-center">{msg}</p>
   );
 
   return (
@@ -400,7 +400,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
       <div className={cn('fixed inset-0 z-40 bg-brand-navy/70 backdrop-blur-sm transition-opacity duration-300', shown ? 'opacity-100' : 'opacity-0')} onClick={onClose} />
       <aside
         className={cn(
-          'fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] flex flex-col bg-brand-navy border-l border-white/[0.1] transition-transform duration-300 ease-out',
+          'fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] flex flex-col bg-brand-navy border-l border-overlay/[0.1] transition-transform duration-300 ease-out',
           shown ? 'translate-x-0' : 'translate-x-full'
         )}
       >
@@ -409,11 +409,11 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
         <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-accent-gold/50 via-accent-blue/30 to-transparent pointer-events-none" />
 
         {/* header */}
-        <div className="relative shrink-0 px-5 pt-5 pb-4 border-b border-white/[0.08]">
+        <div className="relative shrink-0 px-5 pt-5 pb-4 border-b border-overlay/[0.08]">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3.5 min-w-0">
               {isLoading || !u || !m ? (
-                <div className="w-14 h-14 rounded-2xl bg-white/[0.06] animate-pulse" />
+                <div className="w-14 h-14 rounded-2xl bg-overlay/[0.06] animate-pulse" />
               ) : (
                 <div className={cn('w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white text-xl font-bold ring-2', m.ring)}>
                   {u.name[0]?.toUpperCase()}
@@ -421,14 +421,14 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
               )}
               <div className="min-w-0">
                 {isLoading || !u || !m ? (
-                  <div className="space-y-2"><div className="h-4 w-32 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-44 rounded bg-white/[0.04] animate-pulse" /></div>
+                  <div className="space-y-2"><div className="h-4 w-32 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-44 rounded bg-overlay/[0.04] animate-pulse" /></div>
                 ) : (
                   <>
-                    <p className="text-lg font-bold text-white truncate">{u.name}</p>
-                    <p className="text-xs text-zinc-500 truncate">{u.email || '—'} {u.mobile ? `· ${u.mobile}` : ''}</p>
+                    <p className="text-lg font-bold text-heading truncate">{u.name}</p>
+                    <p className="text-xs text-faint truncate">{u.email || '—'} {u.mobile ? `· ${u.mobile}` : ''}</p>
                     <div className="mt-1.5 flex items-center gap-2">
                       <Badge variant={m.badge}>{m.label}</Badge>
-                      <button onClick={copy} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.1] text-[10px] font-mono text-accent-gold hover:border-accent-gold/40 transition-colors" title="Copy referral code">
+                      <button onClick={copy} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-overlay/[0.06] border border-overlay/[0.1] text-[10px] font-mono text-accent-gold hover:border-accent-gold/40 transition-colors" title="Copy referral code">
                         {u.referralCode} {copied ? <Check className="w-3 h-3 text-accent-green" /> : <Copy className="w-3 h-3" />}
                       </button>
                     </div>
@@ -436,21 +436,21 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 )}
               </div>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-all shrink-0" aria-label="Close">
+            <button onClick={onClose} className="p-2 rounded-xl text-muted hover:text-heading hover:bg-overlay/[0.08] transition-all shrink-0" aria-label="Close">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* tabs */}
-        <div className="relative shrink-0 flex gap-1 px-4 pt-3 pb-1 overflow-x-auto border-b border-white/[0.06]">
+        <div className="relative shrink-0 flex gap-1 px-4 pt-3 pb-1 overflow-x-auto border-b border-overlay/[0.06]">
           {drawerTabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all',
-                tab === t.key ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow' : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05]'
+                tab === t.key ? 'bg-gradient-to-r from-accent-violet to-accent-blue text-white shadow-glow' : 'text-faint hover:text-body hover:bg-overlay/[0.05]'
               )}
             >
               <t.icon className="w-3.5 h-3.5" /> {t.label}
@@ -462,9 +462,9 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
         <div className="relative flex-1 min-h-0 overflow-y-auto p-5 space-y-5">
           {isLoading || !data ? (
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">{[0, 1, 2].map((i) => <div key={i} className="h-20 rounded-xl bg-white/[0.04] animate-pulse" />)}</div>
-              <div className="h-4 w-40 rounded bg-white/[0.05] animate-pulse" />
-              {[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}
+              <div className="grid grid-cols-3 gap-3">{[0, 1, 2].map((i) => <div key={i} className="h-20 rounded-xl bg-overlay/[0.04] animate-pulse" />)}</div>
+              <div className="h-4 w-40 rounded bg-overlay/[0.05] animate-pulse" />
+              {[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-overlay/[0.03] animate-pulse" />)}
             </div>
           ) : tab === 'profile' ? (
             <>
@@ -472,24 +472,24 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
               <div className="grid grid-cols-3 gap-3">
                 <div className="glass p-3.5 text-center">
                   <span className="inline-flex p-2 rounded-lg bg-accent-gold/10 mb-1.5"><Coins className="w-4 h-4 text-accent-gold" /></span>
-                  <p className="text-lg font-extrabold text-white tabular-nums leading-none">{formatCoins(data.balances.video)}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1.5">Video</p>
+                  <p className="text-lg font-extrabold text-heading tabular-nums leading-none">{formatCoins(data.balances.video)}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-faint mt-1.5">Video</p>
                 </div>
                 <div className="glass p-3.5 text-center">
                   <span className="inline-flex p-2 rounded-lg bg-accent-blue/10 mb-1.5"><Wallet className="w-4 h-4 text-accent-blue" /></span>
-                  <p className="text-lg font-extrabold text-white tabular-nums leading-none">{formatCoins(data.balances.social)}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1.5">Social</p>
+                  <p className="text-lg font-extrabold text-heading tabular-nums leading-none">{formatCoins(data.balances.social)}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-faint mt-1.5">Social</p>
                 </div>
                 <div className="glass p-3.5 text-center">
                   <span className="inline-flex p-2 rounded-lg bg-accent-violet/10 mb-1.5"><Share2 className="w-4 h-4 text-accent-violet" /></span>
-                  <p className="text-lg font-extrabold text-white tabular-nums leading-none">{data.referralCount}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-500 mt-1.5">Referrals</p>
+                  <p className="text-lg font-extrabold text-heading tabular-nums leading-none">{data.referralCount}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-faint mt-1.5">Referrals</p>
                 </div>
               </div>
 
               {/* profile meta */}
               <div className="glass p-4 space-y-2.5">
-                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-1">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-1">
                   <User className="w-3.5 h-3.5 text-accent-blue/80" /> Profile
                 </p>
                 {[
@@ -501,35 +501,35 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                   ['Joined', u?.createdAt ? formatDate(u.createdAt) : '—'],
                 ].map(([k, v]) => (
                   <div key={k as string} className="flex items-center justify-between gap-3 text-xs">
-                    <span className="text-zinc-500">{k as string}</span>
-                    <span className="text-zinc-200 font-medium capitalize truncate">{v as string || '—'}</span>
+                    <span className="text-faint">{k as string}</span>
+                    <span className="text-body font-medium capitalize truncate">{v as string || '—'}</span>
                   </div>
                 ))}
               </div>
 
               {/* ledger */}
               <div>
-                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">
                   <Inbox className="w-3.5 h-3.5 text-accent-gold/70" /> Recent passbook activity
                 </p>
                 {data.recentLedger.length === 0 && (
-                  <p className="text-sm text-zinc-600 py-4 text-center">No transactions yet.</p>
+                  <p className="text-sm text-dim py-4 text-center">No transactions yet.</p>
                 )}
                 <div className="space-y-2">
                   {data.recentLedger.map((e) => (
-                    <div key={e._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                    <div key={e._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                       <span className={cn('p-2 rounded-lg shrink-0', e.type === 'credit' ? 'bg-accent-green/10 text-accent-green' : 'bg-accent-red/10 text-accent-red')}>
                         {e.type === 'credit' ? <ArrowDown className="w-4 h-4" /> : <ArrowUp className="w-4 h-4" />}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs text-zinc-300 font-medium capitalize truncate">{reasonLabel(e.reason)}</p>
-                        {e.note && <p className="text-[11px] text-zinc-600 truncate">{e.note}</p>}
+                        <p className="text-xs text-body font-medium capitalize truncate">{reasonLabel(e.reason)}</p>
+                        {e.note && <p className="text-[11px] text-dim truncate">{e.note}</p>}
                       </div>
                       <div className="text-right shrink-0">
                         <p className={cn('text-sm font-bold tabular-nums', e.type === 'credit' ? 'text-accent-green' : 'text-accent-red')}>
                           {e.type === 'credit' ? '+' : '−'}{formatCoins(e.amount)}
                         </p>
-                        <p className="text-[10px] text-zinc-600">{e.wallet}</p>
+                        <p className="text-[10px] text-dim">{e.wallet}</p>
                       </div>
                     </div>
                   ))}
@@ -540,7 +540,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
             <>
               <div className="glass p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
                     <Crown className="w-3.5 h-3.5 text-accent-gold/80" /> Membership
                   </p>
                   <Badge variant={s.membership.status === 'active' ? 'success' : s.membership.status === 'pending' ? 'warning' : 'default'}>
@@ -554,15 +554,15 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 ]} />
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent requests</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">Recent requests</p>
                 {r?.membership?.length === 0 || !r?.membership ? <EmptyRow msg="No membership requests." /> : (
                   <div className="space-y-2">
                     {r.membership.map((mem) => (
-                      <div key={mem._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                      <div key={mem._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                         <span className="p-2 rounded-lg bg-accent-gold/10 text-accent-gold shrink-0"><Crown className="w-4 h-4" /></span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-white font-medium">{formatCoins(mem.amount)} <span className="text-xs text-zinc-500 font-normal">· {mem.method}</span></p>
-                          <p className="text-[11px] text-zinc-600">{formatDate(mem.createdAt)}</p>
+                          <p className="text-sm text-heading font-medium">{formatCoins(mem.amount)} <span className="text-xs text-faint font-normal">· {mem.method}</span></p>
+                          <p className="text-[11px] text-dim">{formatDate(mem.createdAt)}</p>
                         </div>
                         <Badge variant={statusBadge(mem.status)}>{mem.status}</Badge>
                       </div>
@@ -574,7 +574,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
           ) : tab === 'tasks' && s ? (
             <>
               <div className="glass p-4">
-                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">
                   <ListChecks className="w-3.5 h-3.5 text-accent-blue/80" /> Task submissions
                 </p>
                 <StatChips items={[
@@ -584,15 +584,15 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 ]} />
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent submissions</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">Recent submissions</p>
                 {r?.tasks?.length === 0 || !r?.tasks ? <EmptyRow msg="No task submissions." /> : (
                   <div className="space-y-2">
                     {r.tasks.map((t) => (
-                      <div key={t._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                      <div key={t._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                         <span className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue shrink-0"><ListChecks className="w-4 h-4" /></span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-white font-medium truncate">{t.task?.title ?? 'Task'}</p>
-                          <p className="text-[11px] text-zinc-600">
+                          <p className="text-sm text-heading font-medium truncate">{t.task?.title ?? 'Task'}</p>
+                          <p className="text-[11px] text-dim">
                             {t.task?.rewardCoins != null && <span className="text-accent-gold">+{formatCoins(t.task.rewardCoins)} coins · </span>}
                             {formatDate(t.createdAt)}
                           </p>
@@ -607,35 +607,35 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
           ) : tab === 'withdrawals' && s ? (
             <>
               <div className="glass p-4">
-                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">
                   <Banknote className="w-3.5 h-3.5 text-accent-green/80" /> Withdrawals
                 </p>
                 <StatChips items={[
                   { label: 'Pending', value: s.withdrawals.pending, tone: 'text-accent-gold' },
                   { label: 'Paid', value: s.withdrawals.paid ?? 0, tone: 'text-accent-green' },
-                  { label: 'Total', value: s.withdrawals.total, tone: 'text-white' },
+                  { label: 'Total', value: s.withdrawals.total, tone: 'text-heading' },
                 ]} />
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <div className="rounded-xl bg-accent-gold/[0.07] border border-accent-gold/15 p-2.5 text-center">
                     <p className="text-sm font-bold text-accent-gold tabular-nums">{formatCoins(s.withdrawals.sums.pending)}</p>
-                    <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Pending amount</p>
+                    <p className="text-[10px] uppercase text-faint mt-0.5">Pending amount</p>
                   </div>
                   <div className="rounded-xl bg-accent-green/[0.07] border border-accent-green/15 p-2.5 text-center">
                     <p className="text-sm font-bold text-accent-green tabular-nums">{formatCoins(s.withdrawals.sums.paid)}</p>
-                    <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Paid amount</p>
+                    <p className="text-[10px] uppercase text-faint mt-0.5">Paid amount</p>
                   </div>
                 </div>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent withdrawals</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">Recent withdrawals</p>
                 {r?.withdrawals?.length === 0 || !r?.withdrawals ? <EmptyRow msg="No withdrawals." /> : (
                   <div className="space-y-2">
                     {r.withdrawals.map((w) => (
-                      <div key={w._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                      <div key={w._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                         <span className="p-2 rounded-lg bg-accent-green/10 text-accent-green shrink-0"><Banknote className="w-4 h-4" /></span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-white font-medium">{formatCoins(w.amount)} <span className="text-xs text-zinc-500 font-normal">· {w.method} · {w.wallet}</span></p>
-                          <p className="text-[11px] text-zinc-600">{formatDate(w.createdAt)}</p>
+                          <p className="text-sm text-heading font-medium">{formatCoins(w.amount)} <span className="text-xs text-faint font-normal">· {w.method} · {w.wallet}</span></p>
+                          <p className="text-[11px] text-dim">{formatDate(w.createdAt)}</p>
                         </div>
                         <Badge variant={statusBadge(w.status)}>{w.status}</Badge>
                       </div>
@@ -647,7 +647,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
           ) : tab === 'deposits' && s ? (
             <>
               <div className="glass p-4">
-                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">
                   <CreditCard className="w-3.5 h-3.5 text-accent-violet/80" /> Deposits
                 </p>
                 <StatChips items={[
@@ -657,19 +657,19 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 ]} />
                 <div className="mt-3 rounded-xl bg-accent-violet/[0.07] border border-accent-violet/15 p-2.5 text-center">
                   <p className="text-sm font-bold text-accent-violet tabular-nums">{formatCoins(s.deposits.sums.completed)}</p>
-                  <p className="text-[10px] uppercase text-zinc-500 mt-0.5">Completed amount</p>
+                  <p className="text-[10px] uppercase text-faint mt-0.5">Completed amount</p>
                 </div>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mb-3">Recent deposits</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint mb-3">Recent deposits</p>
                 {r?.deposits?.length === 0 || !r?.deposits ? <EmptyRow msg="No deposits." /> : (
                   <div className="space-y-2">
                     {r.deposits.map((d) => (
-                      <div key={d._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                      <div key={d._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                         <span className="p-2 rounded-lg bg-accent-violet/10 text-accent-violet shrink-0"><CreditCard className="w-4 h-4" /></span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-white font-medium">{formatCoins(d.amount)} <span className="text-xs text-zinc-500 font-normal">· {d.gateway}</span></p>
-                          <p className="text-[11px] text-zinc-600">{formatDate(d.createdAt)}</p>
+                          <p className="text-sm text-heading font-medium">{formatCoins(d.amount)} <span className="text-xs text-faint font-normal">· {d.gateway}</span></p>
+                          <p className="text-[11px] text-dim">{formatDate(d.createdAt)}</p>
                         </div>
                         <Badge variant={statusBadge(d.status)}>{d.status}</Badge>
                       </div>
@@ -683,7 +683,7 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
 
         {/* footer actions */}
         {u && m && (
-          <div className="relative shrink-0 border-t border-white/[0.08] p-4 space-y-2.5 bg-brand-navy/80 backdrop-blur">
+          <div className="relative shrink-0 border-t border-overlay/[0.08] p-4 space-y-2.5 bg-brand-navy/80 backdrop-blur">
             <div className="flex gap-2.5">
               {u.status !== 'active' && can('users.update') && (
                 <button onClick={() => onStatus(u._id, u.name, 'active')} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-accent-green/15 text-accent-green border border-accent-green/25 hover:bg-accent-green/25 transition-all">
@@ -701,12 +701,12 @@ function UserDrawer({ userId, onClose, onStatus, onAdjust }: {
                 </button>
               )}
               {can('wallet.adjust') && (
-                <button onClick={() => onAdjust(u._id, u.name)} className="btn-ghost !py-2.5 !px-4 border border-white/[0.12] text-xs hover:border-accent-gold/40 hover:text-accent-gold">
+                <button onClick={() => onAdjust(u._id, u.name)} className="btn-ghost !py-2.5 !px-4 border border-overlay/[0.12] text-xs hover:border-accent-gold/40 hover:text-accent-gold">
                   <Wallet className="w-3.5 h-3.5" /> Adjust
                 </button>
               )}
             </div>
-            <p className="text-[10px] text-center text-zinc-600">Status changes are audit-logged</p>
+            <p className="text-[10px] text-center text-dim">Status changes are audit-logged</p>
           </div>
         )}
       </aside>
@@ -735,14 +735,14 @@ function AdjustModal({ user, onClose, onDone }: { user: { id: string; name: stri
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-zinc-400">Passbook</label>
+            <label className="text-xs font-medium text-muted">Passbook</label>
             <select value={wallet} onChange={(e) => setWallet(e.target.value as 'video' | 'social')} className="glass-input mt-1">
               <option value="video">Video Earnings</option>
               <option value="social">Social / Task</option>
             </select>
           </div>
           <div>
-            <label className="text-xs font-medium text-zinc-400">Type</label>
+            <label className="text-xs font-medium text-muted">Type</label>
             <select value={type} onChange={(e) => setType(e.target.value as 'credit' | 'debit')} className="glass-input mt-1">
               <option value="credit">Credit (+)</option>
               <option value="debit">Debit (−)</option>
@@ -750,11 +750,11 @@ function AdjustModal({ user, onClose, onDone }: { user: { id: string; name: stri
           </div>
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-400">Coins</label>
+          <label className="text-xs font-medium text-muted">Coins</label>
           <input type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="glass-input mt-1" placeholder="e.g. 100" />
         </div>
         <div>
-          <label className="text-xs font-medium text-zinc-400">Reason (required for audit)</label>
+          <label className="text-xs font-medium text-muted">Reason (required for audit)</label>
           <input value={reason} onChange={(e) => setReason(e.target.value)} className="glass-input mt-1" placeholder="e.g. Compensation bonus" />
         </div>
         <button onClick={() => mut.mutate()} disabled={!amount || !reason || mut.isPending} className="btn-primary w-full">

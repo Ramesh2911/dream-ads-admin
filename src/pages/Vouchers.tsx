@@ -61,13 +61,13 @@ export default function Vouchers() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Ticket className="w-5 h-5 text-accent-gold" /></span>
             Recharge & Vouchers
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Manage packages and fulfill redemptions</p>
+          <p className="mt-1.5 text-sm text-faint">Manage packages and fulfill redemptions</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function Vouchers() {
       {tab === 'packages' ? <Packages onTab={setTab} /> : <Redemptions onTab={setTab} />}
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
-        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
+        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-overlay/[0.1] shadow-glow-goldSoft">
           {([['packages', 'Packages', Package], ['redemptions', 'Redemptions', Layers]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
@@ -84,7 +84,7 @@ export default function Vouchers() {
                 'flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all',
                 tab === k
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
               )}
             >
               <Icon className="w-3.5 h-3.5" /> {l}
@@ -125,9 +125,9 @@ function VOverview({ stats, statsLoading, children }: { stats?: VStats; statsLoa
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -138,15 +138,15 @@ function VOverview({ stats, statsLoading, children }: { stats?: VStats; statsLoa
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Layers className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Redemptions · last 7 days</h3>
+              <h3 className="font-semibold text-heading truncate">Redemptions · last 7 days</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
+            <span className="text-[11px] text-faint shrink-0 hidden sm:flex items-center gap-3">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> fulfilled</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-gold" /> pending</span>
             </span>
           </div>
           {statsLoading ? (
-            <div className="h-[230px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[230px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={230}>
               <ComposedChart data={chartData} margin={{ top: 6, right: 8, left: -22, bottom: 0 }}>
@@ -170,17 +170,17 @@ function VOverview({ stats, statsLoading, children }: { stats?: VStats; statsLoa
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Crown className="w-4 h-4 text-accent-gold" /></span>
-            <h3 className="font-semibold text-white">Most redeemed</h3>
+            <h3 className="font-semibold text-heading">Most redeemed</h3>
           </div>
-          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!statsLoading && top.length === 0 && (
-            <p className="text-sm text-zinc-500 py-8 text-center">No redemptions yet.</p>
+            <p className="text-sm text-faint py-8 text-center">No redemptions yet.</p>
           )}
           <div className="space-y-2.5">
             {top.map((r, i) => {
               const tone = PROVIDER_TONE[r.provider] ?? { cls: 'from-brand-blue/25 to-brand-blue/5 text-accent-blue', icon: Package };
               return (
-                <div key={r.voucherId ?? `t-${i}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+                <div key={r.voucherId ?? `t-${i}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                   <div className="absolute inset-y-0 left-0 bg-accent-gold opacity-15" style={{ width: `${Math.max(6, Math.round((r.count / maxTop) * 100))}%` }} />
                   <div className="relative flex items-center justify-between gap-2">
                     <div className="min-w-0 flex items-center gap-2.5">
@@ -188,8 +188,8 @@ function VOverview({ stats, statsLoading, children }: { stats?: VStats; statsLoa
                         <tone.icon className="w-3.5 h-3.5" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-white truncate">{r.title}</p>
-                        <p className="text-[10px] text-zinc-500">{r.count} redemptions · {formatCoins(r.coinCost)} coins</p>
+                        <p className="text-xs font-semibold text-heading truncate">{r.title}</p>
+                        <p className="text-[10px] text-faint">{r.count} redemptions · {formatCoins(r.coinCost)} coins</p>
                       </div>
                     </div>
                     <span className="text-[10px] font-bold text-accent-gold shrink-0">#{i + 1}</span>
@@ -278,9 +278,9 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
     <>
       <VOverview stats={stats} statsLoading={statsLoading}>
         <div className="glass overflow-hidden animate-fade-in">
-          <div className="flex flex-col sm:flex-row gap-3 p-4 border-b border-white/[0.08]">
+          <div className="flex flex-col sm:flex-row gap-3 p-4 border-b border-overlay/[0.08]">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
               <input value={search} onChange={(e) => setSearch(e.target.value)} className="field-gold !py-2 pl-10" placeholder="Search packages…" />
             </div>
             <div className="flex items-center gap-2 sm:ml-auto">
@@ -297,15 +297,15 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
 
           {isLoading ? (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
-              {[0, 1, 2].map((i) => <div key={i} className="h-48 rounded-2xl bg-white/[0.03] animate-pulse" />)}
+              {[0, 1, 2].map((i) => <div key={i} className="h-48 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}
             </div>
           ) : vouchers.length === 0 ? (
             <div className="p-12 text-center">
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-gold" />
               </div>
-              <p className="text-white font-semibold">No packages found</p>
-              <p className="mt-1 text-sm text-zinc-500">{search ? 'Try a different search.' : 'Create your first recharge or gift package.'}</p>
+              <p className="text-heading font-semibold">No packages found</p>
+              <p className="mt-1 text-sm text-faint">{search ? 'Try a different search.' : 'Create your first recharge or gift package.'}</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
@@ -313,7 +313,7 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
                 const tone = PROVIDER_TONE[v.provider] ?? { cls: 'from-brand-blue/25 to-brand-blue/5 text-accent-blue', icon: Package };
                 const Icon = tone.icon;
                 return (
-                  <div key={v._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group relative p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
+                  <div key={v._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group relative p-5 rounded-2xl bg-overlay/[0.03] border border-overlay/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in overflow-hidden">
                     <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-accent-gold/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative flex items-start justify-between mb-3">
                       <div className={cn('p-2.5 rounded-xl bg-gradient-to-br', tone.cls)}><Icon className="w-5 h-5" /></div>
@@ -324,7 +324,7 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
                             title={v.isActive ? 'Disable' : 'Enable'}
                             className={cn(
                               'relative w-10 h-6 rounded-full transition-colors border',
-                              v.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-white/[0.06] border-white/10'
+                              v.isActive ? 'bg-accent-green/25 border-accent-green/40' : 'bg-overlay/[0.06] border-overlay/10'
                             )}
                           >
                             <span className={cn(
@@ -337,29 +337,29 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
                         )}
                       </div>
                     </div>
-                    <p className="font-semibold text-white text-sm leading-snug">{v.title}</p>
-                    {v.description && <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{v.description}</p>}
+                    <p className="font-semibold text-heading text-sm leading-snug">{v.title}</p>
+                    {v.description && <p className="text-xs text-faint mt-1 line-clamp-2">{v.description}</p>}
                     <div className="flex items-center gap-2 mt-2.5">
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-white/[0.08] text-zinc-400 border border-white/10">{v.provider}</span>
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-overlay/[0.08] text-muted border border-overlay/10">{v.provider}</span>
                       {v.faceValue != null && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-accent-green/10 text-accent-green border border-accent-green/25">
                           <IndianRupee className="w-2.5 h-2.5" />{v.faceValue} value
                         </span>
                       )}
                     </div>
-                    <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(v.coinCost)} <span className="text-xs font-semibold text-zinc-500">coins</span></p>
+                    <p className="mt-3 text-accent-gold font-extrabold text-lg tabular-nums">{formatCoins(v.coinCost)} <span className="text-xs font-semibold text-faint">coins</span></p>
                     <div className="mt-3">
-                      <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-1">
+                      <div className="flex items-center justify-between text-[10px] text-faint mb-1">
                         <span className="flex items-center gap-1"><Boxes className="w-3 h-3" /> Stock</span>
-                        <span className="text-zinc-300 font-medium">{v.stock != null ? v.stock : 'Unlimited'}</span>
+                        <span className="text-body font-medium">{v.stock != null ? v.stock : 'Unlimited'}</span>
                       </div>
                       {v.stock != null && (
-                        <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-overlay/[0.06] overflow-hidden">
                           <div className="h-full rounded-full bg-gradient-to-r from-accent-gold to-accent-blue" style={{ width: `${Math.min(100, Math.max(4, v.stock))}%` }} />
                         </div>
                       )}
                     </div>
-                    <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
+                    <div className="mt-3 pt-3 border-t border-overlay/[0.06] flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2.5 text-[10px]">
                         <span className="text-accent-green font-semibold">{v.redemptions.fulfilled} done</span>
                         <span className="text-accent-gold font-semibold">{v.redemptions.pending} pending</span>
@@ -384,16 +384,16 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? 'Edit package' : 'New package'} wide>
         <div className="space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Title *</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Title *</label>
             <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="field-gold" placeholder="e.g. Mobile Recharge 50" />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Description</label>
+            <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="field-gold resize-none" placeholder="Short description shown to users…" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Provider *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Provider *</label>
               <select value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} className="field-gold">
                 <option value="recharge">Recharge</option>
                 <option value="voucher">Voucher</option>
@@ -402,24 +402,24 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Coin cost *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Coin cost *</label>
               <input type="number" min={1} value={form.coinCost} onChange={(e) => setForm({ ...form, coinCost: e.target.value })} className="field-gold" placeholder="500" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Face value</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Face value</label>
               <input type="number" min={0} value={form.faceValue} onChange={(e) => setForm({ ...form, faceValue: e.target.value })} className="field-gold" placeholder="50" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Stock</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Stock</label>
               <input type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="field-gold" placeholder="leave blank = unlimited" />
             </div>
           </div>
           <label className="flex items-center gap-2.5 cursor-pointer select-none">
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="w-4 h-4 rounded accent-[#FFD86F]" />
-            <span className="text-sm text-zinc-300">Active (visible to users)</span>
+            <span className="text-sm text-body">Active (visible to users)</span>
           </label>
           {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
-          <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+          <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
             <button onClick={() => setFormOpen(false)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
             <button onClick={() => (editing ? updateMut.mutate() : createMut.mutate())} disabled={!valid} className="btn-gold !py-2 px-4 text-xs disabled:opacity-50">
               {(createMut.isPending || updateMut.isPending) ? 'Saving…' : editing ? 'Save changes' : 'Create package'}
@@ -432,14 +432,14 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete package">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><Trash2 className="w-4 h-4 text-accent-red" /></span>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold truncate">{deleting.title}</p>
-                <p className="text-xs text-zinc-500">{formatCoins(deleting.coinCost)} coins · {deleting.redemptions.total} redemptions</p>
+                <p className="text-sm text-heading font-semibold truncate">{deleting.title}</p>
+                <p className="text-xs text-faint">{formatCoins(deleting.coinCost)} coins · {deleting.redemptions.total} redemptions</p>
               </div>
             </div>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-muted">
               {deleting.redemptions.total > 0
                 ? 'This package has redemptions — deletion will be blocked. Disable it instead.'
                 : 'This permanently removes the package. This cannot be undone.'}
@@ -449,7 +449,7 @@ function Packages({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void })
                 {(deleteMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}
               </p>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => deleteMut.mutate(deleting._id)} disabled={deleteMut.isPending || deleting.redemptions.total > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {deleteMut.isPending ? 'Deleting…' : 'Delete'}
@@ -500,7 +500,7 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
     <>
       <VOverview stats={stats} statsLoading={statsLoading}>
         <div className="glass overflow-hidden animate-fade-in">
-          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-white/[0.08]">
+          <div className="flex flex-wrap items-center gap-2 p-4 border-b border-overlay/[0.08]">
             {[{ k: '', l: 'All' }, { k: 'pending', l: 'Pending' }, { k: 'fulfilled', l: 'Fulfilled' }, { k: 'failed', l: 'Failed' }].map((s) => (
               <button
                 key={s.k}
@@ -511,8 +511,8 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
                     ? s.k === 'fulfilled' ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
                     : s.k === 'failed' ? 'bg-accent-red/15 text-accent-red border-accent-red/30'
                     : s.k === 'pending' ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 shadow-glow-goldSoft'
-                    : 'bg-white/[0.1] text-white border-white/15'
-                    : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                    : 'bg-overlay/[0.1] text-heading border-overlay/15'
+                    : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
                 )}
               >
                 {s.l} <span className="ml-1 opacity-60">{s.k ? (counts[s.k] ?? 0) : total}</span>
@@ -526,10 +526,10 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
           {isLoading ? (
             <div>
               {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                  <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                  <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+                <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                  <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                  <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                  <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
                 </div>
               ))}
             </div>
@@ -538,15 +538,15 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
               <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
                 <Inbox className="w-6 h-6 text-accent-gold" />
               </div>
-              <p className="text-white font-semibold">No {status || ''} redemptions</p>
-              <p className="mt-1 text-sm text-zinc-500">User redemptions appear here for fulfillment.</p>
+              <p className="text-heading font-semibold">No {status || ''} redemptions</p>
+              <p className="mt-1 text-sm text-faint">User redemptions appear here for fulfillment.</p>
             </div>
           ) : (
             items.map((r, i) => (
               <div
                 key={r._id}
                 style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
                 <div className="flex items-center gap-3 min-w-0">
@@ -554,21 +554,21 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
                     {r.user?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{r.user?.name ?? 'Unknown user'}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">{r.user?.email ?? '—'}</p>
+                    <p className="text-sm font-medium text-heading truncate">{r.user?.name ?? 'Unknown user'}</p>
+                    <p className="text-[11px] text-faint truncate">{r.user?.email ?? '—'}</p>
                   </div>
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <p className="text-sm font-semibold text-white truncate flex items-center gap-2">
+                  <p className="text-sm font-semibold text-heading truncate flex items-center gap-2">
                     <Ticket className="w-3.5 h-3.5 text-accent-gold shrink-0" />
                     {r.voucher?.title ?? 'Deleted voucher'}
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] text-zinc-500">{r.voucher?.provider} · {formatCoins(r.voucher?.coinCost ?? 0)} coins</span>
+                    <span className="text-[10px] text-faint">{r.voucher?.provider} · {formatCoins(r.voucher?.coinCost ?? 0)} coins</span>
                     {r.code && (
-                      <button onClick={() => copy(r.code!, r._id)} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-[10px] font-mono text-accent-gold hover:border-accent-gold/40 transition-colors" title="Copy code">
+                      <button onClick={() => copy(r.code!, r._id)} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-overlay/[0.06] border border-overlay/10 text-[10px] font-mono text-accent-gold hover:border-accent-gold/40 transition-colors" title="Copy code">
                         {r.code}
-                        {copiedId === r._id ? <Check className="w-2.5 h-2.5 text-accent-green" /> : <Copy className="w-2.5 h-2.5 text-zinc-500" />}
+                        {copiedId === r._id ? <Check className="w-2.5 h-2.5 text-accent-green" /> : <Copy className="w-2.5 h-2.5 text-faint" />}
                       </button>
                     )}
                   </div>
@@ -578,7 +578,7 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
                     <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold capitalize', (RD_STATUS[r.status] ?? RD_STATUS.pending).cls)}>
                       <span className={cn('w-1.5 h-1.5 rounded-full', (RD_STATUS[r.status] ?? RD_STATUS.pending).dot)} /> {r.status}
                     </span>
-                    <p className="text-[11px] text-zinc-600 md:text-right" title={formatDate(r.createdAt)}>{rel(r.createdAt)}</p>
+                    <p className="text-[11px] text-dim md:text-right" title={formatDate(r.createdAt)}>{rel(r.createdAt)}</p>
                   </div>
                   {manage && r.status === 'pending' && (
                     <div className="flex gap-1.5">
@@ -596,13 +596,13 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
           )}
 
           {data && data.pages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-              <p className="text-xs text-zinc-500">
-                Showing <span className="text-zinc-300 font-medium">{start}–{end}</span> of <span className="text-zinc-300 font-medium">{total}</span>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+              <p className="text-xs text-faint">
+                Showing <span className="text-body font-medium">{start}–{end}</span> of <span className="text-body font-medium">{total}</span>
               </p>
               <div className="flex items-center gap-2">
                 <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">Prev</button>
-                <span className="text-xs text-zinc-500 px-2">Page {page} / {data.pages}</span>
+                <span className="text-xs text-faint px-2">Page {page} / {data.pages}</span>
                 <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next</button>
               </div>
             </div>
@@ -614,21 +614,21 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
       <Modal open={!!fulfill} onClose={() => setFulfill(null)} title="Fulfill redemption">
         {fulfill && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Ticket className="w-4 h-4 text-accent-gold" /></span>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold truncate">{fulfill.voucher?.title ?? 'Voucher'}</p>
-                <p className="text-xs text-zinc-500">{fulfill.user?.name} · {formatCoins(fulfill.voucher?.coinCost ?? 0)} coins</p>
+                <p className="text-sm text-heading font-semibold truncate">{fulfill.voucher?.title ?? 'Voucher'}</p>
+                <p className="text-xs text-faint">{fulfill.user?.name} · {formatCoins(fulfill.voucher?.coinCost ?? 0)} coins</p>
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Voucher / recharge code *</label>
+              <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Voucher / recharge code *</label>
               <input value={code} onChange={(e) => setCode(e.target.value)} className="field-gold font-mono" placeholder="e.g. RC-9F2K-88QX" />
             </div>
             {mut.isError && (
               <p className="text-xs text-accent-red">{(mut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Failed'}</p>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setFulfill(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
                 onClick={() => { mut.mutate({ id: fulfill._id, status: 'fulfilled', code: code.trim() }); setFulfill(null); }}
@@ -646,15 +646,15 @@ function Redemptions({ onTab }: { onTab: (t: 'packages' | 'redemptions') => void
       <Modal open={!!failing} onClose={() => setFailing(null)} title="Fail redemption">
         {failing && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><XCircle className="w-4 h-4 text-accent-red" /></span>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold truncate">{failing.voucher?.title ?? 'Voucher'}</p>
-                <p className="text-xs text-zinc-500">{failing.user?.name}</p>
+                <p className="text-sm text-heading font-semibold truncate">{failing.voucher?.title ?? 'Voucher'}</p>
+                <p className="text-xs text-faint">{failing.user?.name}</p>
               </div>
             </div>
-            <p className="text-sm text-zinc-400">Mark this redemption as failed. No code is issued.</p>
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <p className="text-sm text-muted">Mark this redemption as failed. No code is issued.</p>
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setFailing(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button
                 onClick={() => { mut.mutate({ id: failing._id, status: 'failed' }); setFailing(null); }}

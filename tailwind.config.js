@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -22,12 +23,22 @@ export default {
           pink: '#F472B6',
         },
         brand: {
-          navy: '#050B1F',
-          navyLight: '#0A1540',
+          navy: 'rgb(var(--panel) / <alpha-value>)',
+          navyLight: 'rgb(var(--panel2) / <alpha-value>)',
           blue: '#2E6BFF',
           blueLight: '#3B82F6',
           goldDeep: '#B45309',
         },
+        /* semantic theme tokens (defined in index.css :root / html.light) */
+        heading: 'rgb(var(--heading) / <alpha-value>)',
+        body: 'rgb(var(--body) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+        faint: 'rgb(var(--faint) / <alpha-value>)',
+        dim: 'rgb(var(--dim) / <alpha-value>)',
+        overlay: 'rgb(var(--overlay) / <alpha-value>)',
+        panel: 'rgb(var(--panel) / <alpha-value>)',
+        panel2: 'rgb(var(--panel2) / <alpha-value>)',
+        canvas: 'rgb(var(--bg) / <alpha-value>)',
       },
       fontFamily: {
         display: ['"Segoe UI"', 'system-ui', 'sans-serif'],
@@ -43,7 +54,7 @@ export default {
       backgroundImage: {
         'gradient-violet': 'linear-gradient(135deg, #7C5CFF 0%, #4F8CFF 100%)',
         'gradient-gold': 'linear-gradient(135deg, #FFD86F 0%, #F7A83E 100%)',
-        'gradient-card': 'linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+        'gradient-card': 'linear-gradient(160deg, rgb(var(--overlay) / 0.06) 0%, rgb(var(--overlay) / 0.02) 100%)',
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease-out',

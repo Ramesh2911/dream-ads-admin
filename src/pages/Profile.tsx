@@ -167,11 +167,11 @@ export default function Profile() {
           {/* identity */}
           <div className="flex items-center gap-5 min-w-0 flex-1">
             {isLoading ? (
-              <div className="w-20 h-20 rounded-full bg-white/[0.06] animate-pulse shrink-0" />
+              <div className="w-20 h-20 rounded-full bg-overlay/[0.06] animate-pulse shrink-0" />
             ) : (
               <div className="relative shrink-0">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-gold via-accent-goldDark to-brand-blue p-[3px] shadow-glow-gold">
-                  <div className="w-full h-full rounded-full bg-brand-navy flex items-center justify-center text-2xl font-black text-gradient-gold ring-1 ring-white/10">
+                  <div className="w-full h-full rounded-full bg-brand-navy flex items-center justify-center text-2xl font-black text-gradient-gold ring-1 ring-overlay/10">
                     {initials}
                   </div>
                 </div>
@@ -180,11 +180,11 @@ export default function Profile() {
             )}
             <div className="min-w-0">
               {isLoading ? (
-                <div className="space-y-2"><div className="h-6 w-48 rounded-lg bg-white/[0.06] animate-pulse" /><div className="h-4 w-64 rounded-lg bg-white/[0.04] animate-pulse" /></div>
+                <div className="space-y-2"><div className="h-6 w-48 rounded-lg bg-overlay/[0.06] animate-pulse" /><div className="h-4 w-64 rounded-lg bg-overlay/[0.04] animate-pulse" /></div>
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl font-bold text-white truncate">{res?.name ?? admin?.name}</h1>
+                    <h1 className="text-2xl font-bold text-heading truncate">{res?.name ?? admin?.name}</h1>
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <ShieldCheck className="w-3 h-3" /> {res?.role.name ?? admin?.role}
                     </span>
@@ -195,17 +195,17 @@ export default function Profile() {
                       <span className="w-1.5 h-1.5 rounded-full bg-current" /> {res?.status ?? 'active'}
                     </span>
                   </div>
-                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-zinc-500 truncate">
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-faint truncate">
                     <Mail className="w-3.5 h-3.5 shrink-0" /> {res?.email ?? admin?.email}
                   </p>
                   <div className="mt-2 flex items-center gap-2 flex-wrap">
                     <span className={cn(
                       'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold border',
-                      res?.totpEnabled ? 'bg-accent-violet/12 text-accent-violet border-accent-violet/30' : 'bg-white/[0.05] text-zinc-500 border-white/[0.1]'
+                      res?.totpEnabled ? 'bg-accent-violet/12 text-accent-violet border-accent-violet/30' : 'bg-overlay/[0.05] text-faint border-overlay/[0.1]'
                     )}>
                       <Lock className="w-3 h-3" /> 2FA {res?.totpEnabled ? 'enabled' : 'off'}
                     </span>
-                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono text-zinc-600 bg-white/[0.04] border border-white/[0.07] truncate">
+                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono text-dim bg-overlay/[0.04] border border-overlay/[0.07] truncate">
                       #{String(res?.id ?? '').slice(-10)}
                     </span>
                   </div>
@@ -217,19 +217,19 @@ export default function Profile() {
           {/* stat tiles 2x2 */}
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:w-[440px] shrink-0 gap-3">
             {isLoading
-              ? [0, 1, 2, 3].map((i) => <div key={i} className="h-[74px] rounded-xl bg-white/[0.04] animate-pulse" />)
+              ? [0, 1, 2, 3].map((i) => <div key={i} className="h-[74px] rounded-xl bg-overlay/[0.04] animate-pulse" />)
               : [
                   { l: 'Member for', v: `${memberDays}d`, s: formatDate(res!.createdAt), icon: CalendarDays, tone: 'text-accent-blue' },
                   { l: 'Last login', v: ago(res!.lastLoginAt), s: res!.lastLoginAt ? formatDateTime(res!.lastLoginAt) : 'first session', icon: LogIn, tone: 'text-accent-violet' },
                   { l: 'Actions logged', v: res!.auditCount, s: 'audit trail entries', icon: Activity, tone: 'text-accent-green' },
                   { l: 'Access', v: `${res!.role.permissionCount}/${res!.role.totalPermissions}`, s: 'permissions granted', icon: Sparkles, tone: 'text-accent-gold' },
                 ].map((tile) => (
-                  <div key={tile.l} className="p-3 rounded-xl bg-white/[0.05] border border-white/[0.08] backdrop-blur-sm">
-                    <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-wider text-zinc-600 font-semibold">
+                  <div key={tile.l} className="p-3 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08] backdrop-blur-sm">
+                    <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-wider text-dim font-semibold">
                       <tile.icon className={cn('w-3 h-3', tile.tone)} /> {tile.l}
                     </div>
-                    <p className="mt-1 text-lg font-extrabold text-white tabular-nums leading-tight">{tile.v}</p>
-                    <p className="text-[9px] text-zinc-600 truncate">{tile.s}</p>
+                    <p className="mt-1 text-lg font-extrabold text-heading tabular-nums leading-tight">{tile.v}</p>
+                    <p className="text-[9px] text-dim truncate">{tile.s}</p>
                   </div>
                 ))}
           </div>
@@ -244,7 +244,7 @@ export default function Profile() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><User className="w-4 h-4 text-accent-blue" /></span>
-                <h3 className="font-semibold text-white">Account details</h3>
+                <h3 className="font-semibold text-heading">Account details</h3>
               </div>
               {dirty && (
                 <span className="text-[10px] font-bold text-accent-gold px-2 py-1 rounded-lg bg-accent-gold/10 border border-accent-gold/25 animate-pulse">Unsaved</span>
@@ -263,23 +263,23 @@ export default function Profile() {
             )}
 
             {isLoading ? (
-              <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-zinc-400">Display name</label>
+                  <label className="text-xs font-medium text-muted">Display name</label>
                   <input className="glass-input mt-1" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-400">Email (login)</label>
+                  <label className="text-xs font-medium text-muted">Email (login)</label>
                   <input className="glass-input mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                  <p className="text-[11px] text-zinc-600 mt-1">You sign in with this email next time</p>
+                  <p className="text-[11px] text-dim mt-1">You sign in with this email next time</p>
                 </div>
                 <div className="sm:col-span-2 flex items-center justify-end gap-2">
                   {dirty && (
                     <button
                       onClick={() => { setName(serverName); setEmail(serverEmail); setProfileErr(''); }}
-                      className="px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-zinc-300 hover:bg-white/[0.1] transition-colors text-sm font-semibold"
+                      className="px-4 py-2.5 rounded-xl bg-overlay/[0.06] border border-overlay/[0.10] text-body hover:bg-overlay/[0.1] transition-colors text-sm font-semibold"
                     >
                       Reset
                     </button>
@@ -308,10 +308,10 @@ export default function Profile() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><KeyRound className="w-4 h-4 text-accent-red" /></span>
-                <h3 className="font-semibold text-white">Security</h3>
-                <span className="text-[11px] text-zinc-500">change password</span>
+                <h3 className="font-semibold text-heading">Security</h3>
+                <span className="text-[11px] text-faint">change password</span>
               </div>
-              <span className={cn('text-[11px] font-bold px-2 py-1 rounded-lg border', pwReady ? 'text-accent-green bg-accent-green/10 border-accent-green/25' : 'text-zinc-500 bg-white/[0.05] border-white/[0.1]')}>
+              <span className={cn('text-[11px] font-bold px-2 py-1 rounded-lg border', pwReady ? 'text-accent-green bg-accent-green/10 border-accent-green/25' : 'text-faint bg-overlay/[0.05] border-overlay/[0.1]')}>
                 {pwReady ? 'Ready' : 'Fill all checks'}
               </span>
             </div>
@@ -329,7 +329,7 @@ export default function Profile() {
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div>
-                <label className="text-xs font-medium text-zinc-400">Current password</label>
+                <label className="text-xs font-medium text-muted">Current password</label>
                 <div className="relative mt-1">
                   <input
                     type={showPw.cur ? 'text' : 'password'}
@@ -339,13 +339,13 @@ export default function Profile() {
                     autoComplete="current-password"
                     onChange={(e) => setCurPw(e.target.value)}
                   />
-                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, cur: !s.cur }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors">
+                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, cur: !s.cur }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors">
                     {showPw.cur ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-zinc-400">New password</label>
+                <label className="text-xs font-medium text-muted">New password</label>
                 <div className="relative mt-1">
                   <input
                     type={showPw.next ? 'text' : 'password'}
@@ -355,13 +355,13 @@ export default function Profile() {
                     autoComplete="new-password"
                     onChange={(e) => setNewPw(e.target.value)}
                   />
-                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, next: !s.next }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors">
+                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, next: !s.next }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors">
                     {showPw.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-zinc-400">Confirm new</label>
+                <label className="text-xs font-medium text-muted">Confirm new</label>
                 <div className="relative mt-1">
                   <input
                     type={showPw.conf ? 'text' : 'password'}
@@ -371,7 +371,7 @@ export default function Profile() {
                     autoComplete="new-password"
                     onChange={(e) => setConfPw(e.target.value)}
                   />
-                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, conf: !s.conf }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors">
+                  <button type="button" tabIndex={-1} onClick={() => setShowPw((s) => ({ ...s, conf: !s.conf }))} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors">
                     {showPw.conf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -381,14 +381,14 @@ export default function Profile() {
             {/* strength meter */}
             <div className="mt-4">
               <div className="flex items-center justify-between text-[11px] mb-1.5">
-                <span className="text-zinc-500 font-medium">Strength</span>
+                <span className="text-faint font-medium">Strength</span>
                 <span className={cn('font-bold', score <= 1 ? 'text-accent-red' : score === 2 ? 'text-accent-gold' : score === 3 ? 'text-accent-blue' : 'text-accent-green')}>
                   {newPw ? `${pwLabel} · ${score}/4` : '—'}
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-1.5">
                 {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="h-1.5 rounded-full bg-white/[0.07] overflow-hidden">
+                  <div key={i} className="h-1.5 rounded-full bg-overlay/[0.07] overflow-hidden">
                     <div className={cn('h-full rounded-full transition-all duration-500', i < score ? pwColor : 'w-0')} style={i < score ? { width: '100%' } : undefined} />
                   </div>
                 ))}
@@ -396,7 +396,7 @@ export default function Profile() {
             </div>
 
             {/* checklist + action */}
-            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-white/[0.08]">
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-overlay/[0.08]">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5">
                 {([
                   { ok: pwChecks.len, l: '8+ characters' },
@@ -404,7 +404,7 @@ export default function Profile() {
                   { ok: pwChecks.digit, l: 'Has number' },
                   { ok: pwChecks.match, l: 'Matches confirm' },
                 ] as Array<{ ok: boolean; l: string }>).map((c) => (
-                  <span key={c.l} className={cn('flex items-center gap-1.5 text-[11px] font-medium', c.ok ? 'text-accent-green' : 'text-zinc-600')}>
+                  <span key={c.l} className={cn('flex items-center gap-1.5 text-[11px] font-medium', c.ok ? 'text-accent-green' : 'text-dim')}>
                     {c.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />} {c.l}
                   </span>
                 ))}
@@ -421,11 +421,11 @@ export default function Profile() {
 
           {/* activity */}
           <div className="glass overflow-hidden animate-slide-up" style={{ animationDelay: '140ms' }}>
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-overlay/[0.08]">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Activity className="w-4 h-4 text-accent-green" /></span>
-                <h3 className="font-semibold text-white">My activity</h3>
-                <span className="text-[11px] text-zinc-500">audit trail · own actions only</span>
+                <h3 className="font-semibold text-heading">My activity</h3>
+                <span className="text-[11px] text-faint">audit trail · own actions only</span>
               </div>
               <span className="text-[11px] font-bold text-accent-gold tabular-nums">{res?.auditCount ?? 0} total</span>
             </div>
@@ -433,7 +433,7 @@ export default function Profile() {
             {/* top actions */}
             {res && res.topActions.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap px-4 sm:px-5 pt-4">
-                <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Most frequent:</span>
+                <span className="text-[10px] uppercase tracking-wider text-dim font-semibold">Most frequent:</span>
                 {res.topActions.map((a) => (
                   <span key={a.action} className={cn('px-2 py-0.5 rounded-lg text-[10px] font-bold border', actionTone(a.action))}>
                     {a.action} <span className="opacity-70">×{a.count}</span>
@@ -443,22 +443,22 @@ export default function Profile() {
             )}
 
             <div className="p-4 sm:p-5 space-y-3">
-              {isLoading && [0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}
+              {isLoading && [0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}
               {!isLoading && res?.activity.length === 0 && (
                 <div className="py-8 text-center">
                   <div className="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-green/20 to-brand-blue/10 flex items-center justify-center mb-3"><Activity className="w-5 h-5 text-accent-green" /></div>
-                  <p className="text-sm font-semibold text-white">No actions yet</p>
-                  <p className="text-xs text-zinc-500 mt-1">Everything you do in the admin panel shows up here.</p>
+                  <p className="text-sm font-semibold text-heading">No actions yet</p>
+                  <p className="text-xs text-faint mt-1">Everything you do in the admin panel shows up here.</p>
                 </div>
               )}
               {!isLoading && res?.activity.map((a, i) => (
-                <div key={i} className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
+                <div key={i} className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] hover:bg-overlay/[0.05] transition-colors animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
                   <span className={cn('w-2 h-2 rounded-full shrink-0', actionDot(a.action))} />
                   <span className={cn('px-2 py-0.5 rounded-lg text-[10px] font-bold border shrink-0', actionTone(a.action))}>{a.action}</span>
-                  <span className="text-[11px] text-zinc-500 truncate">{a.entity}</span>
+                  <span className="text-[11px] text-faint truncate">{a.entity}</span>
                   <span className="ml-auto flex items-center gap-3 shrink-0">
-                    {a.ip && <span className="hidden sm:block text-[10px] font-mono text-zinc-700">{a.ip}</span>}
-                    <span className="text-[10px] text-zinc-600">{ago(a.createdAt)}</span>
+                    {a.ip && <span className="hidden sm:block text-[10px] font-mono text-body">{a.ip}</span>}
+                    <span className="text-[10px] text-dim">{ago(a.createdAt)}</span>
                   </span>
                 </div>
               ))}
@@ -473,7 +473,7 @@ export default function Profile() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><ShieldCheck className="w-4 h-4 text-accent-gold" /></span>
-                <h3 className="font-semibold text-white">Role & access</h3>
+                <h3 className="font-semibold text-heading">Role & access</h3>
               </div>
               <span className={cn('text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg border', isSuper ? 'text-accent-gold bg-accent-gold/12 border-accent-gold/30' : 'text-accent-blue bg-brand-blue/15 border-brand-blue/30')}>
                 {isSuper ? 'Full access' : 'Scoped'}
@@ -481,27 +481,27 @@ export default function Profile() {
             </div>
 
             {isLoading ? (
-              <div className="space-y-3"><div className="h-8 rounded-xl bg-white/[0.03] animate-pulse" /><div className="h-4 rounded-lg bg-white/[0.03] animate-pulse" /></div>
+              <div className="space-y-3"><div className="h-8 rounded-xl bg-overlay/[0.03] animate-pulse" /><div className="h-4 rounded-lg bg-overlay/[0.03] animate-pulse" /></div>
             ) : (
               <>
                 <div className="flex items-baseline justify-between mb-2">
-                  <p className="text-xl font-extrabold text-white">{res?.role.name}</p>
+                  <p className="text-xl font-extrabold text-heading">{res?.role.name}</p>
                   <p className="text-xs font-bold text-accent-gold tabular-nums">{res?.role.permissionCount}/{res?.role.totalPermissions} · {pct}%</p>
                 </div>
-                <div className="h-2.5 rounded-full bg-white/[0.07] overflow-hidden mb-4">
+                <div className="h-2.5 rounded-full bg-overlay/[0.07] overflow-hidden mb-4">
                   <div className="h-full rounded-full bg-gradient-to-r from-accent-gold to-brand-blue transition-all duration-700" style={{ width: `${Math.max(4, pct)}%` }} />
                 </div>
 
                 {isSuper ? (
                   <div className="p-3.5 rounded-xl bg-gradient-to-br from-accent-gold/12 to-brand-blue/10 border border-accent-gold/25">
                     <p className="text-xs font-bold text-accent-gold flex items-center gap-1.5 mb-1"><Sparkles className="w-3.5 h-3.5" /> Super Admin</p>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">Unrestricted access to {res?.role.totalPermissions} permissions across every module — actions are still audit-logged.</p>
+                    <p className="text-[11px] text-muted leading-relaxed">Unrestricted access to {res?.role.totalPermissions} permissions across every module — actions are still audit-logged.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {permGroups.map(([mod, perms]) => (
                       <div key={mod}>
-                        <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold mb-1.5">{MODULE_LABELS[mod] ?? mod}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-dim font-semibold mb-1.5">{MODULE_LABELS[mod] ?? mod}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {perms.sort().map((p) => (
                             <span
@@ -517,7 +517,7 @@ export default function Profile() {
                         </div>
                       </div>
                     ))}
-                    {permGroups.length === 0 && <p className="text-xs text-zinc-600">No permissions granted.</p>}
+                    {permGroups.length === 0 && <p className="text-xs text-dim">No permissions granted.</p>}
                   </div>
                 )}
               </>
@@ -528,21 +528,21 @@ export default function Profile() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '140ms' }}>
             <div className="flex items-center gap-2.5 mb-4">
               <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Info className="w-4 h-4 text-accent-violet" /></span>
-              <h3 className="font-semibold text-white">Account info</h3>
+              <h3 className="font-semibold text-heading">Account info</h3>
             </div>
             {isLoading ? (
-              <div className="space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="h-9 rounded-lg bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="h-9 rounded-lg bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-1.5">
                 {[
                   { l: 'Status', v: res?.status ?? '—', tone: res?.status === 'active' ? 'text-accent-green' : 'text-accent-red' },
-                  { l: '2FA (TOTP)', v: res?.totpEnabled ? 'enabled' : 'not enabled', tone: res?.totpEnabled ? 'text-accent-violet' : 'text-zinc-500' },
-                  { l: 'Joined', v: res ? `${formatDateTime(res.createdAt)} (${memberDays}d ago)` : '—', tone: 'text-white' },
-                  { l: 'Profile updated', v: res ? `${formatDateTime(res.updatedAt)} · ${ago(res.updatedAt)}` : '—', tone: 'text-white' },
-                  { l: 'Last login', v: res?.lastLoginAt ? `${formatDateTime(res.lastLoginAt)} · ${ago(res.lastLoginAt)}` : 'never', tone: 'text-white' },
+                  { l: '2FA (TOTP)', v: res?.totpEnabled ? 'enabled' : 'not enabled', tone: res?.totpEnabled ? 'text-accent-violet' : 'text-faint' },
+                  { l: 'Joined', v: res ? `${formatDateTime(res.createdAt)} (${memberDays}d ago)` : '—', tone: 'text-heading' },
+                  { l: 'Profile updated', v: res ? `${formatDateTime(res.updatedAt)} · ${ago(res.updatedAt)}` : '—', tone: 'text-heading' },
+                  { l: 'Last login', v: res?.lastLoginAt ? `${formatDateTime(res.lastLoginAt)} · ${ago(res.lastLoginAt)}` : 'never', tone: 'text-heading' },
                 ].map((row) => (
-                  <div key={row.l} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05]">
-                    <span className="text-[11px] text-zinc-500 font-medium shrink-0">{row.l}</span>
+                  <div key={row.l} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-overlay/[0.03] border border-overlay/[0.05]">
+                    <span className="text-[11px] text-faint font-medium shrink-0">{row.l}</span>
                     <span className={cn('text-xs font-semibold truncate text-right', row.tone)}>{row.v}</span>
                   </div>
                 ))}
@@ -556,7 +556,7 @@ export default function Profile() {
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20 shrink-0"><Clock className="w-4 h-4 text-accent-gold" /></span>
               <div>
                 <p className="text-xs font-bold text-accent-gold">Security tip</p>
-                <p className="text-[11px] text-zinc-500 leading-relaxed mt-1">
+                <p className="text-[11px] text-faint leading-relaxed mt-1">
                   Rotate your admin password regularly. Every password change and profile edit is audit-logged with your IP for compliance.
                 </p>
               </div>

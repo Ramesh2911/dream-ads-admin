@@ -115,13 +115,13 @@ export default function WalletLedger() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Wallet className="w-5 h-5 text-accent-gold" /></span>
             Passbook Ledger
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Immutable transaction history, balances and flow analytics</p>
+          <p className="mt-1.5 text-sm text-faint">Immutable transaction history, balances and flow analytics</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -132,9 +132,9 @@ export default function WalletLedger() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -146,15 +146,15 @@ export default function WalletLedger() {
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Activity className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Coin flow</h3>
+              <h3 className="font-semibold text-heading truncate">Coin flow</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
+            <span className="text-[11px] text-faint shrink-0 hidden sm:flex items-center gap-3">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-green" /> credits</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-red" /> debits</span>
             </span>
           </div>
           {statsLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <ComposedChart data={chartData} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
@@ -178,29 +178,29 @@ export default function WalletLedger() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Receipt className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Top reasons</h3>
+            <h3 className="font-semibold text-heading">Top reasons</h3>
           </div>
-          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {statsLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!statsLoading && byReason.length === 0 && (
-            <p className="text-sm text-zinc-500 py-8 text-center">No ledger activity yet.</p>
+            <p className="text-sm text-faint py-8 text-center">No ledger activity yet.</p>
           )}
           <div className="space-y-2.5">
             {byReason.map((r, i) => (
-              <div key={`${r.reason}-${r.type}`} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden">
+              <div key={`${r.reason}-${r.type}`} className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] relative overflow-hidden">
                 <div
                   className={cn('absolute inset-y-0 left-0 opacity-15', r.type === 'credit' ? 'bg-accent-green' : 'bg-accent-red')}
                   style={{ width: `${Math.max(6, Math.round((r.total / maxReason) * 100))}%` }}
                 />
                 <div className="relative flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white capitalize truncate">{human(r.reason)}</p>
-                    <p className="text-[10px] text-zinc-500">{r.count} entries</p>
+                    <p className="text-xs font-semibold text-heading capitalize truncate">{human(r.reason)}</p>
+                    <p className="text-[10px] text-faint">{r.count} entries</p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className={cn('text-sm font-bold tabular-nums', r.type === 'credit' ? 'text-accent-green' : 'text-accent-red')}>
                       {r.type === 'credit' ? '+' : '−'}{formatCoins(r.total)}
                     </p>
-                    <p className="text-[10px] text-zinc-600">{r.type}</p>
+                    <p className="text-[10px] text-dim">{r.type}</p>
                   </div>
                 </div>
               </div>
@@ -212,9 +212,9 @@ export default function WalletLedger() {
       {/* ledger list */}
       <div className="glass overflow-hidden animate-fade-in">
         {/* toolbar */}
-        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
+        <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-overlay/[0.08]">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -223,7 +223,7 @@ export default function WalletLedger() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08]">
               {[{ k: '', l: 'All passbooks' }, { k: 'video', l: 'Video' }, { k: 'social', l: 'Social' }].map((w) => (
                 <button
                   key={w.k}
@@ -232,14 +232,14 @@ export default function WalletLedger() {
                     'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all',
                     wallet === w.k
                       ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                      : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
                   )}
                 >
                   {w.l}
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08]">
               {[{ k: '', l: 'All' }, { k: 'credit', l: 'Credits' }, { k: 'debit', l: 'Debits' }].map((x) => (
                 <button
                   key={x.k}
@@ -251,8 +251,8 @@ export default function WalletLedger() {
                         ? 'bg-accent-green/20 text-accent-green border border-accent-green/30'
                         : x.k === 'debit'
                         ? 'bg-accent-red/20 text-accent-red border border-accent-red/30'
-                        : 'bg-white/[0.1] text-white'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent'
+                        : 'bg-overlay/[0.1] text-heading'
+                      : 'text-muted hover:text-heading hover:bg-overlay/[0.06] border border-transparent'
                   )}
                 >
                   {x.l}
@@ -266,10 +266,10 @@ export default function WalletLedger() {
         {isLoading ? (
           <div>
             {[0, 1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-white/[0.05]">
-                <div className="w-9 h-9 rounded-full bg-white/[0.06] animate-pulse" />
-                <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-white/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" /></div>
-                <div className="h-6 w-20 rounded-full bg-white/[0.05] animate-pulse" />
+              <div key={i} className="flex items-center gap-4 px-4 py-4 border-b border-overlay/[0.05]">
+                <div className="w-9 h-9 rounded-full bg-overlay/[0.06] animate-pulse" />
+                <div className="flex-1 space-y-2"><div className="h-3.5 w-36 rounded bg-overlay/[0.06] animate-pulse" /><div className="h-3 w-52 rounded bg-overlay/[0.04] animate-pulse" /></div>
+                <div className="h-6 w-20 rounded-full bg-overlay/[0.05] animate-pulse" />
               </div>
             ))}
           </div>
@@ -278,15 +278,15 @@ export default function WalletLedger() {
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4">
               <Inbox className="w-6 h-6 text-accent-gold" />
             </div>
-            <p className="text-white font-semibold">No ledger entries found</p>
-            <p className="mt-1 text-sm text-zinc-500">Adjust filters — transactions appear here the moment coins move.</p>
+            <p className="text-heading font-semibold">No ledger entries found</p>
+            <p className="mt-1 text-sm text-faint">Adjust filters — transactions appear here the moment coins move.</p>
           </div>
         ) : (
           entries.map((e, i) => (
             <div
               key={e._id}
               style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}
-              className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_minmax(0,1.4fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative"
+              className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_auto_minmax(0,1.4fr)_auto] gap-2 md:gap-4 items-center px-4 py-3.5 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative"
             >
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
               <div className="flex items-center gap-3 min-w-0">
@@ -299,8 +299,8 @@ export default function WalletLedger() {
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{e.user?.name ?? 'Unknown user'}</p>
-                  <p className="text-[11px] text-zinc-500 truncate">{e.user?.email ?? e.user?.referralCode ?? '—'}</p>
+                  <p className="text-sm font-medium text-heading truncate">{e.user?.name ?? 'Unknown user'}</p>
+                  <p className="text-[11px] text-faint truncate">{e.user?.email ?? e.user?.referralCode ?? '—'}</p>
                 </div>
               </div>
               <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-0.5">
@@ -310,19 +310,19 @@ export default function WalletLedger() {
                 <Badge variant={e.wallet === 'video' ? 'info' : 'warning'}>{e.wallet}</Badge>
               </div>
               <div className="min-w-0">
-                <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold capitalize', REASON_TONE[e.reason] ?? 'bg-white/[0.08] text-zinc-300 border-white/10')}>
+                <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border text-[11px] font-semibold capitalize', REASON_TONE[e.reason] ?? 'bg-overlay/[0.08] text-body border-overlay/10')}>
                   {human(e.reason)}
                 </span>
-                {e.note && <p className="text-[11px] text-zinc-600 truncate mt-1.5">{e.note}</p>}
+                {e.note && <p className="text-[11px] text-dim truncate mt-1.5">{e.note}</p>}
               </div>
               <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
                 <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-600">Balance after</p>
-                  <p className="text-sm font-bold text-zinc-200 tabular-nums">{formatCoins(e.balanceAfter)}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-dim">Balance after</p>
+                  <p className="text-sm font-bold text-body tabular-nums">{formatCoins(e.balanceAfter)}</p>
                 </div>
                 <div className="text-right shrink-0 w-24">
-                  <p className="text-[11px] text-zinc-400" title={formatDate(e.createdAt)}>{rel(e.createdAt)}</p>
-                  <p className="text-[10px] text-zinc-600 hidden md:block">{formatDate(e.createdAt)}</p>
+                  <p className="text-[11px] text-muted" title={formatDate(e.createdAt)}>{rel(e.createdAt)}</p>
+                  <p className="text-[10px] text-dim hidden md:block">{formatDate(e.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -331,15 +331,15 @@ export default function WalletLedger() {
 
         {/* pagination */}
         {data && data.pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">
-              Showing <span className="text-zinc-300 font-medium">{start}–{end}</span> of <span className="text-zinc-300 font-medium">{total}</span> entries
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-overlay/[0.08]">
+            <p className="text-xs text-faint">
+              Showing <span className="text-body font-medium">{start}–{end}</span> of <span className="text-body font-medium">{total}</span> entries
             </p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40">
                 <ChevronLeft className="w-4 h-4" /> Prev
               </button>
-              <span className="text-xs text-zinc-500 px-2">Page {page} / {data.pages}</span>
+              <span className="text-xs text-faint px-2">Page {page} / {data.pages}</span>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">
                 Next <ChevronRight className="w-4 h-4" />
               </button>
@@ -349,7 +349,7 @@ export default function WalletLedger() {
       </div>
 
       {/* footnote */}
-      <p className="mt-4 text-[11px] text-zinc-600 flex items-center gap-1.5">
+      <p className="mt-4 text-[11px] text-dim flex items-center gap-1.5">
         <ArrowRight className="w-3 h-3" />
         All balance changes are recorded in an immutable ledger. Manual adjustments require a reason and are fully audited (Users → Adjust passbook).
       </p>

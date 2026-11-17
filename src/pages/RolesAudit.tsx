@@ -39,7 +39,7 @@ const humanPerm = (p: string) => {
 };
 const toneFor = (action: string) => {
   const key = Object.keys(ACTION_TONE).find((k) => action.includes(k));
-  return ACTION_TONE[key ?? ''] ?? { cls: 'bg-white/[0.08] text-zinc-300 border-white/10', dot: 'bg-zinc-500' };
+  return ACTION_TONE[key ?? ''] ?? { cls: 'bg-overlay/[0.08] text-body border-overlay/10', dot: 'bg-zinc-500' };
 };
 
 function rel(iso: string) {
@@ -73,13 +73,13 @@ export default function RolesAudit() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Shield className="w-5 h-5 text-accent-gold" /></span>
             Roles & Audit
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Permission roles and immutable action history</p>
+          <p className="mt-1.5 text-sm text-faint">Permission roles and immutable action history</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -90,9 +90,9 @@ export default function RolesAudit() {
           <div key={c.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', c.chip)}><c.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{c.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{c.value ?? '—'}</p>
-              {c.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{c.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{c.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{c.value ?? '—'}</p>
+              {c.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{c.sub}</p>}
             </div>
           </div>
         ))}
@@ -100,7 +100,7 @@ export default function RolesAudit() {
 
       {/* tabs */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 lg:left-auto lg:right-8 lg:translate-x-0">
-        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-white/[0.1] shadow-glow-goldSoft">
+        <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-base-950/80 backdrop-blur-xl border border-overlay/[0.1] shadow-glow-goldSoft">
           {([['roles', 'Roles', Shield], ['audit', 'Audit log', Scroll]] as const).map(([k, l, Icon]) => (
             <button
               key={k}
@@ -109,7 +109,7 @@ export default function RolesAudit() {
                 'flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all',
                 tab === k
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 shadow-glow-gold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
               )}
             >
               <Icon className="w-3.5 h-3.5" /> {l}
@@ -163,11 +163,11 @@ function PermMatrix({ all, selected, onChange, disabled }: { all: string[]; sele
       {groups.map(({ group, perms }) => {
         const on = perms.filter((p) => selected.includes(p)).length;
         return (
-          <div key={group} className="rounded-xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.02]">
+          <div key={group} className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-overlay/[0.06] bg-overlay/[0.02]">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white">{humanModule(group)}</span>
-                <span className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded-md', on === perms.length ? 'bg-accent-green/15 text-accent-green' : on > 0 ? 'bg-accent-gold/15 text-accent-gold' : 'bg-white/[0.06] text-zinc-500')}>
+                <span className="text-sm font-bold text-heading">{humanModule(group)}</span>
+                <span className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded-md', on === perms.length ? 'bg-accent-green/15 text-accent-green' : on > 0 ? 'bg-accent-gold/15 text-accent-gold' : 'bg-overlay/[0.06] text-faint')}>
                   {on}/{perms.length}
                 </span>
               </div>
@@ -177,7 +177,7 @@ function PermMatrix({ all, selected, onChange, disabled }: { all: string[]; sele
                 onClick={() => toggleGroup(perms)}
                 className={cn(
                   'text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors',
-                  on === perms.length ? 'text-accent-green hover:bg-accent-green/10' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]',
+                  on === perms.length ? 'text-accent-green hover:bg-accent-green/10' : 'text-muted hover:text-heading hover:bg-overlay/[0.06]',
                   disabled && 'opacity-40 cursor-not-allowed'
                 )}
               >
@@ -196,8 +196,8 @@ function PermMatrix({ all, selected, onChange, disabled }: { all: string[]; sele
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-all border',
                       checked
-                        ? 'bg-accent-gold/10 border-accent-gold/30 text-white'
-                        : 'bg-white/[0.02] border-transparent text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200',
+                        ? 'bg-accent-gold/10 border-accent-gold/30 text-heading'
+                        : 'bg-overlay/[0.02] border-transparent text-muted hover:bg-overlay/[0.05] hover:text-body',
                       disabled && 'cursor-not-allowed opacity-60'
                     )}
                   >
@@ -209,7 +209,7 @@ function PermMatrix({ all, selected, onChange, disabled }: { all: string[]; sele
                     </span>
                     <span className="min-w-0">
                       <span className="block text-xs font-semibold truncate">{humanPerm(p)}</span>
-                      <span className="block text-[10px] font-mono text-zinc-600 truncate">{p}</span>
+                      <span className="block text-[10px] font-mono text-dim truncate">{p}</span>
                     </span>
                   </button>
                 );
@@ -278,19 +278,19 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
   return (
     <>
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-white/[0.08]">
-          <p className="text-sm text-zinc-500"><span className="text-white font-semibold">{roles.length}</span> roles · permission catalog: <span className="text-accent-gold font-semibold">{all.length}</span></p>
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-overlay/[0.08]">
+          <p className="text-sm text-faint"><span className="text-heading font-semibold">{roles.length}</span> roles · permission catalog: <span className="text-accent-gold font-semibold">{all.length}</span></p>
           {manage && (
             <button onClick={openCreate} className="btn-gold !py-2 px-3.5 text-xs"><Plus className="w-3.5 h-3.5" /> New role</button>
           )}
         </div>
 
         {isLoading ? (
-          <div className="grid sm:grid-cols-2 gap-4 p-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-48 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
+          <div className="grid sm:grid-cols-2 gap-4 p-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-48 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}</div>
         ) : roles.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Inbox className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No roles</p>
+            <p className="text-heading font-semibold">No roles</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4 p-4">
@@ -298,7 +298,7 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
               const pct = Math.round((r.permissions.length / total) * 100);
               const groups = [...new Set(r.permissions.map(groupOf))];
               return (
-                <div key={r._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in relative overflow-hidden">
+                <div key={r._id} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }} className="group p-5 rounded-2xl bg-overlay/[0.03] border border-overlay/[0.06] hover:border-accent-gold/30 transition-all animate-fade-in relative overflow-hidden">
                   <div className={cn('absolute -top-16 -right-16 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity', r.isSystem ? 'bg-accent-violet/15' : 'bg-accent-gold/10')} />
                   <div className="relative flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3 min-w-0">
@@ -306,10 +306,10 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
                         {r.isSystem ? <Lock className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
                       </span>
                       <div className="min-w-0">
-                        <p className="font-semibold text-white truncate">{r.name}</p>
+                        <p className="font-semibold text-heading truncate">{r.name}</p>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           {r.isSystem ? <Badge variant="info">System</Badge> : <Badge variant="success">Custom</Badge>}
-                          <span className="inline-flex items-center gap-1 text-[10px] text-zinc-500"><Users className="w-2.5 h-2.5" />{r.adminCount} admins</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-faint"><Users className="w-2.5 h-2.5" />{r.adminCount} admins</span>
                         </div>
                       </div>
                     </div>
@@ -327,20 +327,20 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
                     )}
                   </div>
                   <div className="relative">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-1">
+                    <div className="flex items-center justify-between text-[10px] text-faint mb-1">
                       <span>Permission coverage</span>
-                      <span className="text-zinc-300 font-bold">{r.permissions.length}/{all.length} · {pct}%</span>
+                      <span className="text-body font-bold">{r.permissions.length}/{all.length} · {pct}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-overlay/[0.06] overflow-hidden">
                       <div className={cn('h-full rounded-full bg-gradient-to-r', r.isSystem ? 'from-accent-violet to-accent-blue' : 'from-accent-gold to-accent-blue')} style={{ width: `${Math.max(4, pct)}%` }} />
                     </div>
                     <div className="flex flex-wrap gap-1.5 mt-3">
                       {groups.map((g) => (
-                        <span key={g} className="px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-[10px] font-semibold text-zinc-400 capitalize">
-                          {humanModule(g)} <span className="text-zinc-600">×{r.permissions.filter((p) => groupOf(p) === g).length}</span>
+                        <span key={g} className="px-2 py-0.5 rounded-md bg-overlay/[0.06] border border-overlay/[0.08] text-[10px] font-semibold text-muted capitalize">
+                          {humanModule(g)} <span className="text-dim">×{r.permissions.filter((p) => groupOf(p) === g).length}</span>
                         </span>
                       ))}
-                      {groups.length === 0 && <span className="text-[11px] text-zinc-600">No permissions assigned</span>}
+                      {groups.length === 0 && <span className="text-[11px] text-dim">No permissions assigned</span>}
                     </div>
                   </div>
                 </div>
@@ -362,11 +362,11 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
             {modal.mode !== 'view' && (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Role name *</label>
+                  <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Role name *</label>
                   <input className="field-gold" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Moderator" />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Phone *</label>
+                  <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Phone *</label>
                   <input
                     className="field-gold"
                     inputMode="numeric"
@@ -377,11 +377,11 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Email *</label>
+                  <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">Email *</label>
                   <input type="email" className="field-gold" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="role@example.com" />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[11px] font-semibold text-muted uppercase tracking-wider mb-1.5">
                     Password {modal.mode === 'create' ? '*' : ''}
                   </label>
                   <div className="relative">
@@ -398,7 +398,7 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
                       onClick={() => setShowPw((v) => !v)}
                       tabIndex={-1}
                       title={showPw ? 'Hide password' : 'Show password'}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent-gold transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-faint hover:text-accent-gold transition-colors"
                     >
                       {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -415,13 +415,13 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
               </div>
             )}
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-zinc-500">Select the capabilities this role grants</p>
+              <p className="text-[11px] text-faint">Select the capabilities this role grants</p>
               <p className="text-xs font-bold text-accent-gold tabular-nums">{perms.length}/{all.length} selected</p>
             </div>
             <PermMatrix all={all} selected={perms} onChange={setPerms} disabled={modal.mode === 'view'} />
             {formErr && <p className="text-xs text-accent-red">{formErr}</p>}
             {modal.mode !== 'view' && (
-              <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+              <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
                 <button onClick={() => setModal(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
                 <button
                   onClick={() => (modal.mode === 'create' ? createMut.mutate() : updateMut.mutate())}
@@ -440,18 +440,18 @@ function RolesTab({ data, isLoading }: { data?: RolesData; isLoading: boolean })
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete role">
         {deleting && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06]">
               <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><Trash2 className="w-4 h-4 text-accent-red" /></span>
               <div>
-                <p className="text-sm text-white font-semibold">{deleting.name}</p>
-                <p className="text-xs text-zinc-500">{deleting.adminCount} admins · {deleting.permissions.length} permissions</p>
+                <p className="text-sm text-heading font-semibold">{deleting.name}</p>
+                <p className="text-xs text-faint">{deleting.adminCount} admins · {deleting.permissions.length} permissions</p>
               </div>
             </div>
             {deleting.adminCount > 0 && <p className="text-xs text-accent-red">Role is in use — reassign admins first.</p>}
             {delMut.isError && (
               <p className="text-xs text-accent-red">{(delMut.error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Delete failed'}</p>
             )}
-            <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="flex justify-end gap-2 pt-4 border-t border-overlay/[0.08]">
               <button onClick={() => setDeleting(null)} className="btn-ghost !py-2 px-4 text-xs">Cancel</button>
               <button onClick={() => delMut.mutate(deleting._id)} disabled={delMut.isPending || deleting.adminCount > 0} className="btn !py-2 px-4 text-xs bg-accent-red/90 hover:bg-accent-red text-white disabled:opacity-50">
                 {delMut.isPending ? 'Deleting…' : 'Delete'}
@@ -482,9 +482,9 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
 
   return (
     <div className="glass overflow-hidden animate-fade-in">
-      <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-white/[0.08]">
+      <div className="flex flex-col lg:flex-row gap-3 p-4 border-b border-overlay/[0.08]">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
           <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="field-gold !py-2 pl-10" placeholder="Search action, actor or entity..." />
         </div>
         <button onClick={() => onTab('roles')} className="btn-ghost !py-2 px-3 text-xs lg:ml-auto self-start">
@@ -494,7 +494,7 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
 
       {entities.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 px-4 pt-3">
-          <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Entity</span>
+          <span className="text-[10px] uppercase tracking-wider text-dim font-semibold">Entity</span>
           {[{ k: '', l: 'All' }, ...entities.map((e) => ({ k: e, l: humanModule(e) }))].map((x) => (
             <button
               key={x.k || 'all'}
@@ -503,7 +503,7 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
                 'px-3 py-1 rounded-lg text-[11px] font-semibold transition-all border',
                 entity === x.k
                   ? 'bg-gradient-to-r from-accent-gold to-accent-goldDark text-base-950 border-transparent shadow-glow-goldSoft'
-                  : 'bg-white/[0.04] text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.08]'
+                  : 'bg-overlay/[0.04] text-faint border-transparent hover:text-heading hover:bg-overlay/[0.08]'
               )}
             >
               {x.l}
@@ -515,13 +515,13 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
       <div className="p-4">
         {isLoading ? (
           <div className="space-y-2">
-            {[0, 1, 2, 3, 4, 5, 6].map((i) => <div key={i} className="h-12 rounded-xl bg-white/[0.03] animate-pulse" />)}
+            {[0, 1, 2, 3, 4, 5, 6].map((i) => <div key={i} className="h-12 rounded-xl bg-overlay/[0.03] animate-pulse" />)}
           </div>
         ) : items.length === 0 ? (
           <div className="p-10 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Scroll className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No audit entries</p>
-            <p className="mt-1 text-sm text-zinc-500">{search || entity ? 'Try different filters.' : 'Admin actions will be recorded here.'}</p>
+            <p className="text-heading font-semibold">No audit entries</p>
+            <p className="mt-1 text-sm text-faint">{search || entity ? 'Try different filters.' : 'Admin actions will be recorded here.'}</p>
           </div>
         ) : (
           items.map((l, i) => {
@@ -530,33 +530,33 @@ function AuditTab({ onTab }: { onTab: (t: TabKey) => void }) {
               <div
                 key={l._id}
                 style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}
-                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] gap-2 md:gap-4 items-center px-3 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative rounded-lg"
+                className="group grid grid-cols-1 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] gap-2 md:gap-4 items-center px-3 py-3 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative rounded-lg"
               >
                 <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all rounded-full" />
                 <div className="flex items-center gap-3 min-w-0">
                   <span className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold font-mono shrink-0', tone.cls)}>
                     <span className={cn('w-1.5 h-1.5 rounded-full', tone.dot)} /> {l.action}
                   </span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-zinc-400 font-semibold shrink-0">{l.entity}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-overlay/[0.06] border border-overlay/[0.08] text-muted font-semibold shrink-0">{l.entity}</span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-zinc-300 truncate">{l.actorEmail ?? 'system'}</p>
-                  {l.ip && <p className="text-[10px] text-zinc-600 font-mono truncate">ip {l.ip}</p>}
+                  <p className="text-xs text-body truncate">{l.actorEmail ?? 'system'}</p>
+                  {l.ip && <p className="text-[10px] text-dim font-mono truncate">ip {l.ip}</p>}
                 </div>
-                <p className="text-[11px] text-zinc-500 md:text-right" title={formatDate(l.createdAt)}>{rel(l.createdAt)}</p>
+                <p className="text-[11px] text-faint md:text-right" title={formatDate(l.createdAt)}>{rel(l.createdAt)}</p>
               </div>
             );
           })
         )}
 
         {data && data.pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-2 border-t border-white/[0.08]">
-            <p className="text-xs text-zinc-500">
-              Showing <span className="text-zinc-300 font-medium">{(page - 1) * 30 + 1}–{Math.min(page * 30, total)}</span> of <span className="text-zinc-300 font-medium">{total}</span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-2 border-t border-overlay/[0.08]">
+            <p className="text-xs text-faint">
+              Showing <span className="text-body font-medium">{(page - 1) * 30 + 1}–{Math.min(page * 30, total)}</span> of <span className="text-body font-medium">{total}</span>
             </p>
             <div className="flex items-center gap-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost !py-1.5 disabled:opacity-40"><ChevronLeft className="w-3.5 h-3.5" /> Prev</button>
-              <span className="text-xs text-zinc-500 px-2">Page {page} / {data.pages}</span>
+              <span className="text-xs text-faint px-2">Page {page} / {data.pages}</span>
               <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages} className="btn-ghost !py-1.5 disabled:opacity-40">Next <ChevronRight className="w-3.5 h-3.5" /></button>
             </div>
           </div>

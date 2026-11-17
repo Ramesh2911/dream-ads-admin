@@ -150,20 +150,20 @@ export default function Referrals() {
     i === 0 ? 'bg-gradient-to-br from-accent-gold to-accent-goldDark text-base-950'
       : i === 1 ? 'bg-zinc-200 text-base-950'
       : i === 2 ? 'bg-accent-goldDark/80 text-base-950'
-      : 'bg-white/[0.08] text-zinc-300';
+      : 'bg-overlay/[0.08] text-body';
 
   return (
     <div>
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><Trophy className="w-5 h-5 text-accent-gold" /></span>
             Referral Network
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Live growth, rewards and level configuration</p>
+          <p className="mt-1.5 text-sm text-faint">Live growth, rewards and level configuration</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -174,8 +174,8 @@ export default function Referrals() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
             </div>
           </div>
         ))}
@@ -187,15 +187,15 @@ export default function Referrals() {
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Coins className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Referral momentum</h3>
+              <h3 className="font-semibold text-heading truncate">Referral momentum</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 shrink-0 hidden sm:flex items-center gap-3">
+            <span className="text-[11px] text-faint shrink-0 hidden sm:flex items-center gap-3">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent-gold" /> coins</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-accent-blue" /> joins</span>
             </span>
           </div>
           {isLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <ComposedChart data={chartData} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
@@ -220,15 +220,15 @@ export default function Referrals() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Settings2 className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Rewards by level</h3>
+            <h3 className="font-semibold text-heading">Rewards by level</h3>
           </div>
           {isLoading ? (
-            <div className="h-[250px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[250px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (stats?.byLevel.length ?? 0) === 0 ? (
             <div className="h-[250px] flex flex-col items-center justify-center gap-3 text-center">
               <span className="p-4 rounded-full bg-accent-gold/10 border border-accent-gold/25"><Coins className="w-7 h-7 text-accent-gold" /></span>
-              <p className="text-sm font-semibold text-white">No rewards paid yet</p>
-              <p className="text-xs text-zinc-500 px-6">Level payouts will appear here after first referred signups.</p>
+              <p className="text-sm font-semibold text-heading">No rewards paid yet</p>
+              <p className="text-xs text-faint px-6">Level payouts will appear here after first referred signups.</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={250}>
@@ -256,26 +256,26 @@ export default function Referrals() {
         <div className="lg:col-span-2 glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Trophy className="w-4 h-4 text-accent-gold" /></span>
-            <h3 className="font-semibold text-white">Top referrers</h3>
+            <h3 className="font-semibold text-heading">Top referrers</h3>
           </div>
-          {isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {isLoading && <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!isLoading && (stats?.topReferrers.length ?? 0) === 0 && (
-            <p className="text-sm text-zinc-500 py-6 text-center">No referrals yet — leaderboard is waiting.</p>
+            <p className="text-sm text-faint py-6 text-center">No referrals yet — leaderboard is waiting.</p>
           )}
           <div className="space-y-2.5">
             {(stats?.topReferrers ?? []).map((t, i) => (
-              <div key={t.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-accent-gold/30 transition-colors">
+              <div key={t.id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] hover:border-accent-gold/30 transition-colors">
                 <span className={cn('w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0', rankCls(i))}>{i + 1}</span>
                 <span className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {t.name[0]?.toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white truncate">{t.name}</p>
-                  <p className="text-[11px] text-zinc-500 truncate">{t.referralCode}</p>
+                  <p className="text-sm font-medium text-heading truncate">{t.name}</p>
+                  <p className="text-[11px] text-faint truncate">{t.referralCode}</p>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-bold text-accent-gold tabular-nums">{t.count}</p>
-                  <p className="text-[10px] text-zinc-600">{formatCoins(t.coins)} coins</p>
+                  <p className="text-[10px] text-dim">{formatCoins(t.coins)} coins</p>
                 </div>
               </div>
             ))}
@@ -286,28 +286,28 @@ export default function Referrals() {
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
               <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Inbox className="w-4 h-4 text-accent-green" /></span>
-              <h3 className="font-semibold text-white">Recent referral joins</h3>
+              <h3 className="font-semibold text-heading">Recent referral joins</h3>
             </div>
-            <span className="text-[11px] text-zinc-500 hidden sm:block">Newest first</span>
+            <span className="text-[11px] text-faint hidden sm:block">Newest first</span>
           </div>
-          {isLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-12 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {isLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-12 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           {!isLoading && (stats?.recentJoins.length ?? 0) === 0 && (
-            <p className="text-sm text-zinc-500 py-6 text-center">No referred signups yet.</p>
+            <p className="text-sm text-faint py-6 text-center">No referred signups yet.</p>
           )}
           <div className="space-y-2.5">
             {(stats?.recentJoins ?? []).map((j) => (
-              <div key={j._id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div key={j._id} className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                 <span className="w-9 h-9 rounded-full bg-gradient-to-br from-accent-green/80 to-brand-blue flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {j.name[0]?.toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-white font-medium truncate">{j.name}</p>
-                  <p className="text-[11px] text-zinc-500 truncate">via {j.referredBy ? `${j.referredBy.name} · ${j.referredBy.referralCode}` : 'unknown'}</p>
+                  <p className="text-sm text-heading font-medium truncate">{j.name}</p>
+                  <p className="text-[11px] text-faint truncate">via {j.referredBy ? `${j.referredBy.name} · ${j.referredBy.referralCode}` : 'unknown'}</p>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-zinc-600 shrink-0 hidden sm:block" />
+                <ArrowRight className="w-3.5 h-3.5 text-dim shrink-0 hidden sm:block" />
                 <div className="text-right shrink-0">
-                  <p className="text-[11px] text-zinc-400">{rel(j.createdAt)}</p>
-                  <p className={cn('text-[10px] font-medium', j.status === 'active' ? 'text-accent-green' : 'text-zinc-600')}>{j.status}</p>
+                  <p className="text-[11px] text-muted">{rel(j.createdAt)}</p>
+                  <p className={cn('text-[10px] font-medium', j.status === 'active' ? 'text-accent-green' : 'text-dim')}>{j.status}</p>
                 </div>
               </div>
             ))}
@@ -322,49 +322,49 @@ export default function Referrals() {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Settings2 className="w-4 h-4 text-accent-violet" /></span>
-                <h3 className="font-semibold text-white">Level rewards</h3>
+                <h3 className="font-semibold text-heading">Level rewards</h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-[10px] text-zinc-400">
+                <span className="px-2.5 py-1 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-[10px] text-muted">
                   Max {maxLevels} levels
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-[10px] text-zinc-400">
+                <span className="px-2.5 py-1 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-[10px] text-muted">
                   <CalendarDays className="w-3 h-3 inline -mt-0.5 mr-1 text-accent-blue" />
                   {cfg?.dailyJoinLimit ?? '—'} joins/day
                 </span>
               </div>
             </div>
-            <p className="text-sm text-zinc-500 mb-3">Coins paid to the referrer when a referred user joins, per network level. Team size and level-up bonus load dynamically from the database.</p>
+            <p className="text-sm text-faint mb-3">Coins paid to the referrer when a referred user joins, per network level. Team size and level-up bonus load dynamically from the database.</p>
 
             {/* client table totals (live from draft) */}
             <div className="flex flex-wrap gap-2 mb-4">
-              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
-                Team target <span className="text-white font-bold tabular-nums">{shown.reduce((s, l) => s + l.target, 0).toLocaleString('en-IN')}</span> members
+              <span className="px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-muted">
+                Team target <span className="text-heading font-bold tabular-nums">{shown.reduce((s, l) => s + l.target, 0).toLocaleString('en-IN')}</span> members
               </span>
-              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+              <span className="px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-muted">
                 Per joining <span className="text-accent-gold font-bold tabular-nums">₹{shown.reduce((s, l) => s + l.coins, 0).toLocaleString('en-IN')}</span> distributed
               </span>
-              <span className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-[11px] text-zinc-400">
+              <span className="px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.1] text-[11px] text-muted">
                 Total potential <span className="text-accent-green font-bold tabular-nums">₹{shown.reduce((s, l) => s + l.target * l.coins, 0).toLocaleString('en-IN')}</span>
               </span>
             </div>
 
             {cfg === undefined ? (
-              <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>
+              <div className="space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : shown.length === 0 ? (
-              <p className="text-sm text-zinc-500 py-4">No level rewards configured. Add levels below.</p>
+              <p className="text-sm text-faint py-4">No level rewards configured. Add levels below.</p>
             ) : (
               <div className="space-y-2">
                 {shown.map((r, i) => {
                   const paid = paidByLevel.get(i + 1);
                   return (
-                    <div key={i} className="group flex flex-wrap items-center gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-accent-gold/30 transition-colors">
+                    <div key={i} className="group flex flex-wrap items-center gap-3 p-3.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] hover:border-accent-gold/30 transition-colors">
                       <span className={cn('w-11 h-11 rounded-xl border flex items-center justify-center text-sm font-extrabold shrink-0 bg-gradient-to-br', LEVEL_TONES[i % LEVEL_TONES.length])}>
                         L{i + 1}
                       </span>
                       <div className="min-w-[130px] flex-1">
-                        <p className="text-sm font-semibold text-white">Level {i + 1}</p>
-                        <p className="text-[11px] text-zinc-500">
+                        <p className="text-sm font-semibold text-heading">Level {i + 1}</p>
+                        <p className="text-[11px] text-faint">
                           {paid ? (
                             <>Paid so far: <span className="text-accent-gold font-semibold">{formatCoins(paid.coins)}</span> coins · {paid.users} users</>
                           ) : 'Not paid yet'}
@@ -372,7 +372,7 @@ export default function Referrals() {
                       </div>
                       <div className="flex items-end gap-2 flex-wrap">
                         <label className="flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Team size</span>
+                          <span className="text-[9px] uppercase tracking-wider text-dim font-bold">Team size</span>
                           <input
                             type="number" min={1} value={r.target}
                             onChange={(e) => patchLevel(i, { target: Math.max(1, Number(e.target.value)) })}
@@ -380,7 +380,7 @@ export default function Referrals() {
                           />
                         </label>
                         <label className="flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Per join ₹</span>
+                          <span className="text-[9px] uppercase tracking-wider text-dim font-bold">Per join ₹</span>
                           <input
                             type="number" min={0} value={r.coins}
                             onChange={(e) => patchLevel(i, { coins: Math.max(0, Number(e.target.value)) })}
@@ -388,7 +388,7 @@ export default function Referrals() {
                           />
                         </label>
                         <label className="flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Level-up bonus</span>
+                          <span className="text-[9px] uppercase tracking-wider text-dim font-bold">Level-up bonus</span>
                           <input
                             type="number" min={0} value={r.bonus}
                             onChange={(e) => patchLevel(i, { bonus: Math.max(0, Number(e.target.value)) })}
@@ -396,7 +396,7 @@ export default function Referrals() {
                           />
                         </label>
                         <label className="flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">Passbook</span>
+                          <span className="text-[9px] uppercase tracking-wider text-dim font-bold">Passbook</span>
                           <select
                             value={r.wallet}
                             onChange={(e) => patchLevel(i, { wallet: e.target.value as 'video' | 'social' })}
@@ -409,7 +409,7 @@ export default function Referrals() {
                         <button
                           onClick={() => removeLevel(i)}
                           title="Remove level"
-                          className="p-2 rounded-lg text-zinc-600 hover:text-accent-red hover:bg-accent-red/10 transition-all"
+                          className="p-2 rounded-lg text-dim hover:text-accent-red hover:bg-accent-red/10 transition-all"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -420,7 +420,7 @@ export default function Referrals() {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-white/[0.06]">
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-overlay/[0.06]">
               {dirty ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 text-[11px] font-semibold text-accent-gold">
                   <span className="w-1.5 h-1.5 rounded-full bg-accent-gold animate-pulse" /> Unsaved changes
@@ -434,14 +434,14 @@ export default function Referrals() {
                 <button
                   onClick={loadClientTable}
                   title="Load the client's 10-level income table (20…269 per joining, 3^N team sizes)"
-                  className="btn-ghost border border-white/[0.12] hover:border-accent-gold/40 hover:text-accent-gold"
+                  className="btn-ghost border border-overlay/[0.12] hover:border-accent-gold/40 hover:text-accent-gold"
                 >
                   <Trophy className="w-4 h-4" /> Load client table
                 </button>
                 <button
                   onClick={addLevel}
                   disabled={shown.length >= maxLevels}
-                  className="btn-ghost border border-white/[0.12] disabled:opacity-40 hover:border-accent-blue/40 hover:text-accent-blue"
+                  className="btn-ghost border border-overlay/[0.12] disabled:opacity-40 hover:border-accent-blue/40 hover:text-accent-blue"
                 >
                   <Plus className="w-4 h-4" /> Add level
                 </button>
@@ -465,34 +465,34 @@ export default function Referrals() {
             <div className="relative">
               <div className="flex items-center gap-2.5 mb-4">
                 <span className="p-2 rounded-lg bg-accent-red/10 border border-accent-red/20"><ShieldCheck className="w-4 h-4 text-accent-red" /></span>
-                <h3 className="font-semibold text-white">Compliance</h3>
+                <h3 className="font-semibold text-heading">Compliance</h3>
               </div>
               <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                <div className="p-3.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-zinc-300">Referral commission</p>
+                    <p className="text-sm text-body">Referral commission</p>
                     <Badge variant={cfg?.commissionEnabled ? 'danger' : 'warning'}>
                       {cfg?.commissionEnabled ? `ON · ${cfg.commissionPercent}%` : 'Off (default)'}
                     </Badge>
                   </div>
-                  <p className="text-[11px] text-zinc-500 mt-2 leading-relaxed">
+                  <p className="text-[11px] text-faint mt-2 leading-relaxed">
                     Lifetime redeem commission is disabled by default and requires written business rules plus legal review before activation.
                   </p>
                 </div>
-                <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                <div className="p-3.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-zinc-300">Commission paid to date</p>
-                    <p className="text-sm font-bold text-white tabular-nums">{stats ? formatCoins(stats.totals.commission) : '—'}</p>
+                    <p className="text-sm text-body">Commission paid to date</p>
+                    <p className="text-sm font-bold text-heading tabular-nums">{stats ? formatCoins(stats.totals.commission) : '—'}</p>
                   </div>
-                  <p className="text-[11px] text-zinc-500 mt-2">Ledger truth: referral_commission entries across all passbooks.</p>
+                  <p className="text-[11px] text-faint mt-2">Ledger truth: referral_commission entries across all passbooks.</p>
                 </div>
-                <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                <div className="p-3.5 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-zinc-300">Reward split</p>
+                    <p className="text-sm text-body">Reward split</p>
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <span className="text-xs text-zinc-400">Video <span className="text-accent-gold font-bold">{stats ? formatCoins(stats.totals.rewardsVideo) : '—'}</span></span>
-                    <span className="text-xs text-zinc-400">Social <span className="text-accent-blue font-bold">{stats ? formatCoins(stats.totals.rewardsSocial) : '—'}</span></span>
+                    <span className="text-xs text-muted">Video <span className="text-accent-gold font-bold">{stats ? formatCoins(stats.totals.rewardsVideo) : '—'}</span></span>
+                    <span className="text-xs text-muted">Social <span className="text-accent-blue font-bold">{stats ? formatCoins(stats.totals.rewardsSocial) : '—'}</span></span>
                   </div>
                 </div>
               </div>

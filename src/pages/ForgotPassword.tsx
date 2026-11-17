@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, Eye, EyeOff, ShieldCheck, ArrowRight, ArrowLeft, KeyRound, Check, X } from 'lucide-react';
 import api from '../lib/api';
@@ -49,7 +49,7 @@ export default function ForgotPassword() {
     try {
       await api.post('/admin/forgot-password/verify', { email, otp });
       setStep('password');
-      setInfo('OTP verified — now set your new password');
+      setInfo('OTP verified â€” now set your new password');
     } catch (e) {
       setErr(errMsg(e));
     } finally {
@@ -62,7 +62,7 @@ export default function ForgotPassword() {
     setErr(''); setLoading(true);
     try {
       await api.post('/admin/forgot-password/reset', { email, otp, newPassword: newPw });
-      nav('/login', { state: { flash: 'Password updated — sign in with your new password' } });
+      nav('/login', { state: { flash: 'Password updated â€” sign in with your new password' } });
     } catch (e) {
       setErr(errMsg(e));
     } finally {
@@ -117,7 +117,7 @@ export default function ForgotPassword() {
           <h1 className="text-gradient-gold text-2xl font-extrabold tracking-[0.16em] bg-[length:200%_100%] animate-shimmer">
             DREAM ADS
           </h1>
-          <p className="mt-1 text-xs text-zinc-500">Admin Control Center</p>
+          <p className="mt-1 text-xs text-faint">Admin Control Center</p>
         </div>
 
         <form
@@ -127,15 +127,15 @@ export default function ForgotPassword() {
             else if (step === 'otp') verifyOtp();
             else reset();
           }}
-          className="p-7 sm:p-9 rounded-2xl border border-white/[0.1] bg-brand-navyLight/60 backdrop-blur-xl shadow-glow-blueSoft"
+          className="p-7 sm:p-9 rounded-2xl border border-overlay/[0.1] bg-brand-navyLight/60 backdrop-blur-xl shadow-glow-blueSoft"
         >
           <div className="mb-6 flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/30 flex items-center justify-center shrink-0">
               {headerIcon}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">{headerTitle}</h2>
-              <p className="text-sm text-zinc-500 mt-1">{headerSub}</p>
+              <h2 className="text-xl font-bold text-heading">{headerTitle}</h2>
+              <p className="text-sm text-faint mt-1">{headerSub}</p>
             </div>
           </div>
 
@@ -152,13 +152,13 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 1 — email */}
+          {/* Step 1 â€” email */}
           {step === 'email' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="fp-email" className="text-xs font-medium text-zinc-400">Email</label>
+                <label htmlFor="fp-email" className="text-xs font-medium text-muted">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
                   <input
                     id="fp-email"
                     type="email"
@@ -174,7 +174,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={loading} className="btn-gold w-full shine !py-3">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Sending OTP…
+                    <Loader2 className="w-4 h-4 animate-spin" /> Sending OTPâ€¦
                   </span>
                 ) : (
                   <>Send OTP <ArrowRight className="w-4 h-4" /></>
@@ -183,11 +183,11 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 2 — OTP verify only */}
+          {/* Step 2 â€” OTP verify only */}
           {step === 'otp' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="fp-otp" className="text-xs font-medium text-zinc-400">6-digit OTP</label>
+                <label htmlFor="fp-otp" className="text-xs font-medium text-muted">6-digit OTP</label>
                 <input
                   id="fp-otp"
                   type="text"
@@ -205,7 +205,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={!canVerify} className="btn-gold w-full shine !py-3 disabled:opacity-50">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Verifying…
+                    <Loader2 className="w-4 h-4 animate-spin" /> Verifyingâ€¦
                   </span>
                 ) : (
                   <>Verify OTP <ShieldCheck className="w-4 h-4" /></>
@@ -216,7 +216,7 @@ export default function ForgotPassword() {
                 <button
                   type="button"
                   onClick={resetOtpFlow}
-                  className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="inline-flex items-center gap-1 text-faint hover:text-body transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" /> Change email
                 </button>
@@ -224,7 +224,7 @@ export default function ForgotPassword() {
                   type="button"
                   onClick={() => sendOtp(true)}
                   disabled={cooldown > 0 || loading}
-                  className="text-accent-gold hover:text-accent-gold/80 hover:underline disabled:text-zinc-600 disabled:no-underline transition-colors"
+                  className="text-accent-gold hover:text-accent-gold/80 hover:underline disabled:text-dim disabled:no-underline transition-colors"
                 >
                   {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend OTP'}
                 </button>
@@ -232,20 +232,20 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 3 — new password only (OTP already verified) */}
+          {/* Step 3 â€” new password only (OTP already verified) */}
           {step === 'password' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="fp-new" className="text-xs font-medium text-zinc-400">New password</label>
+                <label htmlFor="fp-new" className="text-xs font-medium text-muted">New password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
                   <input
                     id="fp-new"
                     type={showPw ? 'text' : 'password'}
                     value={newPw}
                     onChange={(e) => setNewPw(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     autoComplete="new-password"
                     autoFocus
                     required
@@ -253,7 +253,7 @@ export default function ForgotPassword() {
                   <button
                     type="button"
                     onClick={() => setShowPw((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-faint hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
                     aria-label={showPw ? 'Hide password' : 'Show password'}
                   >
                     {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -262,23 +262,23 @@ export default function ForgotPassword() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="fp-conf" className="text-xs font-medium text-zinc-400">Confirm password</label>
+                <label htmlFor="fp-conf" className="text-xs font-medium text-muted">Confirm password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
                   <input
                     id="fp-conf"
                     type={showConf ? 'text' : 'password'}
                     value={confPw}
                     onChange={(e) => setConfPw(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     autoComplete="new-password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConf((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-faint hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
                     aria-label={showConf ? 'Hide password' : 'Show password'}
                   >
                     {showConf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -288,7 +288,7 @@ export default function ForgotPassword() {
 
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {checks.map((c) => (
-                  <li key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? 'text-accent-green' : 'text-zinc-500'}`}>
+                  <li key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? 'text-accent-green' : 'text-faint'}`}>
                     {c.ok ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                     {c.label}
                   </li>
@@ -298,7 +298,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={!canReset} className="btn-gold w-full shine !py-3 disabled:opacity-50">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Updating…
+                    <Loader2 className="w-4 h-4 animate-spin" /> Updatingâ€¦
                   </span>
                 ) : (
                   <>Reset password <ShieldCheck className="w-4 h-4" /></>
@@ -309,7 +309,7 @@ export default function ForgotPassword() {
                 <button
                   type="button"
                   onClick={() => { setStep('otp'); setErr(''); setInfo(''); setNewPw(''); setConfPw(''); }}
-                  className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="inline-flex items-center gap-1 text-faint hover:text-body transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" /> Change OTP
                 </button>
@@ -317,9 +317,9 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          <p className="mt-5 text-center text-[11px] text-zinc-600">
-            <button type="button" onClick={() => nav('/login')} className="hover:text-zinc-400 transition-colors">
-              ← Back to sign in
+          <p className="mt-5 text-center text-[11px] text-dim">
+            <button type="button" onClick={() => nav('/login')} className="hover:text-muted transition-colors">
+              â† Back to sign in
             </button>
           </p>
         </form>

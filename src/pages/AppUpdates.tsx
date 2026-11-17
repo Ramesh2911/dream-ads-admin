@@ -92,14 +92,14 @@ export default function AppUpdates() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-brand-blue/10 border border-brand-blue/20"><Sparkles className="w-5 h-5 text-accent-blue" /></span>
             App Updates
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">"What's new" cards shown in the mobile app</p>
+          <p className="mt-1.5 text-sm text-faint">"What's new" cards shown in the mobile app</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+          <span className="inline-flex items-center gap-1.5 text-xs text-faint">
             <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
           </span>
           <button
@@ -120,12 +120,12 @@ export default function AppUpdates() {
 
       {/* list */}
       {isLoading ? (
-        <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-24 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
+        <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-24 rounded-2xl bg-overlay/[0.03] animate-pulse" />)}</div>
       ) : items.length === 0 ? (
         <div className="glass p-10 text-center animate-slide-up">
-          <Sparkles className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-          <p className="text-sm text-zinc-400 font-semibold">No app updates yet</p>
-          <p className="text-xs text-zinc-600 mt-1">Create one to announce new features inside the mobile app.</p>
+          <Sparkles className="w-8 h-8 text-dim mx-auto mb-3" />
+          <p className="text-sm text-muted font-semibold">No app updates yet</p>
+          <p className="text-xs text-dim mt-1">Create one to announce new features inside the mobile app.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -136,28 +136,28 @@ export default function AppUpdates() {
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold text-white text-sm sm:text-base truncate">{u.title}</p>
+                  <p className="font-semibold text-heading text-sm sm:text-base truncate">{u.title}</p>
                   <Badge variant={u.isActive ? 'success' : 'default'}>{u.isActive ? 'Live' : 'Hidden'}</Badge>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-zinc-500 tabular-nums">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-overlay/[0.06] border border-overlay/[0.08] text-faint tabular-nums">
                     prio {u.priority}
                   </span>
                 </div>
-                <p className="text-sm text-zinc-400 mt-1 whitespace-pre-line line-clamp-3">{u.content}</p>
-                <p className="text-[11px] text-zinc-600 mt-2">Added {formatDate(u.createdAt)}</p>
+                <p className="text-sm text-muted mt-1 whitespace-pre-line line-clamp-3">{u.content}</p>
+                <p className="text-[11px] text-dim mt-2">Added {formatDate(u.createdAt)}</p>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => toggleMut.mutate(u)}
                   disabled={!editable || toggleMut.isPending}
                   title={u.isActive ? 'Hide from app' : 'Show in app'}
-                  className="px-2.5 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.09] transition-colors disabled:opacity-40"
+                  className="px-2.5 py-2 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08] text-muted hover:text-heading hover:bg-overlay/[0.09] transition-colors disabled:opacity-40"
                 >
                   {u.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
                 <button
                   onClick={() => openEdit(u)}
                   disabled={!editable}
-                  className="px-2.5 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-zinc-400 hover:text-accent-blue hover:border-accent-blue/30 transition-colors disabled:opacity-40"
+                  className="px-2.5 py-2 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08] text-muted hover:text-accent-blue hover:border-accent-blue/30 transition-colors disabled:opacity-40"
                   aria-label="Edit"
                 >
                   <Pencil className="w-4 h-4" />
@@ -165,7 +165,7 @@ export default function AppUpdates() {
                 <button
                   onClick={() => { if (window.confirm(`Delete "${u.title}"?`)) deleteMut.mutate(u._id); }}
                   disabled={!editable || deleteMut.isPending}
-                  className="px-2.5 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-zinc-400 hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
+                  className="px-2.5 py-2 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08] text-muted hover:text-accent-red hover:border-accent-red/30 transition-colors disabled:opacity-40"
                   aria-label="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -180,7 +180,7 @@ export default function AppUpdates() {
       <Modal open={open} onClose={() => setOpen(false)} title={editId ? 'Edit app update' : 'New app update'}>
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-medium text-zinc-400">Title</label>
+            <label className="text-xs font-medium text-muted">Title</label>
             <input
               className="glass-input mt-1"
               placeholder="e.g. v1.2 is here"
@@ -190,7 +190,7 @@ export default function AppUpdates() {
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-zinc-400">Content</label>
+            <label className="text-xs font-medium text-muted">Content</label>
             <textarea
               className="glass-input mt-1 min-h-[110px] resize-y"
               placeholder="What changed? Keep it short and friendly."
@@ -198,21 +198,21 @@ export default function AppUpdates() {
               maxLength={2000}
               onChange={(e) => setForm({ ...form, content: e.target.value })}
             />
-            <p className="text-[11px] text-zinc-600 mt-1">{form.content.length}/2000</p>
+            <p className="text-[11px] text-dim mt-1">{form.content.length}/2000</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-zinc-400">Priority</label>
+              <label className="text-xs font-medium text-muted">Priority</label>
               <input
                 className="glass-input mt-1 tabular-nums"
                 inputMode="numeric"
                 value={form.priority}
                 onChange={(e) => setForm({ ...form, priority: e.target.value.replace(/\D/g, '') })}
               />
-              <p className="text-[11px] text-zinc-600 mt-1">Higher shows first</p>
+              <p className="text-[11px] text-dim mt-1">Higher shows first</p>
             </div>
             <div>
-              <label className="text-xs font-medium text-zinc-400">Visibility</label>
+              <label className="text-xs font-medium text-muted">Visibility</label>
               <button
                 type="button"
                 role="switch"
@@ -222,7 +222,7 @@ export default function AppUpdates() {
                   'mt-1 w-full px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-colors',
                   form.isActive
                     ? 'bg-accent-green/10 border-accent-green/25 text-accent-green'
-                    : 'bg-white/[0.05] border-white/[0.10] text-zinc-500',
+                    : 'bg-overlay/[0.05] border-overlay/[0.10] text-faint',
                 )}
               >
                 {form.isActive ? <CheckCircle2 className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
@@ -234,7 +234,7 @@ export default function AppUpdates() {
           <div className="flex justify-end gap-2 pt-1">
             <button
               onClick={() => setOpen(false)}
-              className="px-4 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-zinc-300 hover:bg-white/[0.1] transition-colors text-sm font-semibold"
+              className="px-4 py-2.5 rounded-xl bg-overlay/[0.06] border border-overlay/[0.10] text-body hover:bg-overlay/[0.1] transition-colors text-sm font-semibold"
             >
               Cancel
             </button>

@@ -71,7 +71,7 @@ export default function Reports() {
         { l: 'Verified', v: t.kycVerified, tone: 'bg-accent-green', text: 'text-accent-green' },
         { l: 'Pending', v: t.kycPending, tone: 'bg-accent-gold', text: 'text-accent-gold' },
         { l: 'Rejected', v: t.kycRejected, tone: 'bg-accent-red', text: 'text-accent-red' },
-        { l: 'Not started', v: t.kycNone, tone: 'bg-zinc-500', text: 'text-zinc-400' },
+        { l: 'Not started', v: t.kycNone, tone: 'bg-zinc-500', text: 'text-muted' },
       ]
     : [];
   const maxKyc = Math.max(1, ...kycRows.map((r) => r.v));
@@ -100,13 +100,13 @@ export default function Reports() {
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-slide-up">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-heading flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20"><BarChart3 className="w-5 h-5 text-accent-gold" /></span>
             Reports & Leaderboard
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500">Platform analytics, economy health and top performers</p>
+          <p className="mt-1.5 text-sm text-faint">Platform analytics, economy health and top performers</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-faint">
           <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
         </div>
       </div>
@@ -117,9 +117,9 @@ export default function Reports() {
           <div key={s.label} className="glass p-4 flex items-center gap-3 animate-slide-up" style={{ animationDelay: `${i * 60}ms` }}>
             <span className={cn('p-2.5 rounded-xl border shrink-0', s.chip)}><s.icon className="w-4 h-4" /></span>
             <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">{s.label}</p>
-              <p className="text-xl font-extrabold text-white tabular-nums leading-tight">{s.value ?? '—'}</p>
-              {s.sub && <p className="text-[10px] text-zinc-600 mt-0.5 truncate">{s.sub}</p>}
+              <p className="text-[11px] uppercase tracking-wider text-faint font-semibold">{s.label}</p>
+              <p className="text-xl font-extrabold text-heading tabular-nums leading-tight">{s.value ?? '—'}</p>
+              {s.sub && <p className="text-[10px] text-dim mt-0.5 truncate">{s.sub}</p>}
             </div>
           </div>
         ))}
@@ -131,16 +131,16 @@ export default function Reports() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><BarChart3 className="w-4 h-4 text-accent-gold" /></span>
-              <h3 className="font-semibold text-white truncate">Platform pulse · 14 days</h3>
+              <h3 className="font-semibold text-heading truncate">Platform pulse · 14 days</h3>
             </div>
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] border border-white/[0.08] self-start">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-overlay/[0.05] border border-overlay/[0.08] self-start">
               {METRICS.map((x) => (
                 <button
                   key={x.k}
                   onClick={() => setMetric(x.k)}
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-                    metric === x.k ? 'text-base-950 shadow-glow-goldSoft' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                    metric === x.k ? 'text-base-950 shadow-glow-goldSoft' : 'text-muted hover:text-heading hover:bg-overlay/[0.06]'
                   )}
                   style={metric === x.k ? { background: `linear-gradient(to right, ${x.color}, ${x.color}CC)` } : undefined}
                 >
@@ -150,7 +150,7 @@ export default function Reports() {
             </div>
           </div>
           {isLoading ? (
-            <div className="h-[260px] rounded-xl bg-white/[0.03] animate-pulse" />
+            <div className="h-[260px] rounded-xl bg-overlay/[0.03] animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={chartData} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
@@ -183,33 +183,33 @@ export default function Reports() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
               <span className="p-2 rounded-lg bg-accent-green/10 border border-accent-green/20"><Medal className="w-4 h-4 text-accent-green" /></span>
-              <h3 className="font-semibold text-white">KYC funnel</h3>
+              <h3 className="font-semibold text-heading">KYC funnel</h3>
             </div>
             {t && kycTotal > 0 && (
               <span className="text-xs font-bold text-accent-green tabular-nums">{Math.round((t.kycVerified / kycTotal) * 100)}% verified</span>
             )}
           </div>
-          {isLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {isLoading && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
           <div className="space-y-3">
             {kycRows.map((r) => (
               <div key={r.l}>
                 <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-zinc-400 font-medium">{r.l}</span>
-                  <span className={cn('font-bold tabular-nums', r.text)}>{r.v} <span className="text-zinc-600 font-medium">({kycTotal ? Math.round((r.v / kycTotal) * 100) : 0}%)</span></span>
+                  <span className="text-muted font-medium">{r.l}</span>
+                  <span className={cn('font-bold tabular-nums', r.text)}>{r.v} <span className="text-dim font-medium">({kycTotal ? Math.round((r.v / kycTotal) * 100) : 0}%)</span></span>
                 </div>
-                <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                <div className="h-2 rounded-full bg-overlay/[0.06] overflow-hidden">
                   <div className={cn('h-full rounded-full transition-all duration-700', r.tone)} style={{ width: `${Math.max(3, Math.round((r.v / maxKyc) * 100))}%` }} />
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-5 pt-4 border-t border-white/[0.08] grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Referred</p>
+          <div className="mt-5 pt-4 border-t border-overlay/[0.08] grid grid-cols-2 gap-3">
+            <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
+              <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">Referred</p>
               <p className="text-lg font-extrabold text-accent-violet tabular-nums">{t?.referred ?? '—'}</p>
             </div>
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Organic</p>
+            <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05]">
+              <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">Organic</p>
               <p className="text-lg font-extrabold text-accent-blue tabular-nums">{t ? organic : '—'}</p>
             </div>
           </div>
@@ -218,19 +218,19 @@ export default function Reports() {
 
       {/* leaderboard */}
       <div className="glass overflow-hidden mb-6 animate-fade-in">
-        <div className="flex items-center gap-2.5 p-4 border-b border-white/[0.08]">
+        <div className="flex items-center gap-2.5 p-4 border-b border-overlay/[0.08]">
           <span className="p-2 rounded-lg bg-accent-gold/10 border border-accent-gold/20"><Trophy className="w-4 h-4 text-accent-gold" /></span>
-          <h3 className="font-semibold text-white">Top earners</h3>
-          <span className="text-[11px] text-zinc-500">lifetime coins received · top {earners.length}</span>
+          <h3 className="font-semibold text-heading">Top earners</h3>
+          <span className="text-[11px] text-faint">lifetime coins received · top {earners.length}</span>
         </div>
 
-        {isLoading && <div className="p-4 space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+        {isLoading && <div className="p-4 space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
 
         {!isLoading && earners.length === 0 && (
           <div className="p-10 text-center">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-gold/20 to-brand-blue/10 flex items-center justify-center mb-4"><Trophy className="w-6 h-6 text-accent-gold" /></div>
-            <p className="text-white font-semibold">No earners yet</p>
-            <p className="mt-1 text-sm text-zinc-500">Coins credited through rewards will rank users here.</p>
+            <p className="text-heading font-semibold">No earners yet</p>
+            <p className="mt-1 text-sm text-faint">Coins credited through rewards will rank users here.</p>
           </div>
         )}
 
@@ -241,7 +241,7 @@ export default function Reports() {
               {podium.map((e, i) => {
                 const r = RANK_STYLES[i];
                 return (
-                  <div key={e.userId ?? i} style={{ animationDelay: `${i * 80}ms` }} className={cn('relative p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07] animate-slide-up text-center overflow-hidden', i === 0 && 'border-accent-gold/40', r.glow)}>
+                  <div key={e.userId ?? i} style={{ animationDelay: `${i * 80}ms` }} className={cn('relative p-4 rounded-2xl bg-overlay/[0.03] border border-overlay/[0.07] animate-slide-up text-center overflow-hidden', i === 0 && 'border-accent-gold/40', r.glow)}>
                     <div className={cn('absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-24 rounded-full blur-2xl', i === 0 ? 'bg-accent-gold/20' : i === 1 ? 'bg-zinc-400/15' : 'bg-accent-goldDark/15')} />
                     <div className="relative">
                       <span className={cn('inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-black mb-2', r.badge)}>#{i + 1}</span>
@@ -250,8 +250,8 @@ export default function Reports() {
                           {e.name?.[0]?.toUpperCase() ?? '?'}
                         </div>
                       </div>
-                      <p className="text-sm font-bold text-white truncate">{e.name}</p>
-                      <p className="text-[10px] text-zinc-600 truncate">{e.email}</p>
+                      <p className="text-sm font-bold text-heading truncate">{e.name}</p>
+                      <p className="text-[10px] text-dim truncate">{e.email}</p>
                       <p className="mt-2 text-xl font-extrabold text-accent-gold tabular-nums">{formatCoins(e.total)}</p>
                       <div className="flex justify-center gap-2 mt-1.5 text-[10px]">
                         <span className="px-1.5 py-0.5 rounded bg-brand-blue/10 text-accent-blue border border-brand-blue/20">V {formatCoins(e.video)}</span>
@@ -265,18 +265,18 @@ export default function Reports() {
 
             {/* rows 4+ */}
             {rest.length > 0 && (
-              <div className="border-t border-white/[0.08]">
+              <div className="border-t border-overlay/[0.08]">
                 {rest.map((e, i) => (
-                  <div key={e.userId ?? i} className="group grid grid-cols-[auto_minmax(0,1.6fr)_auto] gap-3 md:gap-4 items-center px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative">
+                  <div key={e.userId ?? i} className="group grid grid-cols-[auto_minmax(0,1.6fr)_auto] gap-3 md:gap-4 items-center px-4 py-3 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative">
                     <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-gold/70 to-accent-blue/50 transition-all" />
-                    <span className="w-6 text-center text-xs font-black text-zinc-600 tabular-nums">#{i + 4}</span>
+                    <span className="w-6 text-center text-xs font-black text-dim tabular-nums">#{i + 4}</span>
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white text-xs font-bold shrink-0">
                         {e.name?.[0]?.toUpperCase() ?? '?'}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-white truncate">{e.name}</p>
-                        <div className="h-1 rounded-full bg-white/[0.06] mt-1 overflow-hidden max-w-xs">
+                        <p className="text-sm font-medium text-heading truncate">{e.name}</p>
+                        <div className="h-1 rounded-full bg-overlay/[0.06] mt-1 overflow-hidden max-w-xs">
                           <div className="h-full rounded-full bg-gradient-to-r from-accent-gold/70 to-accent-blue/60" style={{ width: `${Math.max(4, Math.round((e.total / maxEarn) * 100))}%` }} />
                         </div>
                       </div>
@@ -294,28 +294,28 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* top videos */}
         <div className="glass overflow-hidden animate-slide-up">
-          <div className="flex items-center gap-2.5 p-4 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2.5 p-4 border-b border-overlay/[0.08]">
             <span className="p-2 rounded-lg bg-brand-blue/10 border border-brand-blue/20"><Play className="w-4 h-4 text-accent-blue" /></span>
-            <h3 className="font-semibold text-white">Top videos</h3>
-            <span className="text-[11px] text-zinc-500">by views</span>
+            <h3 className="font-semibold text-heading">Top videos</h3>
+            <span className="text-[11px] text-faint">by views</span>
           </div>
-          {isLoading && <div className="p-4 space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
-          {!isLoading && videos.length === 0 && <p className="p-8 text-center text-sm text-zinc-500">No videos yet.</p>}
+          {isLoading && <div className="p-4 space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-14 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
+          {!isLoading && videos.length === 0 && <p className="p-8 text-center text-sm text-faint">No videos yet.</p>}
           {videos.map((v, i) => (
-            <div key={v._id} className="group flex items-center gap-3 px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative" style={{ animationDelay: `${i * 40}ms` }}>
+            <div key={v._id} className="group flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative" style={{ animationDelay: `${i * 40}ms` }}>
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-blue/70 to-accent-violet/50 transition-all" />
-              <span className="text-[10px] font-black text-zinc-600 w-4 shrink-0 tabular-nums">{i + 1}</span>
+              <span className="text-[10px] font-black text-dim w-4 shrink-0 tabular-nums">{i + 1}</span>
               <img src={mediaSrc(v.thumbnail)} alt="" className="w-16 h-10 rounded-lg object-cover shrink-0" loading="lazy" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-white truncate">{v.title}</p>
-                <div className="flex items-center gap-3 mt-1 text-[11px] text-zinc-500">
+                <p className="text-sm font-medium text-heading truncate">{v.title}</p>
+                <div className="flex items-center gap-3 mt-1 text-[11px] text-faint">
                   <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{v.views}</span>
                   <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{v.likes}</span>
                   <span className="flex items-center gap-1 text-accent-gold font-bold"><Coins className="w-3 h-3" />{formatCoins(v.rewardCoins)}</span>
                 </div>
               </div>
               <div className="hidden sm:block w-24 shrink-0">
-                <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div className="h-1.5 rounded-full bg-overlay/[0.06] overflow-hidden">
                   <div className="h-full rounded-full bg-gradient-to-r from-accent-blue to-accent-violet" style={{ width: `${Math.max(4, Math.round((v.views / maxViews) * 100))}%` }} />
                 </div>
               </div>
@@ -327,34 +327,34 @@ export default function Reports() {
         <div className="glass p-5 sm:p-6 animate-slide-up">
           <div className="flex items-center gap-2.5 mb-5">
             <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Users className="w-4 h-4 text-accent-violet" /></span>
-            <h3 className="font-semibold text-white">User distribution</h3>
+            <h3 className="font-semibold text-heading">User distribution</h3>
           </div>
 
-          {isLoading && <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-11 rounded-xl bg-white/[0.03] animate-pulse" />)}</div>}
+          {isLoading && <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-11 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>}
 
           {!isLoading && (
             <div className="space-y-4">
               <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">By status</p>
+                <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">By status</p>
                 {statusRows.map((r) => (
                   <div key={r.l}>
                     <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span className="text-zinc-400 font-medium">{r.l}</span>
+                      <span className="text-muted font-medium">{r.l}</span>
                       <span className={cn('font-bold tabular-nums', r.text)}>{r.v}</span>
                     </div>
-                    <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="h-2 rounded-full bg-overlay/[0.06] overflow-hidden">
                       <div className={cn('h-full rounded-full', r.tone)} style={{ width: `${Math.max(3, Math.round((r.v / maxStatus) * 100))}%` }} />
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-4 border-t border-white/[0.08]">
+              <div className="pt-4 border-t border-overlay/[0.08]">
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Acquisition</span>
+                  <span className="text-[10px] uppercase tracking-wider text-dim font-semibold">Acquisition</span>
                   <span className="text-accent-violet font-bold">{referredPct}% via referral</span>
                 </div>
-                <div className="h-3 rounded-full bg-white/[0.06] overflow-hidden flex">
+                <div className="h-3 rounded-full bg-overlay/[0.06] overflow-hidden flex">
                   <div className="h-full bg-gradient-to-r from-accent-violet to-accent-blue transition-all duration-700" style={{ width: `${referredPct}%` }} />
                   <div className="h-full bg-gradient-to-r from-brand-blue/60 to-brand-blue/30 flex-1" />
                 </div>
@@ -364,21 +364,21 @@ export default function Reports() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/[0.08]">
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] text-center">
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coins in</p>
+              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-overlay/[0.08]">
+                <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] text-center">
+                  <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">Coins in</p>
                   <p className="text-sm font-extrabold text-accent-green tabular-nums mt-0.5">{formatCoins(t?.coinsIn ?? 0)}</p>
-                  <p className="text-[9px] text-zinc-600">V {formatCoins(t?.coinsInVideo ?? 0)} · S {formatCoins(t?.coinsInSocial ?? 0)}</p>
+                  <p className="text-[9px] text-dim">V {formatCoins(t?.coinsInVideo ?? 0)} · S {formatCoins(t?.coinsInSocial ?? 0)}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] text-center">
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coins out</p>
+                <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] text-center">
+                  <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">Coins out</p>
                   <p className="text-sm font-extrabold text-accent-red tabular-nums mt-0.5">{formatCoins(t?.coinsOut ?? 0)}</p>
-                  <p className="text-[9px] text-zinc-600">rewards · purchases</p>
+                  <p className="text-[9px] text-dim">rewards · purchases</p>
                 </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] text-center">
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Outstanding</p>
+                <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.05] text-center">
+                  <p className="text-[10px] uppercase tracking-wider text-dim font-semibold">Outstanding</p>
                   <p className="text-sm font-extrabold text-accent-gold tabular-nums mt-0.5">{formatCoins(t?.outstanding ?? 0)}</p>
-                  <p className="text-[9px] text-zinc-600">circulating</p>
+                  <p className="text-[9px] text-dim">circulating</p>
                 </div>
               </div>
             </div>
@@ -388,26 +388,26 @@ export default function Reports() {
 
       {/* top referrers */}
       <div className="glass overflow-hidden animate-fade-in">
-        <div className="flex items-center gap-2.5 p-4 border-b border-white/[0.08]">
+        <div className="flex items-center gap-2.5 p-4 border-b border-overlay/[0.08]">
           <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
-          <h3 className="font-semibold text-white">Top referrers</h3>
-          <span className="text-[11px] text-zinc-500">most invited users</span>
+          <h3 className="font-semibold text-heading">Top referrers</h3>
+          <span className="text-[11px] text-faint">most invited users</span>
         </div>
         {referrers.length === 0 ? (
-          <p className="p-8 text-center text-sm text-zinc-500">No referrals yet.</p>
+          <p className="p-8 text-center text-sm text-faint">No referrals yet.</p>
         ) : (
           referrers.slice(0, 5).map((r, i) => (
-            <div key={r.id} className="group flex items-center gap-3 px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.035] transition-colors animate-fade-in relative" style={{ animationDelay: `${i * 40}ms` }}>
+            <div key={r.id} className="group flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.05] last:border-0 hover:bg-overlay/[0.035] transition-colors animate-fade-in relative" style={{ animationDelay: `${i * 40}ms` }}>
               <span className="absolute left-0 top-0 bottom-0 w-0 group-hover:w-0.5 bg-gradient-to-b from-accent-violet/70 to-accent-gold/50 transition-all" />
               <span className={cn(
                 'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0',
-                i === 0 ? 'bg-accent-gold text-base-950' : i === 1 ? 'bg-zinc-300 text-base-950' : i === 2 ? 'bg-accent-goldDark text-base-950' : 'bg-white/[0.06] text-zinc-500'
+                i === 0 ? 'bg-accent-gold text-base-950' : i === 1 ? 'bg-zinc-300 text-base-950' : i === 2 ? 'bg-accent-goldDark text-base-950' : 'bg-overlay/[0.06] text-faint'
               )}>
                 {i < 3 ? <Medal className="w-3 h-3" /> : `#${i + 1}`}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-white truncate">{r.name}</p>
-                <p className="text-[11px] text-zinc-600 font-mono truncate">{r.referralCode}</p>
+                <p className="text-sm font-medium text-heading truncate">{r.name}</p>
+                <p className="text-[11px] text-dim font-mono truncate">{r.referralCode}</p>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-sm font-bold text-accent-violet tabular-nums">{r.count} invites</p>

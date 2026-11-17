@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2, Eye, EyeOff, ShieldCheck, ScrollText, Database, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -39,7 +39,7 @@ export default function Login() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(5,11,31,0.75)_100%)]" />
 
         {/* top badge */}
-        <div className="relative flex items-center gap-2.5 w-fit px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-accent-gold/30 backdrop-blur-sm">
+        <div className="relative flex items-center gap-2.5 w-fit px-3.5 py-1.5 rounded-full bg-overlay/[0.06] border border-accent-gold/30 backdrop-blur-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
           <span className="text-[11px] font-semibold tracking-wider text-accent-gold uppercase">MCA Registered Entity</span>
         </div>
@@ -63,8 +63,8 @@ export default function Login() {
           <h1 className="text-gradient-gold text-4xl font-extrabold tracking-[0.18em] bg-[length:200%_100%] animate-shimmer">
             DREAM ADS
           </h1>
-          <p className="mt-3 text-zinc-400 text-sm tracking-wide">
-            Admin Control Center · Multi Solutions Private Limited
+          <p className="mt-3 text-muted text-sm tracking-wide">
+            Admin Control Center Â· Multi Solutions Private Limited
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
@@ -75,7 +75,7 @@ export default function Login() {
             ].map((c) => (
               <span
                 key={c.label}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-xs text-zinc-300 backdrop-blur-sm hover:border-accent-gold/40 hover:text-accent-gold transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-overlay/[0.05] border border-overlay/[0.1] text-xs text-body backdrop-blur-sm hover:border-accent-gold/40 hover:text-accent-gold transition-colors"
               >
                 <c.icon className="w-3.5 h-3.5" /> {c.label}
               </span>
@@ -84,8 +84,8 @@ export default function Login() {
         </div>
 
         {/* bottom note */}
-        <p className="relative text-[11px] text-zinc-600 text-center">
-          © {new Date().getFullYear()} Dream Ads Multi Solutions Pvt Ltd · CIN U62011WR2026PTC295658
+        <p className="relative text-[11px] text-dim text-center">
+          Â© {new Date().getFullYear()} Dream Ads Multi Solutions Pvt Ltd Â· CIN U62011WR2026PTC295658
         </p>
       </aside>
 
@@ -114,18 +114,18 @@ export default function Login() {
             <h1 className="text-gradient-gold text-2xl font-extrabold tracking-[0.16em] bg-[length:200%_100%] animate-shimmer">
               DREAM ADS
             </h1>
-            <p className="mt-1 text-xs text-zinc-500">Admin Control Center</p>
+            <p className="mt-1 text-xs text-faint">Admin Control Center</p>
           </div>
 
-          <form onSubmit={submit} className="p-7 sm:p-9 rounded-2xl border border-white/[0.1] bg-brand-navyLight/60 backdrop-blur-xl shadow-glow-blueSoft">
+          <form onSubmit={submit} className="p-7 sm:p-9 rounded-2xl border border-overlay/[0.1] bg-brand-navyLight/60 backdrop-blur-xl shadow-glow-blueSoft">
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-white">Sign in</h2>
-              <p className="text-sm text-zinc-500 mt-1">Use your admin credentials to continue</p>
+              <h2 className="text-xl font-bold text-heading">Sign in</h2>
+              <p className="text-sm text-faint mt-1">Use your admin credentials to continue</p>
             </div>
 
             {flash && (
               <div className="mb-5 p-3.5 rounded-xl bg-accent-green/10 border border-accent-green/25 text-accent-green text-sm flex items-start gap-2.5 animate-fade-in">
-                <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-green/20 flex items-center justify-center shrink-0 text-[10px] font-bold">✓</span>
+                <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-green/20 flex items-center justify-center shrink-0 text-[10px] font-bold">âœ“</span>
                 {flash}
               </div>
             )}
@@ -139,9 +139,9 @@ export default function Login() {
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-xs font-medium text-zinc-400">Email</label>
+                <label htmlFor="email" className="text-xs font-medium text-muted">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
                   <input
                     id="email"
                     type="email"
@@ -156,23 +156,23 @@ export default function Login() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="password" className="text-xs font-medium text-zinc-400">Password</label>
+                <label htmlFor="password" className="text-xs font-medium text-muted">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
                   <input
                     id="password"
                     type={showPass ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     autoComplete="current-password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPass((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-faint hover:text-accent-gold hover:bg-accent-gold/10 transition-colors"
                     aria-label={showPass ? 'Hide password' : 'Show password'}
                   >
                     {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -193,7 +193,7 @@ export default function Login() {
             <button type="submit" disabled={loading} className="btn-gold w-full mt-6 shine !py-3">
               {loading ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Signing in…
+                  <Loader2 className="w-4 h-4 animate-spin" /> Signing inâ€¦
                 </span>
               ) : (
                 <>
@@ -202,8 +202,8 @@ export default function Login() {
               )}
             </button>
 
-            <p className="mt-5 text-center text-[11px] text-zinc-600">
-              Access is role-restricted · all actions are audit-logged
+            <p className="mt-5 text-center text-[11px] text-dim">
+              Access is role-restricted Â· all actions are audit-logged
             </p>
           </form>
         </div>
