@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Kyc from './pages/Kyc';
+import DeletionRequests from './pages/DeletionRequests';
 import Content from './pages/Content';
 import Tasks from './pages/Tasks';
 import Finance from './pages/Finance';
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
               <Route path="/kyc" element={<Kyc />} />
+              <Route path="/deletion-requests" element={<DeletionRequests />} />
               <Route path="/wallet" element={<WalletLedger />} />
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/content" element={<Content />} />
