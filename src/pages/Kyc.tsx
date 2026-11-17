@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   BadgeCheck, Search, CheckCircle, XCircle, Clock, Eye, UserCheck,
-  ChevronLeft, ChevronRight, FileX, Inbox, ShieldAlert,
+  ChevronLeft, ChevronRight, FileX, Inbox, ShieldAlert, X, ZoomIn, ZoomOut, RotateCcw,
 } from 'lucide-react';
 import api from '../lib/api';
-import { Badge, Modal, EmptyState } from '../components/ui';
+import { Badge, EmptyState } from '../components/ui';
 import { cn, formatDate } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
@@ -233,14 +233,122 @@ export default function Kyc() {
         </div>
       )}
 
-      <ReviewModal userId={reviewId} onClose={() => setReviewId(null)} />
+      <ReviewOverlay userId={reviewId} onClose={() => setReviewId(null)} />
     </div>
   );
 }
 
-/* ===================== REVIEW MODAL ===================== */
-function DocImage({ userId, kind, alt }: { userId: string; kind: 'aadharFront' | 'aadharBack'; alt: string }) {
-  const [big, setBig] = useState(false);
+/* ===================== LIGHTBOX ===================== */
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  const [zoom, setZoom] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const zoomRef = useRef(1);
+  const posRef = useRef({ x: 0, y: 0 });
+  zoomRef.current = zoom;
+  posRef.current = pos;
+  const dragRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
+  const vpRef = useRef<HTMLDivElement>(null);
+
+  const clamp = (z: number) => Math.min(5, Math.max(1, z));
+
+  useEffect(() => {
+    const el = vpRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = el.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const z0 = zoomRef.current;
+      const nz = clamp(z0 * (e.deltaY < 0 ? 1.12 : 1 / 1.12));
+      if (nz === z0) return;
+      const k = nz / z0;
+      const p0 = posRef.current;
+      setZoom(nz);
+      setPos(nz === 1 ? { x: 0, y: 0 } : { x: cx - (cx - p0.x) * k, y: cy - (cy - p0.y) * k });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  const bumpZoom = (dir: 1 | -1) => {
+    const nz = clamp(zoom * (dir === 1 ? 1.25 : 1 / 1.25));
+    setZoom(nz);
+    if (nz === 1) setPos({ x: 0, y: 0 });
+  };
+  const reset = () => {
+    setZoom(1);
+    setPos({ x: 0, y: 0 });
+  };
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (zoom <= 1) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragRef.current = { x: e.clientX, y: e.clientY, ox: pos.x, oy: pos.y };
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = dragRef.current;
+    if (!d) return;
+    setPos({ x: d.ox + (e.clientX - d.x), y: d.oy + (e.clientY - d.y) });
+  };
+  const onPointerUp = () => {
+    dragRef.current = null;
+  };
+  const onDblClick = () => {
+    if (zoom > 1) reset();
+    else {
+      setZoom(2.5);
+      setPos({ x: 0, y: 0 });
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex flex-col bg-black/90 animate-fade-in">
+      <div className="flex items-center justify-between gap-3 shrink-0 border-b border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
+        <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-white/70">{alt}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button onClick={() => bumpZoom(-1)} disabled={zoom <= 1} title="Zoom out (−)" className="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 disabled:opacity-30">
+            <ZoomOut className="h-4 w-4" />
+          </button>
+          <span className="w-14 text-center text-xs font-bold tabular-nums text-white">{Math.round(zoom * 100)}%</span>
+          <button onClick={() => bumpZoom(1)} disabled={zoom >= 5} title="Zoom in (+)" className="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 disabled:opacity-30">
+            <ZoomIn className="h-4 w-4" />
+          </button>
+          <button onClick={reset} title="Reset" className="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 disabled:opacity-30" disabled={zoom === 1 && pos.x === 0 && pos.y === 0}>
+            <RotateCcw className="h-4 w-4" />
+          </button>
+          <span className="mx-1 h-5 w-px bg-white/15" />
+          <button onClick={onClose} title="Close (Esc)" className="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={vpRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onDoubleClick={onDblClick}
+        className={cn(
+          'flex flex-1 touch-none select-none items-center justify-center overflow-hidden',
+          zoom > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
+        )}
+      >
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="max-w-none will-change-transform"
+          style={{ transform: `translate(${pos.x}px, ${pos.y}px) scale(${zoom})` }}
+        />
+      </div>
+      <p className="shrink-0 py-2.5 text-center text-[11px] text-white/45">Scroll to zoom · drag to pan · double-click to fit</p>
+    </div>
+  );
+}
+
+/* ===================== REVIEW OVERLAY ===================== */
+function DocImage({ userId, kind, alt, onView }: { userId: string; kind: 'aadharFront' | 'aadharBack'; alt: string; onView: (src: string) => void }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['kyc-doc', userId, kind],
     queryFn: async () => {
@@ -250,34 +358,36 @@ function DocImage({ userId, kind, alt }: { userId: string; kind: 'aadharFront' |
     staleTime: 5 * 60_000,
   });
 
-  if (isLoading)
-    return <div className={cn('rounded-xl bg-overlay/[0.05] animate-pulse', big ? 'h-[60vh]' : 'h-56')} />;
+  if (isLoading) return <div className="h-64 rounded-xl bg-overlay/[0.05] animate-pulse" />;
   if (isError || !data)
     return (
-      <div className="h-56 rounded-xl border border-dashed border-overlay/[0.12] flex flex-col items-center justify-center gap-2 text-dim">
-        <FileX className="w-6 h-6" />
+      <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-overlay/[0.12] text-dim">
+        <FileX className="h-6 w-6" />
         <p className="text-xs">Could not load image</p>
       </div>
     );
   return (
-    <button type="button" onClick={() => setBig((v) => !v)} className="block w-full text-left" title={big ? 'Shrink' : 'Enlarge'}>
-      <img
-        src={data}
-        alt={alt}
-        className={cn(
-          'w-full rounded-xl object-contain bg-black/40 border border-overlay/[0.08] transition-all cursor-zoom-in',
-          big ? 'h-[60vh]' : 'h-56'
-        )}
-      />
-      <p className="text-[10px] text-dim mt-1 text-center">{big ? 'Click to shrink' : 'Click to enlarge'}</p>
+    <button
+      type="button"
+      onClick={() => onView(data)}
+      title="Click to view full screen"
+      className="group/doc kyc-doc-frame relative block w-full overflow-hidden rounded-xl border border-overlay/[0.08] bg-black/50"
+    >
+      <img src={data} alt={alt} className="h-64 w-full object-contain" />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-gradient-to-t from-black/70 to-transparent py-2 text-[11px] font-semibold text-white/90 opacity-0 transition-opacity group-hover/doc:opacity-100">
+        <ZoomIn className="h-3.5 w-3.5" /> Click to zoom
+      </span>
     </button>
   );
 }
 
-function ReviewModal({ userId, onClose }: { userId: string | null; onClose: () => void }) {
+function ReviewOverlay({ userId, onClose }: { userId: string | null; onClose: () => void }) {
   const { can } = useAuth();
   const qc = useQueryClient();
   const [reason, setReason] = useState('');
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const lbRef = useRef(false);
+  lbRef.current = !!lightbox;
 
   const { data, isLoading } = useQuery({
     queryKey: ['kyc-review', userId],
@@ -296,102 +406,163 @@ function ReviewModal({ userId, onClose }: { userId: string | null; onClose: () =
     },
   });
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (lbRef.current) setLightbox(null);
+      else onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  if (!userId) return null;
+
   const u = data;
   const m = u ? meta(u.kycStatus) : null;
   const dm = u ? docMeta(u.kycDocType) : docMeta(null);
   const hasDocs = !!u?.aadharFront || !!u?.aadharBack;
   const allowed = can('users.update');
+  const loadingBody = isLoading || !u || !m;
 
   return (
-    <Modal open={!!userId} onClose={onClose} title={u ? `KYC review — ${u.name}` : 'KYC review'}>
-      {isLoading || !u || !m ? (
-        <div className="space-y-4">
-          <div className="h-16 rounded-xl bg-overlay/[0.04] animate-pulse" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="h-56 rounded-xl bg-overlay/[0.05] animate-pulse" />
-            <div className="h-56 rounded-xl bg-overlay/[0.05] animate-pulse" />
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-overlay/[0.04] border border-overlay/[0.08]">
-            <span className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue to-accent-violet/80 flex items-center justify-center text-white font-bold shrink-0">
-              {u.name[0]?.toUpperCase()}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => { if (!lightbox) onClose(); }} />
+      <div className="glass relative max-h-[92vh] w-full max-w-7xl animate-slide-up overflow-y-auto rounded-2xl border border-overlay/[0.1]">
+        {/* header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-overlay/[0.08] bg-panel/95 px-4 py-3.5 backdrop-blur-xl sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-blue to-accent-violet/80 text-sm font-bold text-white">
+              {u?.name?.[0]?.toUpperCase() ?? '…'}
             </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-semibold text-heading">{u.name}</p>
-                <Badge variant={m.badge}>{m.label}</Badge>
-                <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-semibold border bg-accent-violet/10 text-accent-violet border-accent-violet/25">
-                  {dm.label}
-                </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="truncate font-semibold text-heading">{u ? `KYC review — ${u.name}` : 'KYC review'}</p>
+                {u && m && <Badge variant={m.badge}>{m.label}</Badge>}
               </div>
-              <p className="text-xs text-faint mt-0.5">{u.email || '—'} {u.mobile ? `· ${u.mobile}` : ''}</p>
-              <p className="text-[11px] text-dim mt-1">
-                DOB: {u.dob ? formatDate(u.dob) : '—'} · Joined {formatDate(u.createdAt)}
+              <p className="truncate text-[11px] text-faint">
+                {u ? `${u.email || '—'}${u.mobile ? ` · ${u.mobile}` : ''} · ${dm.label}` : 'Loading applicant…'}
               </p>
             </div>
           </div>
-
-          {!hasDocs ? (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-accent-gold/10 border border-accent-gold/25 text-sm text-accent-gold">
-              <ShieldAlert className="w-5 h-5 shrink-0" /> No documents uploaded by this user yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-faint mb-1.5">{dm.front}</p>
-                {u.aadharFront ? <DocImage userId={u._id} kind="aadharFront" alt={dm.front} /> : <MissingDoc />}
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-faint mb-1.5">{dm.back}</p>
-                {u.aadharBack ? <DocImage userId={u._id} kind="aadharBack" alt={dm.back} /> : <MissingDoc />}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="text-xs font-medium text-muted">Reason (optional — saved with the decision)</label>
-            <input
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="glass-input mt-1"
-              placeholder="e.g. Name mismatch on document"
-              maxLength={500}
-            />
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => mut.mutate({ status: 'rejected' })}
-              disabled={!hasDocs || !allowed || mut.isPending}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-accent-red/15 text-accent-red border border-accent-red/30 hover:bg-accent-red/25 transition-all active:scale-[0.98] disabled:opacity-40"
-            >
-              <XCircle className="w-4 h-4" /> {mut.isPending ? 'Saving…' : 'Reject'}
-            </button>
-            <button
-              onClick={() => mut.mutate({ status: 'verified' })}
-              disabled={!hasDocs || !allowed || mut.isPending}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-accent-green/20 text-accent-green border border-accent-green/30 hover:bg-accent-green/30 transition-all active:scale-[0.98] disabled:opacity-40"
-            >
-              <UserCheck className="w-4 h-4" /> {mut.isPending ? 'Saving…' : 'Approve'}
-            </button>
-          </div>
-          {!allowed && (
-            <p className="text-[11px] text-center text-dim inline-flex items-center justify-center gap-1.5">
-              <Inbox className="w-3.5 h-3.5" /> You don't have permission to review KYC
-            </p>
-          )}
+          <button onClick={onClose} className="btn-ghost shrink-0 p-2" title="Close (Esc)">
+            <X className="h-4 w-4" />
+          </button>
         </div>
-      )}
-    </Modal>
+
+        {/* body */}
+        <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-5">
+          {/* documents */}
+          <div className="min-w-0">
+            {loadingBody ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="h-64 rounded-xl bg-overlay/[0.05] animate-pulse" />
+                <div className="h-64 rounded-xl bg-overlay/[0.05] animate-pulse" />
+              </div>
+            ) : !hasDocs ? (
+              <div className="flex items-center gap-3 rounded-xl border border-accent-gold/25 bg-accent-gold/10 p-4 text-sm text-accent-gold">
+                <ShieldAlert className="h-5 w-5 shrink-0" /> No documents uploaded by this user yet.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">{dm.front}</p>
+                  {u?.aadharFront ? (
+                    <DocImage userId={u._id} kind="aadharFront" alt={dm.front} onView={(src) => setLightbox({ src, alt: dm.front })} />
+                  ) : (
+                    <MissingDoc />
+                  )}
+                </div>
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">{dm.back}</p>
+                  {u?.aadharBack ? (
+                    <DocImage userId={u._id} kind="aadharBack" alt={dm.back} onView={(src) => setLightbox({ src, alt: dm.back })} />
+                  ) : (
+                    <MissingDoc />
+                  )}
+                </div>
+              </div>
+            )}
+            <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-dim">
+              <ZoomIn className="h-3.5 w-3.5" /> Click a document for full-screen zoom — scroll to zoom, drag to pan, Esc to close
+            </p>
+          </div>
+
+          {/* right rail */}
+          <aside className="flex flex-col gap-4">
+            {/* applicant details */}
+            <div className="rounded-xl border border-overlay/[0.08] bg-overlay/[0.03] p-4">
+              <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-faint">Applicant details</p>
+              {loadingBody ? (
+                <div className="space-y-2.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-4 rounded-md bg-overlay/[0.05] animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {(
+                    [
+                      ['Email', u?.email || '—'],
+                      ['Mobile', u?.mobile || '—'],
+                      ['DOB', u?.dob ? formatDate(u.dob) : '—'],
+                      ['Joined', u ? formatDate(u.createdAt) : '—'],
+                      ['Referral code', u?.referralCode || '—'],
+                    ] as [string, string][]
+                  ).map(([k, v]) => (
+                    <div key={k} className="flex items-start justify-between gap-3 text-xs">
+                      <span className="shrink-0 text-faint">{k}</span>
+                      <span className="break-all text-right font-medium text-heading">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* reason */}
+            <div>
+              <label className="text-xs font-medium text-muted">Reason (optional — saved with the decision)</label>
+              <input
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="glass-input mt-1"
+                placeholder="e.g. Name mismatch on document"
+                maxLength={500}
+              />
+            </div>
+
+            {/* actions */}
+            <div className="flex gap-3 lg:sticky lg:bottom-0 lg:border-t lg:border-overlay/[0.08] lg:bg-panel/95 lg:pb-1 lg:pt-3 lg:backdrop-blur-xl">
+              <button onClick={() => mut.mutate({ status: 'rejected' })} disabled={!hasDocs || !allowed || mut.isPending} className="btn-reject">
+                <XCircle className="h-4 w-4" /> {mut.isPending ? 'Saving…' : 'Reject'}
+              </button>
+              <button onClick={() => mut.mutate({ status: 'verified' })} disabled={!hasDocs || !allowed || mut.isPending} className="btn-approve">
+                <UserCheck className="h-4 w-4" /> {mut.isPending ? 'Saving…' : 'Approve'}
+              </button>
+            </div>
+            {!allowed && (
+              <p className="inline-flex items-center justify-center gap-1.5 text-center text-[11px] text-dim">
+                <Inbox className="h-3.5 w-3.5" /> You don't have permission to review KYC
+              </p>
+            )}
+          </aside>
+        </div>
+      </div>
+
+      {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+    </div>
   );
 }
 
 function MissingDoc() {
   return (
-    <div className="h-56 rounded-xl border border-dashed border-overlay/[0.12] flex flex-col items-center justify-center gap-2 text-dim">
-      <FileX className="w-6 h-6" />
+    <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-overlay/[0.12] text-dim">
+      <FileX className="h-6 w-6" />
       <p className="text-xs">Not uploaded</p>
     </div>
   );

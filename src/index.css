@@ -162,3 +162,45 @@ html.light .recharts-default-tooltip {
   border-color: rgba(24, 24, 27, 0.12) !important;
   color: #18181b !important;
 }
+
+/* ---- KYC review: action buttons + doc frames ----------------------------
+   Dark keeps the tailwind accent tints; light needs darker text for
+   contrast on pale tints (accent-green/red are tuned for dark). */
+.btn-approve {
+  @apply flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all active:scale-[0.98] disabled:opacity-40;
+  background-color: rgba(52, 211, 153, 0.2);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #34d399;
+}
+.btn-approve:hover:not(:disabled) {
+  background-color: rgba(52, 211, 153, 0.3);
+}
+.btn-reject {
+  @apply flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all active:scale-[0.98] disabled:opacity-40;
+  background-color: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: #f87171;
+}
+.btn-reject:hover:not(:disabled) {
+  background-color: rgba(248, 113, 113, 0.25);
+}
+html.light .btn-approve {
+  background-color: rgba(4, 120, 87, 0.1);
+  border-color: rgba(4, 120, 87, 0.35);
+  color: #047857;
+}
+html.light .btn-approve:hover:not(:disabled) {
+  background-color: rgba(4, 120, 87, 0.18);
+}
+html.light .btn-reject {
+  background-color: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.35);
+  color: #b91c1c;
+}
+html.light .btn-reject:hover:not(:disabled) {
+  background-color: rgba(185, 28, 28, 0.16);
+}
+html.light .kyc-doc-frame {
+  border-color: rgba(24, 24, 27, 0.16);
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.08);
+}
