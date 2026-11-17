@@ -95,9 +95,6 @@ export default function Finance() {
           </h1>
           <p className="mt-1.5 text-sm text-faint">Review payout requests and activations — every action is audited</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-faint">
-          <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
-        </div>
       </div>
 
       {tab === 'withdrawals' ? <Withdrawals onTab={setTab} /> : tab === 'deposits' ? <Deposits onTab={setTab} /> : <MembershipRequests />}

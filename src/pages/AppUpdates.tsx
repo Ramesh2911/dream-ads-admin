@@ -99,9 +99,6 @@ export default function AppUpdates() {
           <p className="mt-1.5 text-sm text-faint">"What's new" cards shown in the mobile app</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs text-faint">
-            <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
-          </span>
           <button
             onClick={openAdd}
             disabled={!editable}

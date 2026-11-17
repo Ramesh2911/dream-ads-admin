@@ -259,9 +259,6 @@ export default function Settings() {
               <ShieldAlert className="w-3 h-3" /> Read-only
             </span>
           )}
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-faint px-2.5 py-1.5 rounded-lg bg-overlay/[0.05] border border-overlay/[0.08]">
-            <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
-          </span>
         </div>
       </div>
 

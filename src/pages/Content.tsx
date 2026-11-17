@@ -80,9 +80,6 @@ export default function Content() {
           </h1>
           <p className="mt-1.5 text-sm text-faint">Manage videos, categories, banners and ad placements</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-faint">
-          <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /> Live from Atlas
-        </div>
       </div>
 
       {/* stats */}
