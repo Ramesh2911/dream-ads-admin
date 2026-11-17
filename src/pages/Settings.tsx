@@ -28,6 +28,7 @@ type Form = {
   usdtQr: string;
   usdtAddress: string;
   usdtMin: string;
+  upiId: string;
 };
 
 const toForm = (d?: Record<string, unknown>): Form => ({
@@ -42,6 +43,7 @@ const toForm = (d?: Record<string, unknown>): Form => ({
   usdtQr: String(d?.usdtQr ?? ''),
   usdtAddress: String(d?.usdtAddress ?? ''),
   usdtMin: String(d?.usdtMin ?? '2'),
+  upiId: String(d?.upiId ?? ''),
 });
 
 const isValidUrl = (v: string) => v === '' || /^https?:\/\/\S+$/.test(v);
@@ -109,11 +111,12 @@ export default function Settings() {
     else if (Number(form.minWithdrawal) < 0) e.push('Minimum redeem cannot be negative');
     if (!isInt(form.signupBonus)) e.push('Signup bonus must be a whole number');
     else if (Number(form.signupBonus) > 100_000) e.push('Signup bonus looks too high (max 100,000)');
-    if (!isInt(form.activationFee)) e.push('Activation fee must be a whole number');
-    else if (Number(form.activationFee) <= 0) e.push('Activation fee must be greater than 0');
+    if (!isInt(form.activationFee)) e.push('Membership price must be a whole number');
+    else if (Number(form.activationFee) <= 0) e.push('Membership price must be greater than 0');
     if (form.usdtAddress.trim() && !/^(0x[a-fA-F0-9]{40}|[a-zA-Z0-9]{20,})$/.test(form.usdtAddress.trim()))
       e.push('USDT address looks invalid');
-    if (form.usdtMin && !/^\d+(\.\d{1,2})?$/.test(form.usdtMin.trim())) e.push('Minimum USDT must be a number');
+    if (form.usdtMin && !/^\d+(\.\d{1,2})?$/.test(form.usdtMin.trim())) e.push('Membership price ($) must be a number');
+    if (form.upiId.trim().length > 60) e.push('UPI ID must be 60 characters or fewer');
     return e;
   }, [form]);
 
@@ -129,6 +132,7 @@ export default function Settings() {
     usdtQr: form.usdtQr,
     usdtAddress: form.usdtAddress.trim(),
     usdtMin: Number(form.usdtMin || '0'),
+    upiId: form.upiId.trim(),
   });
 
   const flashSaved = async () => {
@@ -213,6 +217,40 @@ export default function Settings() {
     }
   };
 
+  const qrUploadBlock = (kind: 'upi' | 'usdt', label: string, hint: string) => (
+    <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-medium text-muted flex items-center gap-1.5"><QrCode className="w-3.5 h-3.5" /> {label}</p>
+          <p className="text-[11px] text-dim mt-0.5">{hint}</p>
+        </div>
+        {form[kind === 'upi' ? 'upiQr' : 'usdtQr'] && (
+          <img
+            src={qrSrc(kind, form[kind === 'upi' ? 'upiQr' : 'usdtQr'])}
+            alt={label}
+            className="w-16 h-16 rounded-lg object-cover border border-overlay/[0.12] bg-white"
+          />
+        )}
+      </div>
+      <label className={cn(
+        'mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
+        !editable || qrUploading
+          ? 'opacity-40 cursor-not-allowed border-overlay/[0.1] text-faint'
+          : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
+      )}>
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          disabled={!editable || !!qrUploading}
+          onChange={(e) => uploadQr(kind, e.target.files?.[0])}
+        />
+        <Upload className="w-3.5 h-3.5" />
+        {qrUploading === kind ? 'Uploading…' : form[kind === 'upi' ? 'upiQr' : 'usdtQr'] ? 'Replace QR' : 'Upload QR'}
+      </label>
+    </div>
+  );
+
   const toggleMaintenance = (next: boolean) => {
     if (next && editable) {
       setConfirmMaint(true);
@@ -227,8 +265,9 @@ export default function Settings() {
     { ok: isValidUrl(form.iosDownloadUrl) && form.iosDownloadUrl !== '', warn: form.iosDownloadUrl === '', label: 'iOS download link', hint: form.iosDownloadUrl || 'optional — missing' },
     { ok: isInt(form.minWithdrawal) && Number(form.minWithdrawal) >= 0, label: 'Minimum redeem valid', hint: `${Number(form.minWithdrawal) || 0} coins` },
     { ok: isInt(form.signupBonus) && Number(form.signupBonus) <= 100_000, label: 'Signup bonus valid', hint: `${Number(form.signupBonus) || 0} points per new user` },
-    { ok: isInt(form.activationFee) && Number(form.activationFee) > 0, label: 'Activation fee valid', hint: `${Number(form.activationFee) || 0} (plain number)` },
-    { ok: form.upiQr !== '', warn: form.upiQr === '', label: 'Digital handle QR uploaded', hint: form.upiQr ? 'Configured' : 'missing — users cannot see a QR' },
+    { ok: isInt(form.activationFee) && Number(form.activationFee) > 0, label: 'Membership price valid', hint: `₹${Number(form.activationFee) || 0} (UPI)` },
+    { ok: form.upiId.trim() !== '', warn: form.upiId.trim() === '', label: 'UPI ID configured', hint: form.upiId || 'not set — shown to users for payment' },
+    { ok: form.upiQr !== '', warn: form.upiQr === '', label: 'UPI QR uploaded', hint: form.upiQr ? 'Configured' : 'missing — users cannot see a QR' },
     { ok: form.usdtQr !== '' && form.usdtAddress !== '', warn: form.usdtQr === '' || form.usdtAddress === '', label: 'USDT (BEP-20) payment setup', hint: form.usdtQr && form.usdtAddress ? 'Configured' : 'QR or address missing' },
   ];
 
@@ -416,93 +455,101 @@ export default function Settings() {
           <div className="glass p-5 sm:p-6 animate-slide-up" style={{ animationDelay: '105ms' }}>
             <div className="flex items-center gap-2.5 mb-5">
               <span className="p-2 rounded-lg bg-accent-violet/10 border border-accent-violet/20"><Crown className="w-4 h-4 text-accent-violet" /></span>
-              <h3 className="font-semibold text-heading">Membership Activation</h3>
-              <span className="text-[11px] text-faint">fee & payment QRs</span>
+              <h3 className="font-semibold text-heading">Membership Configuration</h3>
+              <span className="text-[11px] text-faint">price · UPI · crypto</span>
             </div>
             {isLoading ? (
               <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="h-16 rounded-xl bg-overlay/[0.03] animate-pulse" />)}</div>
             ) : (
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium text-muted">Activation fee</label>
-                    <div className="relative mt-1">
-                      <input
-                        className="glass-input pr-14 tabular-nums"
-                        inputMode="numeric"
-                        value={form.activationFee}
-                        disabled={!editable}
-                        onChange={(e) => setForm({ ...form, activationFee: e.target.value })}
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">points</span>
-                    </div>
-                    <p className="text-[11px] text-dim mt-1">Shown in-app as a plain number (no currency symbols)</p>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-muted">Minimum USDT (BEP-20)</label>
-                    <div className="relative mt-1">
-                      <input
-                        className="glass-input pr-14 tabular-nums"
-                        inputMode="decimal"
-                        value={form.usdtMin}
-                        disabled={!editable}
-                        onChange={(e) => setForm({ ...form, usdtMin: e.target.value })}
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-accent-gold">USDT</span>
-                    </div>
-                    <p className="text-[11px] text-dim mt-1">Minimum activation amount for the USDT option</p>
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {([['upi', 'Digital handle QR', 'Digital ID QR shown to users'], ['usdt', 'USDT BEP-20 QR', 'BSC (BEP-20) network only']] as const).map(([kind, label, hint]) => (
-                    <div key={kind} className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-3.5">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium text-muted flex items-center gap-1.5"><QrCode className="w-3.5 h-3.5" /> {label}</p>
-                          <p className="text-[11px] text-dim mt-0.5">{hint}</p>
-                        </div>
-                        {form[kind === 'upi' ? 'upiQr' : 'usdtQr'] && (
-                          <img
-                            src={qrSrc(kind, form[kind === 'upi' ? 'upiQr' : 'usdtQr'])}
-                            alt={label}
-                            className="w-16 h-16 rounded-lg object-cover border border-overlay/[0.12] bg-white"
-                          />
-                        )}
-                      </div>
-                      <label className={cn(
-                        'mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed text-xs font-semibold cursor-pointer transition-colors',
-                        !editable || qrUploading
-                          ? 'opacity-40 cursor-not-allowed border-overlay/[0.1] text-faint'
-                          : 'border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10',
-                      )}>
+                  {/* UPI Configuration */}
+                  <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-4 space-y-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-accent-blue flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-accent-blue" /> UPI Configuration
+                    </p>
+                    <div>
+                      <label className="text-xs font-medium text-muted">Membership Price (₹)</label>
+                      <div className="relative mt-1">
                         <input
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp"
-                          className="hidden"
-                          disabled={!editable || !!qrUploading}
-                          onChange={(e) => uploadQr(kind, e.target.files?.[0])}
+                          className="glass-input pr-10 tabular-nums"
+                          inputMode="numeric"
+                          value={form.activationFee}
+                          disabled={!editable}
+                          onChange={(e) => setForm({ ...form, activationFee: e.target.value })}
                         />
-                        <Upload className="w-3.5 h-3.5" />
-                        {qrUploading === kind ? 'Uploading…' : form[kind === 'upi' ? 'upiQr' : 'usdtQr'] ? 'Replace QR' : 'Upload QR'}
-                      </label>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-accent-gold">₹</span>
+                      </div>
+                      <p className="text-[11px] text-dim mt-1">This price will be displayed to users for membership activation</p>
                     </div>
-                  ))}
+                    <div>
+                      <label className="text-xs font-medium text-muted">UPI ID</label>
+                      <input
+                        className="glass-input mt-1 font-mono"
+                        placeholder="name@bankupi"
+                        value={form.upiId}
+                        disabled={!editable}
+                        onChange={(e) => setForm({ ...form, upiId: e.target.value })}
+                      />
+                      <p className="text-[11px] text-dim mt-1">This UPI ID will be displayed to users for payment</p>
+                    </div>
+                    {qrUploadBlock('upi', 'UPI QR', 'Shown to users for UPI payment')}
+                  </div>
+
+                  {/* Crypto Configuration */}
+                  <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-4 space-y-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-accent-gold flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-accent-gold" /> Crypto Configuration
+                    </p>
+                    <div>
+                      <label className="text-xs font-medium text-muted">Crypto Name</label>
+                      <input className="glass-input mt-1" value="BEP20" disabled />
+                      <p className="text-[11px] text-dim mt-1">The name of the Crypto network (e.g. BEP20)</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted">Membership Price ($)</label>
+                      <div className="relative mt-1">
+                        <input
+                          className="glass-input pr-10 tabular-nums"
+                          inputMode="decimal"
+                          value={form.usdtMin}
+                          disabled={!editable}
+                          onChange={(e) => setForm({ ...form, usdtMin: e.target.value })}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-accent-gold">$</span>
+                      </div>
+                      <p className="text-[11px] text-dim mt-1">This amount in USDT will be displayed to users when selecting crypto payment</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted">Crypto Address</label>
+                      <input
+                        className="glass-input mt-1 font-mono"
+                        placeholder="0x…"
+                        value={form.usdtAddress}
+                        disabled={!editable}
+                        onChange={(e) => setForm({ ...form, usdtAddress: e.target.value })}
+                      />
+                      <p className="text-[11px] text-dim mt-1">The wallet address for Crypto payments</p>
+                    </div>
+                    {qrUploadBlock('usdt', 'Crypto QR', 'BSC (BEP-20) network only')}
+                  </div>
                 </div>
 
                 {qrError && (
                   <p className="text-[11px] text-accent-red flex items-center gap-1.5"><XCircle className="w-3 h-3" /> {qrError}</p>
                 )}
 
-                <Field label="USDT address (BEP-20)" hint="Copyable address shown next to the QR in-app — start with 0x…">
-                  <input
-                    className="glass-input mt-1 font-mono"
-                    placeholder="0x…"
-                    value={form.usdtAddress}
-                    disabled={!editable}
-                    onChange={(e) => setForm({ ...form, usdtAddress: e.target.value })}
-                  />
-                </Field>
+                {/* configuration impact */}
+                <div className="rounded-xl bg-overlay/[0.03] border border-overlay/[0.06] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted mb-2.5">Configuration Impact</p>
+                  <ul className="space-y-1.5 text-[12.5px] text-muted list-disc pl-4">
+                    <li>New users will pay <b className="text-heading">₹{form.activationFee || '—'}</b> (UPI) or <b className="text-heading">{form.usdtMin || '—'} USDT</b> (BEP20)</li>
+                    <li>UPI payment will be made to: <b className="text-heading font-mono break-all">{form.upiId || 'not set'}</b></li>
+                    <li>Crypto (USDT) payment will be made to: <b className="text-heading font-mono break-all">{form.usdtAddress || 'not set'}</b></li>
+                    <li>UPI QR code status: {form.upiQr ? <span className="text-accent-green font-semibold">✓ Uploaded</span> : <span className="text-accent-red">✗ Not uploaded</span>}</li>
+                    <li>Crypto QR code status: {form.usdtQr ? <span className="text-accent-green font-semibold">✓ Uploaded</span> : <span className="text-accent-red">✗ Not uploaded</span>}</li>
+                  </ul>
+                </div>
               </div>
             )}
           </div>
