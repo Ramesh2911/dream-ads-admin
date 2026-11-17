@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AdminLayout from './layouts/AdminLayout';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Kyc from './pages/Kyc';
@@ -35,6 +36,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route element={<Protected><AdminLayout /></Protected>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />

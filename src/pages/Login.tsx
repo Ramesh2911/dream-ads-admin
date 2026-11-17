@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2, Eye, EyeOff, ShieldCheck, ScrollText, Database, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
+  const flash = (location.state as { flash?: string } | null)?.flash;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -121,6 +123,13 @@ export default function Login() {
               <p className="text-sm text-zinc-500 mt-1">Use your admin credentials to continue</p>
             </div>
 
+            {flash && (
+              <div className="mb-5 p-3.5 rounded-xl bg-accent-green/10 border border-accent-green/25 text-accent-green text-sm flex items-start gap-2.5 animate-fade-in">
+                <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-green/20 flex items-center justify-center shrink-0 text-[10px] font-bold">✓</span>
+                {flash}
+              </div>
+            )}
+
             {err && (
               <div className="mb-5 p-3.5 rounded-xl bg-accent-red/10 border border-accent-red/25 text-accent-red text-sm flex items-start gap-2.5 animate-fade-in">
                 <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-red/20 flex items-center justify-center shrink-0 text-[10px] font-bold">!</span>
@@ -167,6 +176,15 @@ export default function Login() {
                     aria-label={showPass ? 'Hide password' : 'Show password'}
                   >
                     {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => nav('/forgot-password')}
+                    className="text-xs font-medium text-accent-gold hover:text-accent-gold/80 hover:underline transition-colors"
+                  >
+                    Forgot password?
                   </button>
                 </div>
               </div>
