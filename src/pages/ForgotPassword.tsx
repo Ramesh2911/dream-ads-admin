@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, Eye, EyeOff, ShieldCheck, ArrowRight, ArrowLeft, KeyRound, Check, X } from 'lucide-react';
 import api from '../lib/api';
@@ -49,7 +49,7 @@ export default function ForgotPassword() {
     try {
       await api.post('/admin/forgot-password/verify', { email, otp });
       setStep('password');
-      setInfo('OTP verified â€” now set your new password');
+      setInfo('OTP verified — now set your new password');
     } catch (e) {
       setErr(errMsg(e));
     } finally {
@@ -62,7 +62,7 @@ export default function ForgotPassword() {
     setErr(''); setLoading(true);
     try {
       await api.post('/admin/forgot-password/reset', { email, otp, newPassword: newPw });
-      nav('/login', { state: { flash: 'Password updated â€” sign in with your new password' } });
+      nav('/login', { state: { flash: 'Password updated — sign in with your new password' } });
     } catch (e) {
       setErr(errMsg(e));
     } finally {
@@ -152,7 +152,7 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 1 â€” email */}
+          {/* Step 1 — email */}
           {step === 'email' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -174,7 +174,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={loading} className="btn-gold w-full shine !py-3">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Sending OTPâ€¦
+                    <Loader2 className="w-4 h-4 animate-spin" /> Sending OTP…
                   </span>
                 ) : (
                   <>Send OTP <ArrowRight className="w-4 h-4" /></>
@@ -183,7 +183,7 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 2 â€” OTP verify only */}
+          {/* Step 2 — OTP verify only */}
           {step === 'otp' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -205,7 +205,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={!canVerify} className="btn-gold w-full shine !py-3 disabled:opacity-50">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Verifyingâ€¦
+                    <Loader2 className="w-4 h-4 animate-spin" /> Verifying…
                   </span>
                 ) : (
                   <>Verify OTP <ShieldCheck className="w-4 h-4" /></>
@@ -232,7 +232,7 @@ export default function ForgotPassword() {
             </div>
           )}
 
-          {/* Step 3 â€” new password only (OTP already verified) */}
+          {/* Step 3 — new password only (OTP already verified) */}
           {step === 'password' && (
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -245,7 +245,7 @@ export default function ForgotPassword() {
                     value={newPw}
                     onChange={(e) => setNewPw(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     autoComplete="new-password"
                     autoFocus
                     required
@@ -271,7 +271,7 @@ export default function ForgotPassword() {
                     value={confPw}
                     onChange={(e) => setConfPw(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     autoComplete="new-password"
                     required
                   />
@@ -298,7 +298,7 @@ export default function ForgotPassword() {
               <button type="submit" disabled={!canReset} className="btn-gold w-full shine !py-3 disabled:opacity-50">
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Updatingâ€¦
+                    <Loader2 className="w-4 h-4 animate-spin" /> Updating…
                   </span>
                 ) : (
                   <>Reset password <ShieldCheck className="w-4 h-4" /></>
@@ -319,7 +319,7 @@ export default function ForgotPassword() {
 
           <p className="mt-5 text-center text-[11px] text-dim">
             <button type="button" onClick={() => nav('/login')} className="hover:text-muted transition-colors">
-              â† Back to sign in
+              ← Back to sign in
             </button>
           </p>
         </form>

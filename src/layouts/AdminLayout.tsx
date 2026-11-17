@@ -1,4 +1,4 @@
-﻿import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, Users, Wallet, Share2, Video, ListChecks,
@@ -75,7 +75,7 @@ export default function AdminLayout() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(46,107,255,0.18),transparent_55%)]" />
         <div className="absolute -left-20 top-[45%] w-64 h-64 rounded-full bg-accent-gold/[0.07] blur-[90px]" />
         <div className="absolute inset-0 dots-grid opacity-30" />
-        {/* right edge: goldâ†’blue hairline */}
+        {/* right edge: gold→blue hairline */}
         <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-accent-gold/50 via-accent-blue/30 to-transparent" />
 
         {/* brand block */}

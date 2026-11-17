@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2, Eye, EyeOff, ShieldCheck, ScrollText, Database, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -64,7 +64,7 @@ export default function Login() {
             DREAM ADS
           </h1>
           <p className="mt-3 text-muted text-sm tracking-wide">
-            Admin Control Center Â· Multi Solutions Private Limited
+            Admin Control Center · Multi Solutions Private Limited
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-2.5">
@@ -85,7 +85,7 @@ export default function Login() {
 
         {/* bottom note */}
         <p className="relative text-[11px] text-dim text-center">
-          Â© {new Date().getFullYear()} Dream Ads Multi Solutions Pvt Ltd Â· CIN U62011WR2026PTC295658
+          © {new Date().getFullYear()} Dream Ads Multi Solutions Pvt Ltd · CIN U62011WR2026PTC295658
         </p>
       </aside>
 
@@ -125,7 +125,7 @@ export default function Login() {
 
             {flash && (
               <div className="mb-5 p-3.5 rounded-xl bg-accent-green/10 border border-accent-green/25 text-accent-green text-sm flex items-start gap-2.5 animate-fade-in">
-                <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-green/20 flex items-center justify-center shrink-0 text-[10px] font-bold">âœ“</span>
+                <span className="mt-0.5 w-4 h-4 rounded-full bg-accent-green/20 flex items-center justify-center shrink-0 text-[10px] font-bold">✓</span>
                 {flash}
               </div>
             )}
@@ -165,7 +165,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="field-gold pl-10 pr-11"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     autoComplete="current-password"
                     required
                   />
@@ -193,7 +193,7 @@ export default function Login() {
             <button type="submit" disabled={loading} className="btn-gold w-full mt-6 shine !py-3">
               {loading ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Signing inâ€¦
+                  <Loader2 className="w-4 h-4 animate-spin" /> Signing in…
                 </span>
               ) : (
                 <>
@@ -203,7 +203,7 @@ export default function Login() {
             </button>
 
             <p className="mt-5 text-center text-[11px] text-dim">
-              Access is role-restricted Â· all actions are audit-logged
+              Access is role-restricted · all actions are audit-logged
             </p>
           </form>
         </div>

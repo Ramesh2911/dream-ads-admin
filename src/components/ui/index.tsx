@@ -1,4 +1,4 @@
-﻿import { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -78,7 +78,7 @@ export function EmptyState({ title, sub, action }: { title: string; sub?: string
   return (
     <div className="glass p-12 text-center animate-fade-in">
       <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/20 to-accent-blue/10 flex items-center justify-center mb-4">
-        <span className="text-2xl">âœ¦</span>
+        <span className="text-2xl">✦</span>
       </div>
       <p className="text-heading font-semibold">{title}</p>
       {sub && <p className="mt-1 text-sm text-faint">{sub}</p>}
